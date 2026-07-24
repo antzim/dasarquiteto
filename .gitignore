@@ -1,0 +1,43 @@
+# ─── Pasta de downloads pessoais (não faz parte do site) ───────────────────────
+Downloads/
+
+# ─── Pasta de arquivo (versões antigas, não necessários para o site) ───────────
+_arquivo/
+
+# ─── Arquivos de sistema ────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ─── Arquivos de editor ─────────────────────────────────────────────────────────
+.vscode/
+*.suo
+*.user
+
+# ─── Arquivos grandes de BIM/3D (não pertencem ao site) ────────────────────────
+*.rvt
+*.rfa
+*.rvtx
+*.skp
+*.fbx
+*.glb
+*.3dm
+*.dwg
+
+# ─── Instaladores e executáveis ─────────────────────────────────────────────────
+*.exe
+*.msi
+*.dmg
+
+# ─── Arquivos de vídeo (muito pesados) ──────────────────────────────────────────
+*.mp4
+*.mov
+*.avi
+*.mkv
+
+# ─── Comprimidos ────────────────────────────────────────────────────────────────
+*.zip
+*.rar
+*.7z
+*.tar
+*.gz
