@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DAS Arquitetos — Arquitetura Contemporânea & Sustentabilidade</title>
+  <meta name="description" content="DAS Arquitetos é um estúdio de arquitetura buscando implementar sua visão em projetos contemporâneos, sustentáveis e pautados na tecnologia."/>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+
+  <style>
+    /* =====================================================
+       DESIGN TOKENS - PASTEL TONES
+    ===================================================== */
+    :root {
+      --ff-sans:   'Outfit', sans-serif;
+      --ff-serif:  'Playfair Display', serif;
+      --ff-mono:   'JetBrains Mono', monospace;
+
+      --bg:        #F4F1EA;
+      --surface:   #EAE5DC;
+      --border:    rgba(0,0,0,0.06);
+
+      --ink-900:   #1A1A1A;
+      --ink-700:   #333333;
+      --ink-400:   #7A7A75;
+      --ink-200:   #C2BFB9;
+
+      --glass-bg:  rgba(244, 241, 234, 0.85);
+      --glass-blur: 24px;
+
+      --ease:      cubic-bezier(0.16, 1, 0.3, 1);
+      --t-fast:    0.2s var(--ease);
+      --t-med:     0.45s var(--ease);
+      --t-slow:    0.8s var(--ease);
+
+      --sp-2:   4px; --sp-4:   8px; --sp-6:   12px; --sp-8:   16px;
+      --sp-12:  24px; --sp-16:  32px; --sp-20:  40px; --sp-24:  48px;
+      --sp-32:  64px; --sp-40:  80px; --sp-56:  112px; --sp-72:  144px;
+
+      --r-xs:   3px; --r-sm:   8px; --r-md: 14px; --r-full: 9999px;
+      --max-w:  1380px; --hdr-h:  68px;
+    }
+
+    html[lang="pt-BR"] .lang-en { display: none !important; }
+    html[lang="en"] .lang-pt { display: none !important; }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; background: var(--bg); color: var(--ink-900); font-family: var(--ff-sans); -webkit-font-smoothing: antialiased; }
+    body { overflow-x: hidden; line-height: 1.65; }
+    img  { display: block; max-width: 100%; }
+    a    { text-decoration: none; color: inherit; }
+    ul   { list-style: none; }
+    button { cursor: pointer; border: none; background: none; font-family: inherit; }
+
+    #progress-bar { position: fixed; top: 0; left: 0; width: 0%; height: 2px; background: var(--ink-900); z-index: 9999; transition: width 0.08s linear; }
+
+    /* HEADER */
+    .hdr { position: fixed; inset: 0 0 auto; height: var(--hdr-h); background: var(--glass-bg); backdrop-filter: blur(var(--glass-blur)); -webkit-backdrop-filter: blur(var(--glass-blur)); border-bottom: 1px solid var(--border); z-index: 900; transition: box-shadow var(--t-med), transform var(--t-med); }
+    .hdr.scrolled  { box-shadow: 0 4px 40px rgba(0,0,0,0.05); }
+    .hdr.hide      { transform: translateY(-100%); }
+    .hdr-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--sp-12); height: 100%; display: flex; align-items: center; justify-content: space-between; gap: var(--sp-16); }
+    .hdr-logo img { height: 42px; width: auto; object-fit: contain; mix-blend-mode: multiply; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); transform-origin: left center; }
+    .hdr-logo:hover img { transform: scale(1.6); }
+    .hdr-nav { display: flex; align-items: center; gap: var(--sp-20); }
+    .hdr-nav a { font-size: 0.75rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-400); transition: color var(--t-fast); position: relative; padding-bottom: 2px; }
+    .hdr-nav a::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 0; height: 1px; background: var(--ink-900); transition: width var(--t-med); }
+    .hdr-nav a:hover { color: var(--ink-900); }
+    .hdr-nav a:hover::after { width: 100%; }
+    
+    .lang-toggle { display: flex; align-items: center; gap: 8px; font-family: var(--ff-mono); font-size: 0.75rem; color: var(--ink-400); margin-right: var(--sp-12); }
+    .lang-toggle button { font-family: inherit; font-size: inherit; color: inherit; transition: color var(--t-fast); }
+    .lang-toggle button.active { color: var(--ink-900); font-weight: 600; }
+    .lang-toggle button:hover { color: var(--ink-900); }
+    .hdr-cta { display: inline-flex; align-items: center; padding: 9px 20px; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; background: var(--ink-900); color: var(--bg); border: 1.5px solid var(--ink-900); border-radius: var(--r-xs); position: relative; overflow: hidden; transition: color var(--t-fast), border-color var(--t-fast); z-index: 1; }
+    .hdr-cta::before { content: ''; position: absolute; inset: 0; background: var(--bg); transform: scaleX(0); transform-origin: left; transition: transform var(--t-med); z-index: -1; }
+    .hdr-cta:hover { color: var(--ink-900); }
+    .hdr-cta:hover::before { transform: scaleX(1); }
+    .hdr-toggle { display: none; flex-direction: column; gap: 5px; padding: 6px; }
+    .hdr-toggle span { display: block; width: 20px; height: 1.5px; background: var(--ink-900); transition: all 0.3s var(--ease); }
+    .hdr-toggle.open span:nth-child(1) { transform: rotate(45deg) translate(4.5px, 4.5px); }
+    .hdr-toggle.open span:nth-child(2) { opacity: 0; }
+    .hdr-toggle.open span:nth-child(3) { transform: rotate(-45deg) translate(4.5px, -4.5px); }
+
+    /* MOBILE NAV */
+    .mob-nav { position: fixed; top: var(--hdr-h); inset-inline: 0; background: var(--bg); border-bottom: 1px solid var(--border); padding: var(--sp-12) var(--sp-12) var(--sp-16); display: flex; flex-direction: column; gap: var(--sp-4); transform: translateY(-110%); opacity: 0; transition: transform var(--t-med), opacity 0.3s; z-index: 899; pointer-events: none; }
+    .mob-nav.open { transform: translateY(0); opacity: 1; pointer-events: auto; }
+    .mob-nav a { font-size: 0.88rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-400); padding: var(--sp-4) 0; border-bottom: 1px solid var(--border); transition: color var(--t-fast); }
+    .mob-nav a:hover { color: var(--ink-900); }
+
+    /* BUTTONS */
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: var(--sp-8) var(--sp-16); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; border-radius: var(--r-xs); position: relative; overflow: hidden; transition: color var(--t-fast), border-color var(--t-fast), transform 0.15s; z-index: 1; cursor: pointer; }
+    .btn:active { transform: scale(0.97); }
+    .btn-fill { background: var(--ink-900); color: var(--bg); border: 1.5px solid var(--ink-900); }
+    .btn-fill::before { content: ''; position: absolute; inset: 0; background: var(--bg); transform: scaleX(0); transform-origin: left; transition: transform var(--t-med); z-index: -1; }
+    .btn-fill:hover { color: var(--ink-900); }
+    .btn-fill:hover::before { transform: scaleX(1); }
+    .btn-ghost-w { background: transparent; color: rgba(255,255,255,0.88); border: 1.5px solid rgba(255,255,255,0.35); }
+    .btn-ghost-w::before { content: ''; position: absolute; inset: 0; background: rgba(255,255,255,0.12); transform: scaleX(0); transform-origin: right; transition: transform var(--t-med); z-index: -1; }
+    .btn-ghost-w:hover { border-color: rgba(255,255,255,0.8); }
+    .btn-ghost-w:hover::before { transform: scaleX(1); }
+
+    /* COMMONS */
+    .s { padding: var(--sp-56) 0; }
+    .s-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--sp-12); }
+    .eyebrow { display: inline-block; font-family: var(--ff-mono); font-size: 0.65rem; font-weight: 400; letter-spacing: 0.35em; text-transform: uppercase; color: var(--ink-400); margin-bottom: var(--sp-6); }
+    .h2 { font-family: var(--ff-serif); font-size: clamp(1.9rem, 3.8vw, 3.2rem); font-weight: 700; line-height: 1.12; color: var(--ink-900); }
+    .h2 em { font-style: italic; color: var(--ink-400); }
+    .lead { font-size: clamp(0.95rem, 1.3vw, 1.08rem); color: var(--ink-400); line-height: 1.8; max-width: 540px; }
+    .s-hdr { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-24); align-items: end; margin-bottom: var(--sp-40); }
+
+    .rv { opacity: 0; transform: translateY(36px); transition: opacity var(--t-slow), transform var(--t-slow); }
+    .rv.in { opacity: 1; transform: none; }
+    .rv-d1 { transition-delay: 0.10s; } .rv-d2 { transition-delay: 0.20s; } .rv-d3 { transition-delay: 0.30s; } .rv-d4 { transition-delay: 0.42s; }
+
+    /* HERO */
+    .hero { position: relative; height: 100svh; min-height: 640px; display: flex; align-items: flex-end; overflow: hidden; }
+    .hero-bgs { position: absolute; inset: -8%; z-index: 0; cursor: pointer; will-change: transform; transition: transform 0.1s ease-out; }
+    .h-bg { position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0; transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1), transform 8s linear; transform: scale(1); filter: brightness(0.7) contrast(1.05); }
+    .h-bg.active { opacity: 1; transform: scale(1.04); }
+    .hero-grad { position: absolute; inset: 0; background: linear-gradient(to top, rgba(26, 26, 26, 0.92) 0%, rgba(26, 26, 26, 0.5) 45%, rgba(26, 26, 26, 0.15) 100%); z-index: 1; }
+    .hero-content { position: relative; z-index: 2; width: 100%; max-width: var(--max-w); margin: 0 auto; padding: var(--sp-40) var(--sp-12); }
+    .hero-eye { font-family: var(--ff-mono); font-size: 0.68rem; letter-spacing: 0.35em; text-transform: uppercase; color: rgba(255,255,255,0.55); display: block; margin-bottom: var(--sp-8); opacity: 0; transform: translateY(14px); transition: opacity var(--t-slow) 0.15s, transform var(--t-slow) 0.15s; }
+    .hero-eye.in { opacity: 1; transform: none; }
+    .hero-title { font-family: var(--ff-serif); font-size: clamp(2.8rem, 6.5vw, 6rem); font-weight: 700; line-height: 1.04; color: #ffffff; max-width: 860px; margin-bottom: var(--sp-12); }
+    .hero-title .line { display: block; overflow: hidden; }
+    .hero-title .line-inner { display: block; opacity: 0; transform: translateY(105%); transition: opacity 0.7s var(--ease), transform 0.7s var(--ease); }
+    .hero-title .line-inner.in { opacity: 1; transform: none; }
+    .hero-title .line:nth-child(2) .line-inner { transition-delay: 0.15s; }
+    .hero-title .line:nth-child(3) .line-inner { transition-delay: 0.28s; }
+    .hero-sub { font-size: clamp(0.95rem, 1.4vw, 1.12rem); font-weight: 300; color: rgba(255,255,255,0.7); max-width: 500px; line-height: 1.78; margin-bottom: var(--sp-16); opacity: 0; transform: translateY(16px); transition: opacity var(--t-slow) 0.7s, transform var(--t-slow) 0.7s; }
+    .hero-sub.in { opacity: 1; transform: none; }
+    .hero-btns { display: flex; gap: var(--sp-6); flex-wrap: wrap; opacity: 0; transform: translateY(14px); transition: opacity var(--t-slow) 0.9s, transform var(--t-slow) 0.9s; }
+    .hero-btns.in { opacity: 1; transform: none; }
+    .hero-strip { position: absolute; bottom: 0; left: 0; right: 0; z-index: 2; background: rgba(255,255,255,0.08); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-top: 1px solid rgba(255,255,255,0.1); }
+    .hero-strip-inner { max-width: var(--max-w); margin: 0 auto; padding: var(--sp-12); display: grid; grid-template-columns: repeat(4,1fr); gap: 1px; }
+    .hstat { text-align: center; padding: var(--sp-8) var(--sp-6); border-right: 1px solid rgba(255,255,255,0.08); }
+    .hstat:last-child { border-right: none; }
+    .hstat-num { display: block; font-family: var(--ff-serif); font-size: 1.9rem; font-weight: 700; color: #ffffff; line-height: 1; margin-bottom: 4px; }
+    .hstat-label { font-family: var(--ff-mono); font-size: 0.6rem; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(255,255,255,0.45); }
+    .hero-caret { position: absolute; bottom: 120px; right: var(--sp-12); z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 6px; opacity: 0; transition: opacity 1s 1.4s; }
+    .hero-caret.in { opacity: 1; }
+    .hero-caret-line { width: 1px; height: 56px; background: rgba(255,255,255,0.35); animation: caretPulse 2.4s ease-in-out infinite; }
+    @keyframes caretPulse { 0%,100% { transform: scaleY(1); opacity: 0.35; } 50% { transform: scaleY(0.45); opacity: 0.8; } }
+    .hero-caret-txt { font-family: var(--ff-mono); font-size: 0.55rem; letter-spacing: 0.28em; text-transform: uppercase; color: rgba(255,255,255,0.4); writing-mode: vertical-rl; }
+
+    /* MARQUEE */
+    .marquee { background: var(--ink-900); padding: 13px 0; overflow: hidden; }
+    .marquee-track { display: flex; width: max-content; animation: marqueeScroll 32s linear infinite; }
+    .marquee-track:hover { animation-play-state: paused; }
+    @keyframes marqueeScroll { to { transform: translateX(-50%); } }
+    .marquee-item { display: flex; align-items: center; gap: var(--sp-12); padding: 0 var(--sp-20); font-family: var(--ff-mono); font-size: 0.66rem; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(255,255,255,0.45); white-space: nowrap; }
+    .marquee-dot { width: 3px; height: 3px; border-radius: 50%; background: rgba(255,255,255,0.22); flex-shrink: 0; }
+
+    /* ABOUT */
+    .about { background: var(--bg); }
+    .about-grid { display: grid; grid-template-columns: 5fr 7fr; gap: var(--sp-40); align-items: center; }
+    .about-img-wrap { position: relative; aspect-ratio: 4/5; border-radius: var(--r-sm); overflow: hidden; }
+    .about-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.8s var(--ease); filter: brightness(0.95); }
+    .about-img-wrap:hover img { transform: scale(1.04); }
+    .about-badge { position: absolute; bottom: var(--sp-12); right: var(--sp-12); background: var(--bg); border-radius: var(--r-xs); padding: var(--sp-8) var(--sp-12); box-shadow: 0 8px 28px rgba(0,0,0,0.08); }
+    .about-badge small { display: block; font-family: var(--ff-mono); font-size: 0.58rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-400); }
+    .about-badge strong { display: block; font-family: var(--ff-serif); font-size: 1.15rem; font-weight: 700; color: var(--ink-900); }
+    .about-cols { display: flex; flex-direction: column; gap: var(--sp-12); }
+    .about-item { display: flex; gap: var(--sp-8); align-items: flex-start; padding: var(--sp-8) 0; border-bottom: 1px solid var(--border); transition: padding-left 0.25s var(--ease); cursor: default; }
+    .about-item:hover { padding-left: 6px; }
+    .about-num { font-family: var(--ff-mono); font-size: 0.6rem; color: var(--ink-400); flex-shrink: 0; margin-top: 3px; width: 22px; }
+    .about-item h4 { font-size: 0.9rem; font-weight: 600; color: var(--ink-900); margin-bottom: 3px; }
+    .about-item p  { font-size: 0.84rem; color: var(--ink-400); line-height: 1.65; }
+
+    /* PROJECTS */
+    .projects { background: var(--surface); }
+    .filters { display: flex; gap: var(--sp-4); flex-wrap: wrap; margin-bottom: var(--sp-20); }
+    .f-pill { font-size: 0.72rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; padding: 6px 14px; border: 1px solid var(--border); border-radius: var(--r-full); color: var(--ink-400); background: var(--bg); transition: all var(--t-fast); cursor: pointer; }
+    .f-pill:hover, .f-pill.on { background: var(--ink-900); color: var(--bg); border-color: var(--ink-900); }
+    .pg { display: grid; grid-template-columns: repeat(12,1fr); gap: var(--sp-6); }
+    .pc { position: relative; overflow: hidden; border-radius: var(--r-xs); cursor: pointer; background: #111; }
+    .pc-8 { grid-column: span 8; } .pc-4 { grid-column: span 4; } .pc-6 { grid-column: span 6; } .pc-7 { grid-column: span 7; } .pc-5 { grid-column: span 5; }
+    .pc-thumb { overflow: hidden; aspect-ratio: 16/10; } .pc-8 .pc-thumb { aspect-ratio: 16/9; } .pc-4 .pc-thumb { aspect-ratio: 4/5; }
+    .pc-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.75s var(--ease); filter: brightness(0.9); }
+    .pc:hover .pc-thumb img { transform: scale(1.07); filter: brightness(0.72); }
+    .pc-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, transparent 58%); z-index: 1; transition: background 0.4s var(--ease); }
+    .pc:hover .pc-overlay { background: linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.1) 68%); }
+    .pc-info { position: absolute; bottom: 0; left: 0; right: 0; z-index: 2; padding: var(--sp-8); transform: translateY(6px); transition: transform 0.38s var(--ease); }
+    .pc:hover .pc-info { transform: none; }
+    .pc-cat { font-family: var(--ff-mono); font-size: 0.58rem; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(255,255,255,0.48); display: block; margin-bottom: 3px; }
+    .pc-name { font-family: var(--ff-serif); font-size: 1.1rem; font-weight: 600; color: #fff; line-height: 1.2; margin-bottom: 5px; }
+    .pc-meta { font-family: var(--ff-mono); font-size: 0.58rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.42); opacity: 0; transition: opacity 0.28s 0.08s; }
+    .pc:hover .pc-meta { opacity: 1; }
+
+    /* BANNER CTA ALL PROJECTS */
+    .full-portfolio-cta-banner {
+      margin-top: var(--sp-32);
+      padding: var(--sp-24) var(--sp-20);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--sp-16);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.04);
+      transition: box-shadow var(--t-med), border-color var(--t-med);
+    }
+    .full-portfolio-cta-banner:hover {
+      box-shadow: 0 20px 48px rgba(0,0,0,0.08);
+      border-color: rgba(0,0,0,0.12);
+    }
+    .full-port-info h3 {
+      font-family: var(--ff-serif);
+      font-size: clamp(1.4rem, 2.4vw, 2.1rem);
+      font-weight: 700;
+      color: var(--ink-900);
+      line-height: 1.2;
+      margin-bottom: 4px;
+    }
+    .full-port-info p {
+      font-size: 0.9rem;
+      color: var(--ink-400);
+    }
+
+    @media (max-width: 768px) {
+      .full-portfolio-cta-banner {
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: left;
+      }
+    }
+
+    /* CAPABILITIES */
+    .caps { background: var(--bg); }
+    .caps-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: var(--sp-8); margin-top: var(--sp-40); }
+    .cap-card { padding: var(--sp-20) var(--sp-16); border: 1px solid var(--border); border-radius: var(--r-sm); position: relative; overflow: hidden; transition: box-shadow 0.4s, border-color 0.4s, transform 0.4s var(--ease); }
+    .cap-card::before { content: ''; position: absolute; top: 0; left: 0; width: 2px; height: 0; background: var(--ink-900); transition: height 0.4s var(--ease); }
+    .cap-card:hover::before { height: 100%; }
+    .cap-card:hover { box-shadow: 0 16px 56px rgba(0,0,0,0.06); border-color: rgba(0,0,0,0.09); transform: translateY(-5px); }
+    .cap-icon { width: 44px; height: 44px; background: var(--surface); border-radius: var(--r-xs); display: flex; align-items: center; justify-content: center; margin-bottom: var(--sp-8); transition: background var(--t-fast); }
+    .cap-card:hover .cap-icon { background: var(--ink-900); }
+    .cap-icon svg { color: var(--ink-400); transition: color var(--t-fast); }
+    .cap-card:hover .cap-icon svg { color: var(--bg); }
+    .cap-title { font-size: 0.95rem; font-weight: 600; color: var(--ink-900); margin-bottom: 5px; }
+    .cap-desc  { font-size: 0.83rem; color: var(--ink-400); line-height: 1.65; }
+
+    /* HIGHLIGHT UNFORGETTABLE YOGA HOUSE AUTOMATIC PARALLAX SHOWCASE */
+    .suriname { background: #0A0A0A; position: relative; overflow: hidden; }
+    .suriname::after { content: 'DAS'; position: absolute; right: -2%; top: -10%; font-family: var(--ff-serif); font-size: clamp(12rem, 22vw, 22rem); font-weight: 700; color: rgba(255,255,255,0.018); line-height: 1; pointer-events: none; user-select: none; }
+    .suriname-inner { max-width: var(--max-w); margin: 0 auto; padding: var(--sp-56) var(--sp-12); display: grid; grid-template-columns: 1fr 1.15fr; gap: var(--sp-40); align-items: center; position: relative; z-index: 1; }
+    .suriname .eyebrow { color: rgba(255,255,255,0.45); } .suriname .h2 { color: #fff; }
+    .sur-desc { font-size: 0.97rem; color: rgba(255,255,255,0.68); line-height: 1.85; margin: var(--sp-12) 0 var(--sp-16); max-width: 520px; }
+    .sur-specs { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-6); margin-bottom: var(--sp-16); }
+    .sur-spec { padding: var(--sp-8) var(--sp-12); background: rgba(255,255,255,0.045); border: 1px solid rgba(255,255,255,0.08); border-radius: var(--r-xs); transition: background 0.3s; }
+    .sur-spec:hover { background: rgba(255,255,255,0.08); }
+    .sur-spec small { display: block; font-family: var(--ff-mono); font-size: 0.56rem; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 3px; }
+    .sur-spec strong { font-size: 0.88rem; font-weight: 600; color: rgba(255,255,255,0.9); }
+
+    /* YOGA HOUSE AUTOMATIC PARALLAX SLIDESHOW CONTAINER */
+    .yoga-gallery-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-8);
+      position: relative;
+      perspective: 1200px;
+    }
+    
+    .yh-main-frame {
+      width: 100%;
+      aspect-ratio: 16/10;
+      border-radius: var(--r-md);
+      overflow: hidden;
+      position: relative;
+      background: #141414;
+      box-shadow: 0 28px 72px rgba(0,0,0,0.6), 0 0 50px rgba(255,255,255,0.03);
+      transform-style: preserve-3d;
+      transition: transform 0.4s var(--ease);
+    }
+    
+    .yh-slide-layer {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transform: scale(1.12) translateY(10px);
+      transition: opacity 1.1s cubic-bezier(0.4, 0, 0.2, 1), transform 1.4s cubic-bezier(0.16, 1, 0.3, 1), filter 1.1s ease;
+      filter: brightness(0.8) blur(3px);
+      will-change: opacity, transform, filter;
+    }
+    .yh-slide-layer.active {
+      opacity: 1;
+      transform: scale(1.02) translateY(0);
+      filter: brightness(0.95) blur(0px);
+      z-index: 2;
+    }
+    .yh-slide-layer img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .yh-caption-badge {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      z-index: 10;
+      background: rgba(10, 10, 10, 0.82);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      padding: 9px 18px;
+      border-radius: var(--r-full);
+      border: 1px solid rgba(255,255,255,0.14);
+      font-family: var(--ff-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.92);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      transition: all 0.4s var(--ease);
+      transform: translateZ(25px);
+    }
+
+    .yh-thumbs-bar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+    .yh-thumb-item {
+      height: 68px;
+      border-radius: var(--r-xs);
+      overflow: hidden;
+      cursor: pointer;
+      border: 1.5px solid rgba(255,255,255,0.12);
+      opacity: 0.55;
+      transition: all 0.4s var(--ease);
+      position: relative;
+    }
+    .yh-thumb-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    /* PROGRESS BAR TIMER ON THUMBS */
+    .yh-thumb-progress {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 3px;
+      width: 0%;
+      background: #FFFFFF;
+      transition: width 0.1s linear;
+    }
+    
+    .yh-thumb-item.active {
+      opacity: 1;
+      border-color: rgba(255,255,255,0.9);
+      transform: translateY(-4px);
+      box-shadow: 0 10px 24px rgba(0,0,0,0.4);
+    }
+    .yh-thumb-item.active .yh-thumb-progress {
+      width: 100%;
+      transition: width 3.6s linear;
+    }
+
+    /* CONTACT */
+    .contact { background: var(--ink-900); position: relative; overflow: hidden; }
+    .contact::before { content: ''; position: absolute; top: -30%; right: -10%; width: 50%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.035), transparent 70%); pointer-events: none; }
+    .contact-inner { max-width: var(--max-w); margin: 0 auto; padding: var(--sp-72) var(--sp-12); display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-40); align-items: center; position: relative; z-index: 1; }
+    .contact .eyebrow { color: rgba(255,255,255,0.35); } .contact .h2 { color: #fff; }
+    .contact-sub { font-size: 0.97rem; color: rgba(255,255,255,0.6); line-height: 1.78; margin: var(--sp-8) 0 var(--sp-16); }
+    .cform { display: flex; flex-direction: column; gap: var(--sp-6); }
+    .cform-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-6); }
+    .cform input, .cform textarea { width: 100%; padding: 13px 16px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: var(--r-xs); font-family: var(--ff-sans); font-size: 0.88rem; color: #fff; outline: none; resize: none; transition: border-color var(--t-fast); }
+    .cform input::placeholder, .cform textarea::placeholder { color: rgba(255,255,255,0.35); }
+    .cform input:focus, .cform textarea:focus { border-color: rgba(255,255,255,0.45); }
+    .cform-submit { display: inline-flex; align-items: center; justify-content: center; padding: 14px 28px; background: #fff; color: var(--ink-900); font-family: var(--ff-sans); font-weight: 700; font-size: 0.78rem; letter-spacing: 0.16em; text-transform: uppercase; border: 1.5px solid #fff; border-radius: var(--r-xs); position: relative; overflow: hidden; transition: color var(--t-fast), background var(--t-fast); cursor: pointer; z-index: 1; }
+    .cform-submit::before { content: ''; position: absolute; inset: 0; background: var(--ink-900); transform: scaleX(0); transform-origin: right; transition: transform var(--t-med); z-index: -1; }
+    .cform-submit:hover { color: #fff; background: transparent; }
+    .cform-submit:hover::before { transform: scaleX(1); }
+
+    /* FOOTER */
+    .ftr { background: #111111; padding: var(--sp-40) 0 var(--sp-16); }
+    .ftr-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--sp-12); }
+    .ftr-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1.5fr; gap: var(--sp-24); padding-bottom: var(--sp-40); border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .ftr-logo img { height: 46px; width: auto; margin-bottom: var(--sp-8); filter: brightness(0) invert(1) opacity(0.65); }
+    .ftr-desc { font-size: 0.82rem; color: rgba(255,255,255,0.4); line-height: 1.72; max-width: 270px; }
+    .ftr-col-lbl { font-family: var(--ff-mono); font-size: 0.56rem; letter-spacing: 0.32em; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: var(--sp-8); }
+    .ftr-links { display: flex; flex-direction: column; gap: 8px; }
+    .ftr-link { font-size: 0.82rem; color: rgba(255,255,255,0.45); transition: color var(--t-fast); }
+    .ftr-link:hover { color: rgba(255,255,255,0.85); }
+    .ftr-sub form { display: flex; gap: 6px; margin-top: var(--sp-4); }
+    .ftr-sub input { flex: 1; padding: 9px 12px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--r-xs); font-family: var(--ff-sans); font-size: 0.8rem; color: #fff; outline: none; }
+    .ftr-sub input::placeholder { color: rgba(255,255,255,0.3); }
+    .ftr-sub button { padding: 9px 14px; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.75); font-family: var(--ff-sans); font-size: 0.74rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; border-radius: var(--r-xs); cursor: pointer; transition: background var(--t-fast), color var(--t-fast); }
+    .ftr-sub button:hover { background: rgba(255,255,255,0.2); color: #fff; }
+    .ftr-bottom { display: flex; justify-content: space-between; align-items: center; padding-top: var(--sp-12); flex-wrap: wrap; gap: var(--sp-6); }
+    .ftr-copy { font-size: 0.74rem; color: rgba(255,255,255,0.25); }
+    .ftr-legal { display: flex; gap: var(--sp-12); }
+    .ftr-legal a { font-size: 0.74rem; color: rgba(255,255,255,0.25); transition: color var(--t-fast); }
+    .ftr-legal a:hover { color: rgba(255,255,255,0.55); }
+
+    /* Responsive */
+    @media (max-width: 1060px) {
+      .about-grid { grid-template-columns: 1fr; } .caps-grid { grid-template-columns: 1fr 1fr; }
+      .suriname-inner { grid-template-columns: 1fr; } 
+      .contact-inner { grid-template-columns: 1fr; } .ftr-top { grid-template-columns: 1fr 1fr; }
+      .s-hdr { grid-template-columns: 1fr; gap: var(--sp-8); }
+      .pc-8, .pc-7, .pc-5, .pc-4, .pc-6 { grid-column: span 12; }
+      .hero-strip-inner { grid-template-columns: repeat(2,1fr); }
+    }
+    @media (max-width: 720px) {
+      :root { --sp-56: 72px; --sp-72: 88px; }
+      .hdr-nav, .hdr-cta, .lang-toggle { display: none; }
+      .hdr-toggle { display: flex; } .caps-grid { grid-template-columns: 1fr; }
+      .ftr-top { grid-template-columns: 1fr; } .cform-row { grid-template-columns: 1fr; }
+      .sur-specs { grid-template-columns: 1fr; }
+      .yh-thumbs-bar { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 460px) {
+      .hero-strip-inner { grid-template-columns: repeat(2,1fr); }
+      .ftr-bottom { flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<header class="hdr" id="hdr">
+  <div class="hdr-inner">
+    <a href="#hero" class="hdr-logo" aria-label="DAS Arquitetos">
+      <img src="logo DAS ARQUITETOS c.jpg" alt="DAS Arquitetos"/>
+    </a>
+
+    <nav class="hdr-nav" aria-label="Navegação">
+      <a href="#projetos"><span class="lang-pt">Projetos</span><span class="lang-en">Projects</span></a>
+      <a href="#sobre"><span class="lang-pt">Sobre</span><span class="lang-en">About</span></a>
+      <a href="#capacidades"><span class="lang-pt">Capacidades</span><span class="lang-en">Capabilities</span></a>
+      <a href="#destaque"><span class="lang-pt">Destaque</span><span class="lang-en">Highlight</span></a>
+    </nav>
+
+    <div style="display:flex;align-items:center;gap:16px;">
+      <!-- LANGUAGE TOGGLE -->
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="pt-BR">PT</button>
+        <span>|</span>
+        <button class="lang-btn" data-lang="en">EN</button>
+      </div>
+
+      <a href="#contato" class="hdr-cta">
+        <span class="lang-pt">Fale Conosco</span><span class="lang-en">Contact Us</span>
+      </a>
+      <button class="hdr-toggle" id="hdrToggle" aria-label="Menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Mobile Nav -->
+<nav class="mob-nav" id="mobNav" aria-label="Menu mobile">
+  <a href="#contato" data-cn style="font-weight:700; color:var(--ink-900);"><span class="lang-pt">Fale Conosco</span><span class="lang-en">Contact Us</span></a>
+  <a href="#projetos" data-cn><span class="lang-pt">Projetos</span><span class="lang-en">Projects</span></a>
+  <a href="#sobre" data-cn><span class="lang-pt">Sobre</span><span class="lang-en">About</span></a>
+  <a href="#capacidades" data-cn><span class="lang-pt">Capacidades</span><span class="lang-en">Capabilities</span></a>
+  <a href="#destaque" data-cn><span class="lang-pt">Destaque</span><span class="lang-en">Highlight</span></a>
+  <div style="margin-top:16px; display:flex; gap:12px;">
+    <button class="lang-btn active" data-lang="pt-BR" style="font-size:0.8rem; font-weight:600; color:var(--ink-900);">PT</button>
+    <button class="lang-btn" data-lang="en" style="font-size:0.8rem; font-weight:600; color:var(--ink-400);">EN</button>
+  </div>
+</nav>
+
+<!-- HERO FIRST FOLD -->
+<section class="hero" id="hero">
+  <div class="hero-bgs" id="heroBgs">
+    <div class="h-bg active" style="background-image: url('das_portfolio_images/img_page19_0.jpeg');"></div>
+    <div class="h-bg" style="background-image: url('das_portfolio_images/img_page7_0.jpeg');"></div>
+    <div class="h-bg" style="background-image: url('das_portfolio_images/img_page11_0.jpeg');"></div>
+    <div class="h-bg" style="background-image: url('das_portfolio_images/img_page4_0.jpeg');"></div>
+    <div class="h-bg" style="background-image: url('das_portfolio_images/img_page26_0.jpeg');"></div>
+  </div>
+  <div class="hero-grad"></div>
+
+  <div class="hero-content">
+    <span class="hero-eye" id="hEye">
+      <span class="lang-pt">Design · Arquitetura · Sustentabilidade</span>
+      <span class="lang-en">Design · Architecture · Sustainability</span>
+    </span>
+    <h1 class="hero-title" id="hTitle">
+      <span class="line"><span class="line-inner">
+        <span class="lang-pt">Arquitetura de</span>
+        <span class="lang-en">Architecture for</span>
+      </span></span>
+      <span class="line"><span class="line-inner">
+        <span class="lang-pt">Contexto, Clima</span>
+        <span class="lang-en">Context, Climate</span>
+      </span></span>
+      <span class="line"><span class="line-inner" style="font-style:italic;color:rgba(255,255,255,0.7)">
+        <span class="lang-pt">& Inovação</span>
+        <span class="lang-en">& Innovation</span>
+      </span></span>
+    </h1>
+    <p class="hero-sub" id="hSub">
+      <span class="lang-pt">
+        Buscamos implementar nossa visão em variados tipos e escalas de projetos. 
+        Acreditamos que os contornos da arquitetura devem se adequar à paisagem e ao clima.
+      </span>
+      <span class="lang-en">
+        We seek to implement our vision across the most varied types and scales of projects. 
+        We believe that the contours of architecture should fit the landscape and the climate.
+      </span>
+    </p>
+    <div class="hero-btns" id="hBtns">
+      <a href="#contato" class="btn btn-fill">
+        <span class="lang-pt">Fale Conosco</span><span class="lang-en">Contact Us</span>
+      </a>
+      <a href="#projetos" class="btn btn-ghost-w">
+        <span class="lang-pt">Projetos Selecionados</span><span class="lang-en">Selected Projects</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="hero-strip" id="heroStrip">
+    <div class="hero-strip-inner">
+      <div class="hstat rv"><span class="hstat-num">DAS</span><span class="hstat-label"><span class="lang-pt">Jovem Estúdio</span><span class="lang-en">Young Studio</span></span></div>
+      <div class="hstat rv rv-d1"><span class="hstat-num">BIM</span><span class="hstat-label"><span class="lang-pt">Gestão Tecnológica</span><span class="lang-en">Technological Management</span></span></div>
+      <div class="hstat rv rv-d2"><span class="hstat-num">+10</span><span class="hstat-label"><span class="lang-pt">Anos de Experiência</span><span class="lang-en">Years of Experience</span></span></div>
+      <div class="hstat rv rv-d3"><span class="hstat-num">NZE</span><span class="hstat-label"><span class="lang-pt">Net Zero Energy</span><span class="lang-en">Net Zero Energy</span></span></div>
+    </div>
+  </div>
+
+  <div class="hero-caret" id="hCaret">
+    <div class="hero-caret-line"></div>
+    <span class="hero-caret-txt">Scroll</span>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee">
+  <div class="marquee-track">
+    <div class="marquee-item"><span class="lang-pt">Arquitetura Contextualizada</span><span class="lang-en">Contextualized Architecture</span><span class="marquee-dot"></span></div>
+    <div class="marquee-item"><span class="lang-pt">Design Sustentável</span><span class="lang-en">Sustainable Design</span><span class="marquee-dot"></span></div>
+    <div class="marquee-item"><span class="lang-pt">Concursos de Projeto</span><span class="lang-en">Design Competitions</span><span class="marquee-dot"></span></div>
+    <div class="marquee-item"><span class="lang-pt">Modelagem BIM</span><span class="lang-en">BIM Modeling</span><span class="marquee-dot"></span></div>
+    <div class="marquee-item"><span class="lang-pt">Estratégias Bioclimáticas</span><span class="lang-en">Bioclimatic Strategies</span><span class="marquee-dot"></span></div>
+    <div class="marquee-item"><span class="lang-pt">Inovação Tecnológica</span><span class="lang-en">Technological Innovation</span><span class="marquee-dot"></span></div>
+    <!-- loop -->
+    <div class="marquee-item"><span class="lang-pt">Arquitetura Contextualizada</span><span class="lang-en">Contextualized Architecture</span><span class="marquee-dot"></span></div>
+    <div class="marquee-item"><span class="lang-pt">Design Sustentável</span><span class="lang-en">Sustainable Design</span><span class="marquee-dot"></span></div>
+    <div class="marquee-item"><span class="lang-pt">Concursos de Projeto</span><span class="lang-en">Design Competitions</span><span class="marquee-dot"></span></div>
+    <div class="marquee-item"><span class="lang-pt">Modelagem BIM</span><span class="lang-en">BIM Modeling</span><span class="marquee-dot"></span></div>
+    <div class="marquee-item"><span class="lang-pt">Estratégias Bioclimáticas</span><span class="lang-en">Bioclimatic Strategies</span><span class="marquee-dot"></span></div>
+    <div class="marquee-item"><span class="lang-pt">Inovação Tecnológica</span><span class="lang-en">Technological Innovation</span><span class="marquee-dot"></span></div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section class="s about" id="sobre">
+  <div class="s-inner">
+    <div class="about-grid">
+      <div class="about-img-wrap rv">
+        <img src="das_portfolio_images/img_page22_0.jpeg" alt="DAS Arquitetos" loading="lazy"/>
+        <div class="about-badge">
+          <small><span class="lang-pt">O Estúdio</span><span class="lang-en">The Studio</span></small>
+          <strong>DAS Arquitetos</strong>
+        </div>
+      </div>
+      <div>
+        <span class="eyebrow rv"><span class="lang-pt">Sobre Nós</span><span class="lang-en">About Us</span></span>
+        <h2 class="h2 rv rv-d1" style="margin-bottom:var(--sp-8);">
+          <span class="lang-pt">Uma visão multidisciplinar<br/><em>para a cidade.</em></span>
+          <span class="lang-en">A multidisciplinary vision<br/><em>for the city.</em></span>
+        </h2>
+        <p class="lead rv rv-d2" style="margin-bottom:var(--sp-16);">
+          <span class="lang-pt">
+            Somos um jovem estúdio formado por dois designers e três arquitetos, buscando implementar nossa visão nas mais variadas escalas de projetos. Nosso objetivo é produzir uma arquitetura contextualizada que seja generosa para a cidade, valorizando matérias-primas locais e testando novas experimentações.
+          </span>
+          <span class="lang-en">
+            We are a young studio formed by two designers and three architects, seeking to implement our vision across the most varied types and scales of projects. Our goal is the production of a contextualized architecture that is generous to the city, valuing local raw materials and testing new experimentations.
+          </span>
+        </p>
+
+        <div class="about-cols rv rv-d3">
+          <div class="about-item">
+            <span class="about-num">01</span>
+            <div>
+              <h4><span class="lang-pt">Gestão Tecnológica</span><span class="lang-en">Technological Management</span></h4>
+              <p><span class="lang-pt">Utilizamos projetos baseados em modelagem BIM para gerar grandes economias na execução da obra.</span><span class="lang-en">We use projects based on BIM modeling to generate great savings in construction execution.</span></p>
+            </div>
+          </div>
+          <div class="about-item">
+            <span class="about-num">02</span>
+            <div>
+              <h4><span class="lang-pt">Sustentabilidade em Foco</span><span class="lang-en">Sustainability in Focus</span></h4>
+              <p><span class="lang-pt">O uso de estratégias bioclimáticas resulta em arquitetura com alta eficiência energética e retorno do investimento.</span><span class="lang-en">The use of bioclimatic strategies results in architecture with high energy efficiency and return on investment.</span></p>
+            </div>
+          </div>
+          <div class="about-item">
+            <span class="about-num">03</span>
+            <div>
+              <h4><span class="lang-pt">Humanização pelo Design</span><span class="lang-en">Humanization through Design</span></h4>
+              <p><span class="lang-pt">Objetivamos conscientizar os usuários de que precisamos urgentemente repensar a maneira como vivemos e vemos nossas relações em sociedade.</span><span class="lang-en">We aim to raise awareness among users that we urgently need to rethink the way we live and see our relationships as a society.</span></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section class="s projects" id="projetos">
+  <div class="s-inner">
+    <div class="s-hdr">
+      <div>
+        <span class="eyebrow rv"><span class="lang-pt">Portfólio Selecionado</span><span class="lang-en">Selected Portfolio</span></span>
+        <h2 class="h2 rv rv-d1">
+          <span class="lang-pt">Do micro<br/><em>ao macro</em></span>
+          <span class="lang-en">From micro<br/><em>to macro</em></span>
+        </h2>
+      </div>
+      <div>
+        <p class="lead rv rv-d2">
+          <span class="lang-pt">Projetamos desde uma simples unidade social até o planejamento estratégico de um bairro inteiro. Veja abaixo uma seleção de trabalhos.</span>
+          <span class="lang-en">We design from a simple social unit to the strategic planning of an entire neighborhood. See a selection of works below.</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters rv">
+      <button class="f-pill on" data-f="all"><span class="lang-pt">Todos</span><span class="lang-en">All</span></button>
+      <button class="f-pill" data-f="institucional"><span class="lang-pt">Institucional</span><span class="lang-en">Institutional</span></button>
+      <button class="f-pill" data-f="residencial"><span class="lang-pt">Residencial</span><span class="lang-en">Residential</span></button>
+      <button class="f-pill" data-f="cultural"><span class="lang-pt">Cultural</span><span class="lang-en">Cultural</span></button>
+    </div>
+
+    <div class="pg rv">
+      <div class="pc pc-8" data-c="institucional">
+        <div class="pc-thumb"><img src="das_portfolio_images/img_page4_0.jpeg" alt="Arena BSB" loading="lazy"/></div>
+        <div class="pc-overlay"></div>
+        <div class="pc-info">
+          <span class="pc-cat"><span class="lang-pt">Esporte & Lazer</span><span class="lang-en">Sports & Leisure</span></span>
+          <h3 class="pc-name">Arena BSB</h3>
+          <p class="pc-meta">90,000m² · <span class="lang-pt">Concurso Nacional - 2º Lugar</span><span class="lang-en">National Competition - 2nd Place</span></p>
+        </div>
+      </div>
+      
+      <div class="pc pc-4" data-c="residencial">
+        <div class="pc-thumb"><img src="das_portfolio_images/img_page7_0.jpeg" alt="Monte Alegre" loading="lazy"/></div>
+        <div class="pc-overlay"></div>
+        <div class="pc-info">
+          <span class="pc-cat"><span class="lang-pt">Interiores & Residencial</span><span class="lang-en">Interiors & Residential</span></span>
+          <h3 class="pc-name">Monte Alegre Residence</h3>
+          <p class="pc-meta">620m² · Executive Project</p>
+        </div>
+      </div>
+
+      <div class="pc pc-5" data-c="residencial">
+        <div class="pc-thumb"><img src="das_portfolio_images/img_page19_0.jpeg" alt="Manaca Residence" loading="lazy"/></div>
+        <div class="pc-overlay"></div>
+        <div class="pc-info">
+          <span class="pc-cat"><span class="lang-pt">Residencial Sustentável</span><span class="lang-en">Sustainable Residential</span></span>
+          <h3 class="pc-name">Manaca Residence</h3>
+          <p class="pc-meta">1,350m² · <span class="lang-pt">Prêmio Saint Gobain</span><span class="lang-en">Saint Gobain Award</span></p>
+        </div>
+      </div>
+
+      <div class="pc pc-7" data-c="residencial">
+        <div class="pc-thumb"><img src="das_portfolio_images/img_page26_0.jpeg" alt="Sambaqui Sunset" loading="lazy"/></div>
+        <div class="pc-overlay"></div>
+        <div class="pc-info">
+          <span class="pc-cat"><span class="lang-pt">Habitação</span><span class="lang-en">Housing</span></span>
+          <h3 class="pc-name">Sambaqui Sunset Residence</h3>
+          <p class="pc-meta">26,000m² · Preliminary Design</p>
+        </div>
+      </div>
+
+      <div class="pc pc-6" data-c="cultural">
+        <div class="pc-thumb"><img src="das_portfolio_images/img_page35_0.jpeg" alt="Vilnius Concert Hall" loading="lazy"/></div>
+        <div class="pc-overlay"></div>
+        <div class="pc-info">
+          <span class="pc-cat"><span class="lang-pt">Cultural Internacional</span><span class="lang-en">International Cultural</span></span>
+          <h3 class="pc-name">Vilnius Concert Hall</h3>
+          <p class="pc-meta">12,000m² · Lithuania</p>
+        </div>
+      </div>
+
+      <div class="pc pc-6" data-c="institucional">
+        <div class="pc-thumb"><img src="das_portfolio_images/img_page11_0.jpeg" alt="Ceara Building" loading="lazy"/></div>
+        <div class="pc-overlay"></div>
+        <div class="pc-info">
+          <span class="pc-cat"><span class="lang-pt">Edifício Residencial/Misto</span><span class="lang-en">Residential/Mixed Building</span></span>
+          <h3 class="pc-name">Ceara Building</h3>
+          <p class="pc-meta">4,449m²</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROMINENT CTA BANNER TO ALL PROJECTS (PORT_index_05.html) -->
+    <div class="full-portfolio-cta-banner rv rv-d3">
+      <div class="full-port-info">
+        <h3>
+          <span class="lang-pt">Quer explorar nossa coleção completa de projetos?</span>
+          <span class="lang-en">Want to explore our complete collection of projects?</span>
+        </h3>
+        <p>
+          <span class="lang-pt">Acesse a nossa galeria interativa com expansão suave e ficha técnica completa.</span>
+          <span class="lang-en">Access our interactive gallery with smooth expansion and detailed datasheets.</span>
+        </p>
+      </div>
+      <a href="PORT_index_05.html" class="btn btn-fill" style="padding:14px 28px; white-space:nowrap; flex-shrink:0;">
+        <span class="lang-pt">Ver Todos os Projetos →</span>
+        <span class="lang-en">View All Projects →</span>
+      </a>
+    </div>
+
+  </div>
+</section>
+
+<!-- CAPABILITIES -->
+<section class="s caps" id="capacidades">
+  <div class="s-inner">
+    <div class="s-hdr">
+      <div>
+        <span class="eyebrow rv"><span class="lang-pt">Nossas Forças</span><span class="lang-en">Our Strengths</span></span>
+        <h2 class="h2 rv rv-d1">
+          <span class="lang-pt">Capacidades e<br/><em>Diferenciais</em></span>
+          <span class="lang-en">Capabilities and<br/><em>Differentials</em></span>
+        </h2>
+      </div>
+      <div>
+        <p class="lead rv rv-d2">
+          <span class="lang-pt">Unimos a sensibilidade estética do design com a precisão rigorosa da engenharia e da sustentabilidade.</span>
+          <span class="lang-en">We merge the aesthetic sensitivity of design with the rigorous precision of engineering and sustainability.</span>
+        </p>
+      </div>
+    </div>
+
+    <div class="caps-grid">
+      <div class="cap-card rv">
+        <div class="cap-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg></div>
+        <h3 class="cap-title"><span class="lang-pt">Prêmio Nacional de Sustentabilidade</span><span class="lang-en">National Sustainability Award</span></h3>
+        <p class="cap-desc">
+          <span class="lang-pt">Premiados no Saint Gobain Architecture and Sustainable Habitat Award (Residência Manaca).</span>
+          <span class="lang-en">Awarded in the Saint Gobain Architecture and Sustainable Habitat Award (Manaca Residence).</span>
+        </p>
+      </div>
+      <div class="cap-card rv rv-d1">
+        <div class="cap-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg></div>
+        <h3 class="cap-title"><span class="lang-pt">Concursos de Arquitetura</span><span class="lang-en">Architecture Competitions</span></h3>
+        <p class="cap-desc">
+          <span class="lang-pt">Forte atuação e premiações em concursos nacionais e internacionais, como a Arena BSB e Vilnius Concert Hall.</span>
+          <span class="lang-en">Strong presence and awards in national and international competitions, such as Arena BSB and Vilnius Concert Hall.</span>
+        </p>
+      </div>
+      <div class="cap-card rv rv-d2">
+        <div class="cap-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M22 9V7h-2V5c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-2h2v-2h-2v-2h2v-2h-2V9h2zm-4 10H4V5h14v14z"/></svg></div>
+        <h3 class="cap-title"><span class="lang-pt">BIM e Inovação</span><span class="lang-en">BIM and Innovation</span></h3>
+        <p class="cap-desc">
+          <span class="lang-pt">Integração tecnológica do começo ao fim para mitigar erros, garantir orçamentos e otimizar processos.</span>
+          <span class="lang-en">Technological integration from start to finish to mitigate errors, ensure budgets, and optimize processes.</span>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HIGHLIGHT PROJECT: UNFORGETTABLE YOGA HOUSE AUTOMATIC PARALLAX SHOWCASE -->
+<section class="suriname" id="destaque">
+  <div class="suriname-inner">
+    <div>
+      <span class="eyebrow rv"><span class="lang-pt">Projeto em Destaque — Concurso Internacional</span><span class="lang-en">Highlight Project — International Competition</span></span>
+      <h2 class="h2 rv rv-d1" style="margin-bottom:0;">Yoga House<br/><em style="color:rgba(255,255,255,0.7); font-size:2rem;">Portugal</em></h2>
+      <p class="sur-desc rv rv-d2">
+        <span class="lang-pt">
+          A palavra Yoga vem da raiz sânscrita "yuj", que significa unir. O conceito do design visa maximizar a conexão com os elementos da natureza usando madeira laminada colada (glulam) em uma volumetria que simula gestualmente a saudação "namastê", integrando correntes de ventilação natural e captação de iluminação bioclimática.
+        </span>
+        <span class="lang-en">
+          The word Yoga comes from the Sanskrit root "yuj", which means to unite. The design concept aims to maximize the connection with elements of nature using glued laminated timber (glulam) in a volumetry that gesturely simulates the "namaste" greeting, integrating natural ventilation currents and bioclimatic light harvesting.
+        </span>
+      </p>
+      <div class="sur-specs rv rv-d2">
+        <div class="sur-spec"><small><span class="lang-pt">Categoria</span><span class="lang-en">Category</span></small><strong><span class="lang-pt">Concurso de Projeto</span><span class="lang-en">Project Competition</span></strong></div>
+        <div class="sur-spec"><small><span class="lang-pt">Ano</span><span class="lang-en">Year</span></small><strong>2020</strong></div>
+        <div class="sur-spec"><small><span class="lang-pt">Área Construída</span><span class="lang-en">Built Area</span></small><strong>220 m²</strong></div>
+        <div class="sur-spec"><small><span class="lang-pt">Estrutura</span><span class="lang-en">Structure</span></small><strong>Glulam / Bioclimatic</strong></div>
+      </div>
+      
+      <!-- BUTTON TO VIEW PDF ONLINE -->
+      <div style="margin-top: 28px;" class="rv rv-d4">
+        <a href="dasarquitetos-portfolio.pdf" target="_blank" class="btn btn-ghost-w" style="border-color: rgba(255,255,255,0.35); color: white;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="margin-right:4px;"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-9.5 8.5L8 9.5V6h3v5.5zm4 0h-3V6h3v5.5zm4 0h-3V6h3v5.5zm-8 4v2H8v-2h1.5zm4 0v2h-1.5v-2h1.5zm4 0v2h-1.5v-2H17.5z"/></svg>
+          <span class="lang-pt">Visualizar PDF do Portfólio</span><span class="lang-en">View Portfolio PDF</span>
+        </a>
+      </div>
+    </div>
+    
+    <!-- UNFORGETTABLE AUTOMATIC PARALLAX MULTI-IMAGE GALLERY SHOWCASE -->
+    <div class="yoga-gallery-wrap rv rv-d2" id="yhGalleryWrap">
+      <div class="yh-main-frame" id="yhMainFrame">
+        
+        <!-- LAYER 0 -->
+        <div class="yh-slide-layer active" data-index="0">
+          <img src="das_portfolio_images/img_page42_0.jpeg" alt="Yoga House — Perspectiva Externa"/>
+        </div>
+        <!-- LAYER 1 -->
+        <div class="yh-slide-layer" data-index="1">
+          <img src="das_portfolio_images/img_page43_1.jpeg" alt="Yoga House — Santuário Interno"/>
+        </div>
+        <!-- LAYER 2 -->
+        <div class="yh-slide-layer" data-index="2">
+          <img src="das_portfolio_images/img_page43_2.jpeg" alt="Yoga House — Elevação & Implantação"/>
+        </div>
+        <!-- LAYER 3 -->
+        <div class="yh-slide-layer" data-index="3">
+          <img src="das_portfolio_images/img_page43_0.jpeg" alt="Yoga House — Diagrama Bioclimático"/>
+        </div>
+
+        <div class="yh-caption-badge" id="yhCapBadge">01 / 04 · Perspectiva Externa · Madeira Glulam</div>
+      </div>
+      
+      <!-- THUMBNAILS BAR WITH AUTOMATIC PROGRESS TIMERS -->
+      <div class="yh-thumbs-bar">
+        <div class="yh-thumb-item active" data-index="0" data-cap-pt="01 / 04 · Perspectiva Externa · Madeira Glulam" data-cap-en="01 / 04 · Exterior View · Glulam Timber">
+          <img src="das_portfolio_images/img_page42_0.jpeg" alt="Perspectiva Externa"/>
+          <div class="yh-thumb-progress"></div>
+        </div>
+        <div class="yh-thumb-item" data-index="1" data-cap-pt="02 / 04 · Santuário Interno · Luz Natural" data-cap-en="02 / 04 · Interior Sanctuary · Natural Light">
+          <img src="das_portfolio_images/img_page43_1.jpeg" alt="Interior Yoga"/>
+          <div class="yh-thumb-progress"></div>
+        </div>
+        <div class="yh-thumb-item" data-index="2" data-cap-pt="03 / 04 · Implantação & Elevação Bioclimática" data-cap-en="03 / 04 · Site Plan & Bioclimatic Elevation">
+          <img src="das_portfolio_images/img_page43_2.jpeg" alt="Elevação"/>
+          <div class="yh-thumb-progress"></div>
+        </div>
+        <div class="yh-thumb-item" data-index="3" data-cap-pt="04 / 04 · Diagrama de Ventilação Natural" data-cap-en="04 / 04 · Natural Ventilation Diagram">
+          <img src="das_portfolio_images/img_page43_0.jpeg" alt="Diagrama Bioclimático"/>
+          <div class="yh-thumb-progress"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="s contact" id="contato">
+  <div class="contact-inner">
+    <div>
+      <span class="eyebrow rv"><span class="lang-pt">Entre em Contato</span><span class="lang-en">Get in Touch</span></span>
+      <h2 class="h2 rv rv-d1" style="margin-bottom:0;">
+        <span class="lang-pt">Vamos projetar<br/><em>o futuro juntos.</em></span>
+        <span class="lang-en">Let's design<br/><em>the future together.</em></span>
+      </h2>
+      <p class="contact-sub rv rv-d2">
+        <span class="lang-pt">Se você busca um projeto único, sustentável e fundamentado na mais alta precisão técnica, converse com nosso estúdio.</span>
+        <span class="lang-en">If you are looking for a unique, sustainable project based on the highest technical precision, talk to our studio.</span>
+      </p>
+    </div>
+    <div>
+      <form class="cform rv rv-d2" onsubmit="event.preventDefault(); alert('Mensagem enviada com sucesso!');">
+        <div class="cform-row">
+          <input type="text" placeholder="Seu Nome" required/>
+          <input type="email" placeholder="Seu E-mail" required/>
+        </div>
+        <input type="text" placeholder="Assunto / Tipo de Projeto"/>
+        <textarea rows="4" placeholder="Descreva brevemente sua ideia..." required></textarea>
+        <button type="submit" class="cform-submit">
+          <span class="lang-pt">Enviar Mensagem</span><span class="lang-en">Send Message</span>
+        </button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="ftr">
+  <div class="ftr-inner">
+    <div class="ftr-top">
+      <div>
+        <a href="#hero" class="ftr-logo"><img src="logo DAS ARQUITETOS c.jpg" alt="DAS Arquitetos"/></a>
+        <p class="ftr-desc">
+          <span class="lang-pt">Estúdio de arquitetura focado em projetos contemporâneos, gestão tecnológica e sustentabilidade ambiental.</span>
+          <span class="lang-en">Architecture studio focused on contemporary projects, technological management, and environmental sustainability.</span>
+        </p>
+      </div>
+      <div>
+        <p class="ftr-col-lbl"><span class="lang-pt">Navegação</span><span class="lang-en">Navigation</span></p>
+        <div class="ftr-links">
+          <a href="#hero" class="ftr-link"><span class="lang-pt">Página Inicial</span><span class="lang-en">Home Page</span></a>
+          <a href="#projetos" class="ftr-link"><span class="lang-pt">Projetos</span><span class="lang-en">Projects</span></a>
+          <a href="#sobre" class="ftr-link"><span class="lang-pt">Sobre o Estúdio</span><span class="lang-en">About Us</span></a>
+          <a href="#destaque" class="ftr-link"><span class="lang-pt">Destaque</span><span class="lang-en">Highlight</span></a>
+          <a href="#contato" class="ftr-link"><span class="lang-pt">Contato</span><span class="lang-en">Contact</span></a>
+        </div>
+      </div>
+      <div>
+        <p class="ftr-col-lbl"><span class="lang-pt">Contatos</span><span class="lang-en">Contacts</span></p>
+        <div class="ftr-links">
+          <a href="mailto:contato@dasarquitetos.com.br" class="ftr-link">contato@dasarquitetos.com.br</a>
+          <a href="tel:+5541999999999" class="ftr-link">+55 (41) 99999-9999</a>
+          <span class="ftr-link" style="color:rgba(255,255,255,0.3);">Curitiba — PR, Brasil</span>
+        </div>
+      </div>
+      <div class="ftr-sub">
+        <p class="ftr-col-lbl"><span class="lang-pt">Newsletter</span><span class="lang-en">Newsletter</span></p>
+        <p style="font-size:0.78rem; color:rgba(255,255,255,0.4); margin-bottom:8px;">
+          <span class="lang-pt">Receba nossas atualizações sobre novos projetos.</span>
+          <span class="lang-en">Receive updates on our new projects.</span>
+        </p>
+        <form onsubmit="event.preventDefault(); alert('Obrigado!');">
+          <input type="email" placeholder="Seu e-mail..." required/>
+          <button type="submit"><span class="lang-pt">Enviar</span><span class="lang-en">Send</span></button>
+        </form>
+      </div>
+    </div>
+    <div class="ftr-bottom">
+      <p class="ftr-copy">© 2026 DAS Arquitetos. Todos os direitos reservados.</p>
+      <div class="ftr-legal">
+        <a href="#"><span class="lang-pt">Termos de Uso</span><span class="lang-en">Terms of Use</span></a>
+        <a href="#"><span class="lang-pt">Privacidade</span><span class="lang-en">Privacy</span></a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ---- Lang Toggle ---- */
+document.querySelectorAll('.lang-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const lang = btn.dataset.lang;
+    document.documentElement.lang = lang;
+    document.querySelectorAll('.lang-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.lang === lang);
+      if(b.dataset.lang === lang) {
+        b.style.fontWeight = "600"; b.style.color = "var(--ink-900)";
+      } else {
+        b.style.fontWeight = "400"; b.style.color = "var(--ink-400)";
+      }
+    });
+    
+    // Update active thumbnail caption for current language
+    const activeThumb = document.querySelector('.yh-thumb-item.active');
+    if (activeThumb) {
+      const isPt = lang === 'pt-BR';
+      document.getElementById('yhCapBadge').textContent = isPt ? activeThumb.dataset.capPt : activeThumb.dataset.capEn;
+    }
+  });
+});
+
+/* ---- Standard Interactions ---- */
+const bar = document.getElementById('progress-bar');
+window.addEventListener('scroll', () => { const h = document.documentElement; bar.style.width = (window.scrollY / (h.scrollHeight - h.clientHeight) * 100) + '%'; }, { passive: true });
+
+const hdr = document.getElementById('hdr');
+let lastY = 0;
+window.addEventListener('scroll', () => { const y = window.scrollY; hdr.classList.toggle('scrolled', y > 60); hdr.classList.toggle('hide', y > lastY && y > 180); lastY = y; }, { passive: true });
+
+const toggle = document.getElementById('hdrToggle'); const mob = document.getElementById('mobNav'); let open = false;
+toggle.addEventListener('click', () => { open = !open; toggle.classList.toggle('open', open); mob.classList.toggle('open', open); toggle.setAttribute('aria-expanded', open); });
+document.querySelectorAll('[data-cn]').forEach(a => { a.addEventListener('click', () => { open = false; toggle.classList.remove('open'); mob.classList.remove('open'); }); });
+
+/* ---- HERO FIRST FOLD ANIMATION & PARALLAX ---- */
+const heroBgs = document.getElementById('heroBgs');
+let mouseX = 0, mouseY = 0;
+document.addEventListener('mousemove', (e) => {
+  mouseX = (e.clientX / window.innerWidth - 0.5) * 25;
+  mouseY = (e.clientY / window.innerHeight - 0.5) * 25;
+  if(window.scrollY < window.innerHeight) {
+    heroBgs.style.transform = `translate(calc(${mouseX}px), calc(${mouseY}px + ${window.scrollY * 0.32}px))`;
+  }
+});
+window.addEventListener('scroll', () => { 
+  if(window.scrollY < window.innerHeight) {
+    heroBgs.style.transform = `translate(calc(${mouseX}px), calc(${mouseY}px + ${window.scrollY * 0.32}px))`; 
+  }
+}, { passive: true });
+
+const bgs = document.querySelectorAll('.h-bg');
+let curBg = 0;
+function nextBg() {
+  bgs[curBg].classList.remove('active');
+  curBg = (curBg + 1) % bgs.length;
+  bgs[curBg].classList.add('active');
+}
+let bgInterval = setInterval(nextBg, 4500);
+heroBgs.addEventListener('click', () => {
+  nextBg();
+  clearInterval(bgInterval);
+  bgInterval = setInterval(nextBg, 4500);
+});
+
+/* Hero Title Entrance Animation */
+(function initHero() {
+  setTimeout(() => document.getElementById('hEye').classList.add('in'), 120);
+  document.querySelectorAll('#hTitle .line-inner').forEach((l, i) => setTimeout(() => l.classList.add('in'), 200 + i * 130));
+  setTimeout(() => document.getElementById('hSub').classList.add('in'), 700);
+  setTimeout(() => document.getElementById('hBtns').classList.add('in'), 900);
+  setTimeout(() => document.getElementById('hCaret').classList.add('in'), 1400);
+})();
+
+const obs = new IntersectionObserver(entries => { entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); } }); }, { threshold: 0.08, rootMargin: '0px 0px -50px 0px' });
+document.querySelectorAll('.rv').forEach(el => obs.observe(el));
+
+document.querySelectorAll('.f-pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    document.querySelectorAll('.f-pill').forEach(p => p.classList.remove('on'));
+    pill.classList.add('on');
+    const f = pill.dataset.f;
+    document.querySelectorAll('.pc').forEach(card => {
+      const match = f === 'all' || card.dataset.c.includes(f);
+      card.style.transition = 'opacity 0.38s ease'; card.style.opacity = match ? '1' : '0.2'; card.style.pointerEvents = match ? 'auto' : 'none';
+    });
+  });
+});
+
+/* ---- YOGA HOUSE AUTOMATIC PARALLAX SLIDESHOW LOGIC ---- */
+const layers = document.querySelectorAll('.yh-slide-layer');
+const capBadge = document.getElementById('yhCapBadge');
+const thumbItems = document.querySelectorAll('.yh-thumb-item');
+const mainFrame = document.getElementById('yhMainFrame');
+let activeIndex = 0;
+let yhInterval = null;
+
+function goToYogaSlide(idx) {
+  layers.forEach((layer, i) => {
+    layer.classList.toggle('active', i === idx);
+  });
+  thumbItems.forEach((thumb, i) => {
+    thumb.classList.toggle('active', i === idx);
+  });
+  
+  activeIndex = idx;
+  const isPt = document.documentElement.lang === 'pt-BR';
+  const targetThumb = thumbItems[idx];
+  capBadge.textContent = isPt ? targetThumb.dataset.capPt : targetThumb.dataset.capEn;
+}
+
+function startYhSlideshow() {
+  if (yhInterval) clearInterval(yhInterval);
+  yhInterval = setInterval(() => {
+    const nextIdx = (activeIndex + 1) % layers.length;
+    goToYogaSlide(nextIdx);
+  }, 3600);
+}
+
+// Interactive Thumbnail Clicks
+thumbItems.forEach((thumb, idx) => {
+  thumb.addEventListener('click', () => {
+    goToYogaSlide(idx);
+    startYhSlideshow(); // Reset automatic timer on user click
+  });
+});
+
+// Interactive 3D Parallax Tilt Effect on Mouse Movement
+mainFrame.addEventListener('mousemove', (e) => {
+  const rect = mainFrame.getBoundingClientRect();
+  const x = e.clientX - rect.left - rect.width / 2;
+  const y = e.clientY - rect.top - rect.height / 2;
+  const tiltX = (y / rect.height) * -16;
+  const tiltY = (x / rect.width) * 16;
+  mainFrame.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale3d(1.02, 1.02, 1.02)`;
+});
+
+mainFrame.addEventListener('mouseleave', () => {
+  mainFrame.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+});
+
+// Start automatic slideshow
+startYhSlideshow();
+</script>
+</body>
+</html>
