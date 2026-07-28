@@ -491,9 +491,9 @@
     .contact-sub { font-size: 0.97rem; color: rgba(255,255,255,0.6); line-height: 1.78; margin: var(--sp-8) 0 var(--sp-16); }
     .cform { display: flex; flex-direction: column; gap: var(--sp-6); }
     .cform-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-6); }
-    .cform input, .cform textaÁrea { width: 100%; padding: 13px 16px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: var(--r-xs); font-family: var(--ff-sans); font-size: 0.88rem; color: #fff; outline: none; resize: none; transition: border-color var(--t-fast); }
-    .cform input::placeholder, .cform textaÁrea::placeholder { color: rgba(255,255,255,0.35); }
-    .cform input:focus, .cform textaÁrea:focus { border-color: rgba(255,255,255,0.45); }
+    .cform input, .cform textarea { width: 100%; padding: 13px 16px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: var(--r-xs); font-family: var(--ff-sans); font-size: 0.88rem; color: #fff; outline: none; resize: none; transition: border-color var(--t-fast); }
+    .cform input::placeholder, .cform textarea::placeholder { color: rgba(255,255,255,0.35); }
+    .cform input:focus, .cform textarea:focus { border-color: rgba(255,255,255,0.45); }
     .cform-submit { display: inline-flex; align-items: center; justify-content: center; padding: 14px 28px; background: #fff; color: var(--ink-900); font-family: var(--ff-sans); font-weight: 700; font-size: 0.78rem; letter-spacing: 0.16em; text-transform: uppercase; border: 1.5px solid #fff; border-radius: var(--r-xs); position: relative; overflow: hidden; transition: color var(--t-fast), background var(--t-fast); cursor: pointer; z-index: 1; }
     .cform-submit::before { content: ''; position: absolute; inset: 0; background: var(--ink-900); transform: scaleX(0); transform-origin: right; transition: transform var(--t-med); z-index: -1; }
     .cform-submit:hover { color: #fff; background: transparent; }
@@ -1067,7 +1067,7 @@
           <input type="email" placeholder="Seu E-mail" required/>
         </div>
         <input type="text" placeholder="Assunto / Tipo de Projeto"/>
-        <textaÁrea rows="4" placeholder="Descreva brevemente sua ideia..." required></textaÁrea>
+        <textarea rows="4" placeholder="Descreva brevemente sua ideia..." required></textarea>
         <button type="submit" class="cform-submit">
           <span class="lang-pt">Enviar Mensagem</span><span class="lang-en">Send Message</span>
         </button>
