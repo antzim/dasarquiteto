@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>DAS Arquitetos — Portfólio</title>
-  <meta name="description" content="Portfólio completo do estúdio DAS Arquitetos. Projetos de arquitetura contemporânea, sustentável e inovadora."/>
+  <title>DAS Arquitetos â€” PortfÃ³lio de Projetos</title>
+  <meta name="description" content="PortfÃ³lio oficial do estÃºdio DAS Arquitetos com acervo exclusivo de imagens arquitetÃ´nicas e temporizador de 15s no hover/clique com barra de progresso."/>
 
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
@@ -12,7 +12,7 @@
 
   <style>
     /* =====================================================
-       DESIGN TOKENS - PASTEL TONES
+       DESIGN TOKENS - ARCHITECTURAL PASTEL TONES
     ===================================================== */
     :root {
       --ff-sans:   'Outfit', sans-serif;
@@ -31,9 +31,9 @@
       --glass-bg:  rgba(244, 241, 234, 0.85);
       --glass-blur: 24px;
 
-      --ease:      cubic-bezier(0.19, 1, 0.22, 1);
-      --t-fast:    0.25s var(--ease);
-      --t-med:     0.55s var(--ease);
+      --ease:      cubic-bezier(0.16, 1, 0.3, 1);
+      --t-fast:    0.22s var(--ease);
+      --t-med:     0.45s var(--ease);
       --t-slow:    0.85s var(--ease);
 
       --sp-2:   4px; --sp-4:   8px; --sp-6:   12px; --sp-8:   16px;
@@ -95,7 +95,7 @@
     .eyebrow { display: inline-block; font-family: var(--ff-mono); font-size: 0.65rem; font-weight: 400; letter-spacing: 0.35em; text-transform: uppercase; color: var(--ink-400); margin-bottom: var(--sp-6); }
     .h2 { font-family: var(--ff-serif); font-size: clamp(1.9rem, 3.8vw, 3.2rem); font-weight: 700; line-height: 1.12; color: var(--ink-900); }
     .h2 em { font-style: italic; color: var(--ink-400); }
-    .lead { font-size: clamp(0.95rem, 1.3vw, 1.08rem); color: var(--ink-400); line-height: 1.8; max-width: 540px; }
+    .lead { font-size: clamp(0.95rem, 1.3vw, 1.08rem); color: var(--ink-400); line-height: 1.8; max-width: 580px; }
     .s-hdr { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-24); align-items: end; margin-bottom: var(--sp-40); }
 
     .rv { opacity: 0; transform: translateY(36px); transition: opacity var(--t-slow), transform var(--t-slow); }
@@ -112,66 +112,174 @@
     .f-pill:hover, .f-pill.on { background: var(--ink-900); color: var(--bg); border-color: var(--ink-900); }
     .pg { display: grid; grid-template-columns: repeat(12,1fr); gap: var(--sp-6); transition: all 0.75s var(--ease); }
     
-    /* CARD NORMAL STATE */
+    /* CARD & IMAGE SLIDESHOW SYSTEM WITH 15s TIMER INDICATOR */
     .pc { 
       position: relative; 
       overflow: hidden; 
       border-radius: var(--r-xs); 
       cursor: pointer; 
-      background: #111; 
-      transition: grid-column 0.75s var(--ease), transform 0.75s var(--ease), background-color 0.75s var(--ease), border-radius 0.75s var(--ease), box-shadow 0.75s var(--ease), padding 0.75s var(--ease);
+      background: #0E0E0E; 
+      transition: box-shadow 0.4s ease, border-radius 0.4s var(--ease), opacity 0.45s var(--ease);
+    }
+    .pc:hover {
+      box-shadow: 0 20px 48px rgba(0, 0, 0, 0.18);
     }
     .pc-8 { grid-column: span 8; } .pc-4 { grid-column: span 4; } .pc-6 { grid-column: span 6; } .pc-7 { grid-column: span 7; } .pc-5 { grid-column: span 5; } .pc-12 { grid-column: span 12; }
     
-    .pc-thumb { overflow: hidden; height: 100%; aspect-ratio: 16/10; transition: all 0.75s var(--ease); } 
+    /* 15s TIMED PROGRESS BAR AT TOP OF CARD */
+    .pc-timer-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0%;
+      height: 3px;
+      background: linear-gradient(90deg, #FFFFFF, rgba(255,255,255,0.7));
+      box-shadow: 0 0 8px rgba(255,255,255,0.8);
+      z-index: 20;
+      pointer-events: none;
+      transition: width 0s linear;
+    }
+    .pc.timer-active .pc-timer-bar {
+      width: 100%;
+      transition: width 15s linear;
+    }
+
+    .pc-thumb { position: relative; overflow: hidden; height: 100%; aspect-ratio: 16/10; } 
     .pc-8 .pc-thumb { aspect-ratio: 16/9; } 
     .pc-4 .pc-thumb { aspect-ratio: 4/5; } 
     .pc-12 .pc-thumb { aspect-ratio: 21/9; }
     
-    .pc-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.85s var(--ease), filter 0.5s var(--ease); filter: brightness(0.9); }
-    .pc:not(.expanded):hover .pc-thumb img { transform: scale(1.07); filter: brightness(0.75); }
-    
-    .pc-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, transparent 58%); z-index: 1; transition: background 0.5s var(--ease); }
-    .pc:not(.expanded):hover .pc-overlay { background: linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.1) 68%); }
-    
-    .pc-info { position: absolute; bottom: 0; left: 0; right: 0; z-index: 2; padding: var(--sp-8); transform: translateY(6px); transition: transform 0.45s var(--ease); }
-    .pc:not(.expanded):hover .pc-info { transform: none; }
-    .pc-cat { font-family: var(--ff-mono); font-size: 0.58rem; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(255,255,255,0.48); display: block; margin-bottom: 3px; }
-    .pc-name { font-family: var(--ff-serif); font-size: 1.1rem; font-weight: 600; color: #fff; line-height: 1.2; margin-bottom: 5px; }
-    .pc-meta { font-family: var(--ff-mono); font-size: 0.58rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.42); opacity: 0; transition: opacity 0.35s 0.08s; }
-    .pc:not(.expanded):hover .pc-meta { opacity: 1; }
+    /* FAST, SMOOTH, CLEAN FADE SLIDE TRANSITION (0.4s) */
+    .pc-slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 1;
+      pointer-events: none;
+    }
+    .pc-slide.active {
+      opacity: 1;
+      z-index: 2;
+    }
+    .pc-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .pc:hover .pc-slide.active img {
+      transform: scale(1.03);
+    }
 
-    /* EXPANDED STATE — INLINE WHITE RECTANGLE FORMATION & SHADE ANIMATION */
+    /* IMAGE COUNTER BADGE & TIMER PULSE */
+    .pc-img-counter {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 10;
+      background: rgba(0,0,0,0.65);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: var(--r-full);
+      font-family: var(--ff-mono);
+      font-size: 0.55rem;
+      letter-spacing: 0.15em;
+      color: rgba(255,255,255,0.9);
+      padding: 4px 10px;
+      opacity: 0;
+      transition: opacity 0.35s var(--ease), transform 0.35s var(--ease);
+      transform: translateY(-6px);
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .pc:hover .pc-img-counter { opacity: 1; transform: translateY(0); }
+
+    .pc-timer-status {
+      display: inline-block;
+      font-size: 0.62rem;
+      opacity: 0.6;
+      transition: opacity 0.3s, transform 0.3s;
+    }
+    .pc.timer-active .pc-timer-status {
+      opacity: 1;
+      animation: pulseTimer 1.5s infinite ease-in-out;
+    }
+    @keyframes pulseTimer {
+      0%, 100% { transform: scale(1); opacity: 0.7; }
+      50% { transform: scale(1.25); opacity: 1; }
+    }
+
+    /* DOT INDICATORS */
+    .pc-dots {
+      position: absolute;
+      bottom: 44px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      display: flex;
+      gap: 6px;
+      opacity: 0;
+      transition: opacity 0.35s var(--ease);
+    }
+    .pc:hover .pc-dots { opacity: 1; }
+    .pc-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.35);
+      transition: background 0.3s, transform 0.3s;
+      cursor: pointer;
+    }
+    .pc-dot.on {
+      background: #fff;
+      transform: scale(1.35);
+    }
+    
+    .pc-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.76) 0%, transparent 58%); z-index: 3; transition: background 0.4s var(--ease); pointer-events: none; }
+    .pc:not(.expanded):hover .pc-overlay { background: linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.12) 68%); }
+    
+    .pc-info { position: absolute; bottom: 0; left: 0; right: 0; z-index: 4; padding: var(--sp-8); transform: translateY(4px); transition: transform 0.38s var(--ease); pointer-events: none; }
+    .pc:not(.expanded):hover .pc-info { transform: none; }
+    .pc-cat { font-family: var(--ff-mono); font-size: 0.58rem; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(255,255,255,0.52); display: block; margin-bottom: 3px; }
+    .pc-name { font-family: var(--ff-serif); font-size: 1.12rem; font-weight: 600; color: #fff; line-height: 1.2; margin-bottom: 5px; }
+    .pc-meta { font-family: var(--ff-mono); font-size: 0.58rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.45); opacity: 0.85; transition: opacity 0.28s 0.08s; }
+
+    /* EXPANDED STATE â€” INLINE GALLERY WITH ACCURATE PDF DATA */
     .pc-expanded-view { display: none; }
     
     .pc.expanded {
       grid-column: 1 / -1 !important;
       background: #FFFFFF !important;
       border-radius: var(--r-md);
-      box-shadow: 0 32px 80px rgba(0,0,0,0.14), 0 6px 24px rgba(0,0,0,0.05);
+      box-shadow: 0 32px 80px rgba(0,0,0,0.14), 0 6px 24px rgba(0,0,0,0.05) !important;
       padding: var(--sp-16);
       cursor: default;
-      z-index: 10;
+      z-index: 10 !important;
       position: relative;
-      animation: boxFormIn 0.85s var(--ease) forwards;
+      animation: boxFormIn 0.75s var(--ease) forwards;
     }
 
     @keyframes boxFormIn {
       0% {
         opacity: 0.7;
-        transform: scale(0.97) translateY(10px);
-        box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+        transform: scale(0.98) translateY(10px);
       }
       100% {
         opacity: 1;
         transform: scale(1) translateY(0);
-        box-shadow: 0 32px 80px rgba(0,0,0,0.14), 0 6px 24px rgba(0,0,0,0.05);
       }
     }
     
     .pc.expanded .pc-thumb,
     .pc.expanded .pc-overlay,
-    .pc.expanded .pc-info {
+    .pc.expanded .pc-info,
+    .pc.expanded .pc-img-counter,
+    .pc.expanded .pc-dots,
+    .pc.expanded .pc-timer-bar {
       display: none !important;
     }
 
@@ -182,19 +290,51 @@
       width: 100%;
     }
 
-    /* SLOW STAGGERED SHADE ANIMATION FOR CONTENTS */
-    .exp-img-container {
-      width: 50%;
-      min-height: 400px;
-      max-height: 540px;
+    .exp-img-gallery {
+      width: 55%;
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-6);
+      opacity: 0;
+      animation: expImgShade 0.75s var(--ease) 0.15s forwards;
+    }
+    
+    .exp-main-img {
+      width: 100%;
+      height: 380px;
       border-radius: var(--r-sm);
       overflow: hidden;
-      position: relative;
-      background: #F4F1EA;
-      opacity: 0;
-      animation: expImgShade 0.9s var(--ease) 0.15s forwards;
+      background: #000;
     }
-    .exp-img-container img {
+    .exp-main-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: opacity 0.4s var(--ease);
+    }
+
+    .exp-thumbs-row {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+    .exp-thumb-item {
+      width: 84px;
+      height: 58px;
+      border-radius: var(--r-xs);
+      overflow: hidden;
+      flex-shrink: 0;
+      cursor: pointer;
+      border: 2px solid transparent;
+      opacity: 0.6;
+      transition: opacity 0.25s, border-color 0.25s;
+    }
+    .exp-thumb-item.active, .exp-thumb-item:hover {
+      opacity: 1;
+      border-color: var(--ink-900);
+    }
+    .exp-thumb-item img {
       width: 100%;
       height: 100%;
       object-fit: cover;
@@ -203,36 +343,31 @@
     @keyframes expImgShade {
       0% {
         opacity: 0;
-        transform: scale(0.95);
-        filter: brightness(0.85) blur(4px);
+        transform: translateY(12px);
       }
       100% {
         opacity: 1;
-        transform: scale(1);
-        filter: brightness(1) blur(0);
+        transform: translateY(0);
       }
     }
 
     .exp-content {
-      width: 50%;
-      padding: var(--sp-12) var(--sp-20) var(--sp-12) var(--sp-8);
+      width: 45%;
+      padding: var(--sp-4) var(--sp-12) var(--sp-8) 0;
       display: flex;
       flex-direction: column;
       justify-content: center;
       position: relative;
     }
 
-    /* SHADE FADE ANIMATION KEYFRAME FOR TEXT ELEMENTS */
     @keyframes textShadeIn {
       0% {
         opacity: 0;
-        transform: translateY(22px);
-        filter: blur(5px);
+        transform: translateY(18px);
       }
       100% {
         opacity: 1;
         transform: translateY(0);
-        filter: blur(0);
       }
     }
 
@@ -243,11 +378,11 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 9px 18px;
+      padding: 8px 16px;
       background: #F4F1EA;
       color: var(--ink-900);
       font-family: var(--ff-mono);
-      font-size: 0.7rem;
+      font-size: 0.68rem;
       font-weight: 600;
       letter-spacing: 0.12em;
       text-transform: uppercase;
@@ -256,7 +391,7 @@
       transition: all var(--t-fast);
       cursor: pointer;
       opacity: 0;
-      animation: textShadeIn 0.85s var(--ease) 0.65s forwards;
+      animation: textShadeIn 0.75s var(--ease) 0.45s forwards;
     }
     .exp-close-btn:hover {
       background: var(--ink-900);
@@ -272,18 +407,18 @@
       color: var(--ink-400);
       margin-bottom: var(--sp-4);
       opacity: 0;
-      animation: textShadeIn 0.85s var(--ease) 0.25s forwards;
+      animation: textShadeIn 0.75s var(--ease) 0.15s forwards;
     }
 
     .exp-title {
       font-family: var(--ff-serif);
-      font-size: clamp(1.9rem, 3.2vw, 2.8rem);
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
       font-weight: 700;
       color: var(--ink-900);
       line-height: 1.15;
       margin-bottom: var(--sp-8);
       opacity: 0;
-      animation: textShadeIn 0.85s var(--ease) 0.35s forwards;
+      animation: textShadeIn 0.75s var(--ease) 0.25s forwards;
     }
 
     .exp-meta-grid {
@@ -295,7 +430,7 @@
       border-top: 1px solid var(--border);
       border-bottom: 1px solid var(--border);
       opacity: 0;
-      animation: textShadeIn 0.85s var(--ease) 0.45s forwards;
+      animation: textShadeIn 0.75s var(--ease) 0.35s forwards;
     }
 
     .exp-meta-item small {
@@ -309,35 +444,28 @@
     }
 
     .exp-meta-item span {
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       font-weight: 600;
       color: var(--ink-900);
     }
 
     .exp-desc {
-      font-size: 0.95rem;
+      font-size: 0.92rem;
       color: var(--ink-700);
-      line-height: 1.85;
+      line-height: 1.8;
       opacity: 0;
-      animation: textShadeIn 0.85s var(--ease) 0.55s forwards;
+      animation: textShadeIn 0.75s var(--ease) 0.45s forwards;
     }
 
     @media (max-width: 860px) {
       .pc.expanded .pc-expanded-view {
         flex-direction: column;
       }
-      .exp-img-container {
+      .exp-img-gallery, .exp-content {
         width: 100%;
-        min-height: 250px;
-        max-height: 340px;
       }
-      .exp-content {
-        width: 100%;
-        padding: var(--sp-8) 0 0 0;
-      }
-      .exp-close-btn {
-        top: -12px;
-        right: 0;
+      .exp-main-img {
+        height: 260px;
       }
     }
 
@@ -389,7 +517,7 @@
       <img src="das_portfolio_images/logo-das-arquitetos.jpg" alt="DAS Arquitetos"/>
     </a>
 
-    <nav class="hdr-nav" aria-label="Navegação">
+    <nav class="hdr-nav" aria-label="NavegaÃ§Ã£o">
       <a href="index.html"><span class="lang-pt">Voltar para o site</span><span class="lang-en">Back to site</span></a>
     </nav>
 
@@ -402,7 +530,7 @@
       </div>
 
       <a href="index.html" class="hdr-cta">
-        <span class="lang-pt">Página Inicial</span><span class="lang-en">Home Page</span>
+        <span class="lang-pt">PÃ¡gina Inicial</span><span class="lang-en">Home Page</span>
       </a>
       <button class="hdr-toggle" id="hdrToggle" aria-label="Menu" aria-expanded="false">
         <span></span><span></span><span></span>
@@ -413,7 +541,7 @@
 
 <!-- Mobile Nav -->
 <nav class="mob-nav" id="mobNav" aria-label="Menu mobile">
-  <a href="index.html" data-cn><span class="lang-pt">Página Inicial</span><span class="lang-en">Home Page</span></a>
+  <a href="index.html" data-cn><span class="lang-pt">PÃ¡gina Inicial</span><span class="lang-en">Home Page</span></a>
   <div style="margin-top:16px; display:flex; gap:12px;">
     <button class="lang-btn active" data-lang="pt-BR" style="font-size:0.8rem; font-weight:600; color:var(--ink-900);">PT</button>
     <button class="lang-btn" data-lang="en" style="font-size:0.8rem; font-weight:600; color:var(--ink-400);">EN</button>
@@ -425,16 +553,16 @@
   <div class="s-inner">
     <div class="s-hdr">
       <div>
-        <span class="eyebrow rv"><span class="lang-pt">Portfólio Completo</span><span class="lang-en">Full Portfolio</span></span>
+        <span class="eyebrow rv"><span class="lang-pt">Acervo Oficial Â· 100% Imagens de Arquitetura</span><span class="lang-en">Official Collection Â· 100% Architectural Images</span></span>
         <h2 class="h2 rv rv-d1">
-          <span class="lang-pt">Nossas<br/><em>Obras & Projetos</em></span>
-          <span class="lang-en">Our<br/><em>Works & Projects</em></span>
+          <span class="lang-pt">CatÃ¡logo de<br/><em>Obras & Projetos</em></span>
+          <span class="lang-en">Catalog of<br/><em>Works & Projects</em></span>
         </h2>
       </div>
       <div>
         <p class="lead rv rv-d2">
-          <span class="lang-pt">Uma coletânea completa do nosso estúdio. Clique em qualquer imagem para expandi-la com centralização automática da tela.</span>
-          <span class="lang-en">A complete collection from our studio. Click on any image to expand it with auto-centering viewport.</span>
+          <span class="lang-pt">Exclusivamente renders, desenhos e fotos de arquitetura do portfÃ³lio oficial. Passe o mouse ou clique para ativar o <strong>temporizador de 15 segundos</strong> com barra de progresso em tempo real.</span>
+          <span class="lang-en">Exclusively architectural renders, drawings, and photos from the official portfolio. Hover or click to activate the <strong>15-second timer</strong> with a real-time progress bar.</span>
         </p>
       </div>
     </div>
@@ -450,326 +578,667 @@
     </div>
 
     <div class="pg rv" id="projectGrid">
-      
-      <!-- 1. Arena BSB -->
+      <!-- Arena BSB -->
       <div class="pc pc-8" data-c="institucional concurso">
-        <div class="pc-thumb"><img src="das_portfolio_images/img_page4_0.jpeg" alt="Arena BSB" loading="lazy"/></div>
+        <div class="pc-timer-bar"></div>
+        <div class="pc-thumb">
+          <div class="pc-slide active"><img src="das_portfolio_images/page_4_img_1.jpeg" alt="Arena BSB - Imagem 1" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_5_img_1.jpeg" alt="Arena BSB - Imagem 2" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_5_img_2.jpeg" alt="Arena BSB - Imagem 3" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_5_img_3.jpeg" alt="Arena BSB - Imagem 4" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_6_img_1.jpeg" alt="Arena BSB - Imagem 5" loading="lazy"/></div>
+        </div>
+        <div class="pc-img-counter"><span class="pc-timer-status">â±ï¸</span> 01 / 05</div>
+        <div class="pc-dots">
+          <div class="pc-dot on" data-idx="0"></div>
+          <div class="pc-dot " data-idx="1"></div>
+          <div class="pc-dot " data-idx="2"></div>
+          <div class="pc-dot " data-idx="3"></div>
+          <div class="pc-dot " data-idx="4"></div>
+        </div>
         <div class="pc-overlay"></div>
         <div class="pc-info">
-          <span class="pc-cat"><span class="lang-pt">Esporte & Lazer</span><span class="lang-en">Sports & Leisure</span></span>
+          <span class="pc-cat"><span class="lang-pt">Esporte & Lazer / Urbanismo</span><span class="lang-en">Sports & Leisure / Urbanism</span></span>
           <h3 class="pc-name">Arena BSB</h3>
-          <p class="pc-meta">Brasília/DF · 90,000m² · <span class="lang-pt">Concurso Nacional - 2º Lugar</span><span class="lang-en">National Competition - 2nd Place</span></p>
+          <p class="pc-meta">BrasÃ­lia/DF Â· 90,000mÂ²</p>
         </div>
       </div>
-      
-      <!-- 2. Monte Alegre Residence -->
+      <!-- Monte Alegre Residence -->
       <div class="pc pc-4" data-c="residencial">
-        <div class="pc-thumb"><img src="das_portfolio_images/img_page7_0.jpeg" alt="Monte Alegre Residence" loading="lazy"/></div>
+        <div class="pc-timer-bar"></div>
+        <div class="pc-thumb">
+          <div class="pc-slide active"><img src="das_portfolio_images/page_7_img_1.jpeg" alt="Monte Alegre Residence - Imagem 1" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_8_img_1.jpeg" alt="Monte Alegre Residence - Imagem 2" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_9_img_1.jpeg" alt="Monte Alegre Residence - Imagem 3" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_9_img_2.jpeg" alt="Monte Alegre Residence - Imagem 4" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_9_img_3.jpeg" alt="Monte Alegre Residence - Imagem 5" loading="lazy"/></div>
+        </div>
+        <div class="pc-img-counter"><span class="pc-timer-status">â±ï¸</span> 01 / 05</div>
+        <div class="pc-dots">
+          <div class="pc-dot on" data-idx="0"></div>
+          <div class="pc-dot " data-idx="1"></div>
+          <div class="pc-dot " data-idx="2"></div>
+          <div class="pc-dot " data-idx="3"></div>
+          <div class="pc-dot " data-idx="4"></div>
+        </div>
         <div class="pc-overlay"></div>
         <div class="pc-info">
-          <span class="pc-cat"><span class="lang-pt">Projeto Executivo</span><span class="lang-en">Executive Project</span></span>
+          <span class="pc-cat"><span class="lang-pt">Projeto Executivo / Interiores</span><span class="lang-en">Executive Project / Interior Design</span></span>
           <h3 class="pc-name">Monte Alegre Residence</h3>
-          <p class="pc-meta">Campo Largo/PR · 620m²</p>
+          <p class="pc-meta">Campo Largo/PR Â· 620mÂ²</p>
         </div>
       </div>
-
-      <!-- 3. Ceara Building -->
+      <!-- Ceara Building -->
       <div class="pc pc-4" data-c="residencial">
-        <div class="pc-thumb"><img src="das_portfolio_images/img_page11_0.jpeg" alt="Ceara Building" loading="lazy"/></div>
+        <div class="pc-timer-bar"></div>
+        <div class="pc-thumb">
+          <div class="pc-slide active"><img src="das_portfolio_images/page_11_img_1.jpeg" alt="Ceara Building - Imagem 1" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_12_img_1.jpeg" alt="Ceara Building - Imagem 2" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_13_img_1.jpeg" alt="Ceara Building - Imagem 3" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_14_img_1.jpeg" alt="Ceara Building - Imagem 4" loading="lazy"/></div>
+        </div>
+        <div class="pc-img-counter"><span class="pc-timer-status">â±ï¸</span> 01 / 04</div>
+        <div class="pc-dots">
+          <div class="pc-dot on" data-idx="0"></div>
+          <div class="pc-dot " data-idx="1"></div>
+          <div class="pc-dot " data-idx="2"></div>
+          <div class="pc-dot " data-idx="3"></div>
+        </div>
         <div class="pc-overlay"></div>
         <div class="pc-info">
           <span class="pc-cat"><span class="lang-pt">Residencial Multifamiliar</span><span class="lang-en">Multifamily Residential</span></span>
           <h3 class="pc-name">Ceara Building</h3>
-          <p class="pc-meta">4,449.75m²</p>
+          <p class="pc-meta">Curitiba/PR Â· 4,449.75mÂ²</p>
         </div>
       </div>
-
-      <!-- 4. Red One -->
+      <!-- Red One -->
       <div class="pc pc-4" data-c="residencial">
-        <div class="pc-thumb"><img src="das_portfolio_images/img_page15_0.jpeg" alt="Red One" loading="lazy"/></div>
+        <div class="pc-timer-bar"></div>
+        <div class="pc-thumb">
+          <div class="pc-slide active"><img src="das_portfolio_images/page_15_img_1.jpeg" alt="Red One - Imagem 1" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_16_img_1.jpeg" alt="Red One - Imagem 2" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_17_img_1.jpeg" alt="Red One - Imagem 3" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_18_img_1.jpeg" alt="Red One - Imagem 4" loading="lazy"/></div>
+        </div>
+        <div class="pc-img-counter"><span class="pc-timer-status">â±ï¸</span> 01 / 04</div>
+        <div class="pc-dots">
+          <div class="pc-dot on" data-idx="0"></div>
+          <div class="pc-dot " data-idx="1"></div>
+          <div class="pc-dot " data-idx="2"></div>
+          <div class="pc-dot " data-idx="3"></div>
+        </div>
         <div class="pc-overlay"></div>
         <div class="pc-info">
           <span class="pc-cat"><span class="lang-pt">Residencial Multifamiliar</span><span class="lang-en">Multifamily Residential</span></span>
           <h3 class="pc-name">Red One</h3>
-          <p class="pc-meta">17,952m²</p>
+          <p class="pc-meta">Curitiba/PR Â· 17,952mÂ²</p>
         </div>
       </div>
-
-      <!-- 5. Manaca Residence -->
+      <!-- Manaca Residence -->
       <div class="pc pc-4" data-c="residencial">
-        <div class="pc-thumb"><img src="das_portfolio_images/img_page19_0.jpeg" alt="Manaca Residence" loading="lazy"/></div>
+        <div class="pc-timer-bar"></div>
+        <div class="pc-thumb">
+          <div class="pc-slide active"><img src="das_portfolio_images/page_19_img_1.jpeg" alt="Manaca Residence - Imagem 1" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_20_img_5.jpeg" alt="Manaca Residence - Imagem 2" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_20_img_6.jpeg" alt="Manaca Residence - Imagem 3" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_21_img_1.jpeg" alt="Manaca Residence - Imagem 4" loading="lazy"/></div>
+        </div>
+        <div class="pc-img-counter"><span class="pc-timer-status">â±ï¸</span> 01 / 04</div>
+        <div class="pc-dots">
+          <div class="pc-dot on" data-idx="0"></div>
+          <div class="pc-dot " data-idx="1"></div>
+          <div class="pc-dot " data-idx="2"></div>
+          <div class="pc-dot " data-idx="3"></div>
+        </div>
         <div class="pc-overlay"></div>
         <div class="pc-info">
-          <span class="pc-cat"><span class="lang-pt">Projeto Executivo</span><span class="lang-en">Executive Project</span></span>
+          <span class="pc-cat"><span class="lang-pt">Projeto Executivo / SustentÃ¡vel</span><span class="lang-en">Executive Project / Sustainable</span></span>
           <h3 class="pc-name">Manaca Residence</h3>
-          <p class="pc-meta">Campo Largo/PR · 1,350m² · Saint Gobain Award</p>
+          <p class="pc-meta">Campo Largo/PR Â· 1,350mÂ²</p>
         </div>
       </div>
-
-      <!-- 6. Jardim Viviane -->
+      <!-- Jardim Viviane -->
       <div class="pc pc-6" data-c="residencial urbano">
-        <div class="pc-thumb"><img src="das_portfolio_images/img_page22_0.jpeg" alt="Jardim Viviane" loading="lazy"/></div>
+        <div class="pc-timer-bar"></div>
+        <div class="pc-thumb">
+          <div class="pc-slide active"><img src="das_portfolio_images/page_22_img_1.jpeg" alt="Jardim Viviane - Imagem 1" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_23_img_1.jpeg" alt="Jardim Viviane - Imagem 2" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_23_img_2.jpeg" alt="Jardim Viviane - Imagem 3" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_23_img_3.jpeg" alt="Jardim Viviane - Imagem 4" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_23_img_5.jpeg" alt="Jardim Viviane - Imagem 5" loading="lazy"/></div>
+        </div>
+        <div class="pc-img-counter"><span class="pc-timer-status">â±ï¸</span> 01 / 05</div>
+        <div class="pc-dots">
+          <div class="pc-dot on" data-idx="0"></div>
+          <div class="pc-dot " data-idx="1"></div>
+          <div class="pc-dot " data-idx="2"></div>
+          <div class="pc-dot " data-idx="3"></div>
+          <div class="pc-dot " data-idx="4"></div>
+        </div>
         <div class="pc-overlay"></div>
         <div class="pc-info">
-          <span class="pc-cat"><span class="lang-pt">Projeto Executivo</span><span class="lang-en">Executive Project</span></span>
+          <span class="pc-cat"><span class="lang-pt">Projeto Executivo / HabitaÃ§Ã£o</span><span class="lang-en">Executive Project / Housing</span></span>
           <h3 class="pc-name">Jardim Viviane</h3>
-          <p class="pc-meta">Araucaria/PR · 2,200m²</p>
+          <p class="pc-meta">AraucÃ¡ria/PR Â· 2,200mÂ²</p>
         </div>
       </div>
-
-      <!-- 7. Dalligna Residence -->
+      <!-- Dalligna Residence -->
       <div class="pc pc-6" data-c="residencial">
-        <div class="pc-thumb"><img src="das_portfolio_images/img_page24_0.jpeg" alt="Dalligna Residence" loading="lazy"/></div>
+        <div class="pc-timer-bar"></div>
+        <div class="pc-thumb">
+          <div class="pc-slide active"><img src="das_portfolio_images/page_24_img_1.jpeg" alt="Dalligna Residence - Imagem 1" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_25_img_1.jpeg" alt="Dalligna Residence - Imagem 2" loading="lazy"/></div>
+        </div>
+        <div class="pc-img-counter"><span class="pc-timer-status">â±ï¸</span> 01 / 02</div>
+        <div class="pc-dots">
+          <div class="pc-dot on" data-idx="0"></div>
+          <div class="pc-dot " data-idx="1"></div>
+        </div>
         <div class="pc-overlay"></div>
         <div class="pc-info">
           <span class="pc-cat"><span class="lang-pt">Projeto Executivo</span><span class="lang-en">Executive Project</span></span>
           <h3 class="pc-name">Dalligna Residence</h3>
-          <p class="pc-meta">Quatro Barras/PR · 680m²</p>
+          <p class="pc-meta">Quatro Barras/PR Â· 680mÂ²</p>
         </div>
       </div>
-
-      <!-- 8. Sambaqui Sunset Residence -->
+      <!-- Sambaqui Sunset Residence -->
       <div class="pc pc-8" data-c="residencial urbano">
-        <div class="pc-thumb"><img src="das_portfolio_images/img_page26_0.jpeg" alt="Sambaqui Sunset Residence" loading="lazy"/></div>
+        <div class="pc-timer-bar"></div>
+        <div class="pc-thumb">
+          <div class="pc-slide active"><img src="das_portfolio_images/page_26_img_1.jpeg" alt="Sambaqui Sunset Residence - Imagem 1" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_27_img_1.jpeg" alt="Sambaqui Sunset Residence - Imagem 2" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_27_img_2.jpeg" alt="Sambaqui Sunset Residence - Imagem 3" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_28_img_1.jpeg" alt="Sambaqui Sunset Residence - Imagem 4" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_28_img_2.jpeg" alt="Sambaqui Sunset Residence - Imagem 5" loading="lazy"/></div>
+        </div>
+        <div class="pc-img-counter"><span class="pc-timer-status">â±ï¸</span> 01 / 05</div>
+        <div class="pc-dots">
+          <div class="pc-dot on" data-idx="0"></div>
+          <div class="pc-dot " data-idx="1"></div>
+          <div class="pc-dot " data-idx="2"></div>
+          <div class="pc-dot " data-idx="3"></div>
+          <div class="pc-dot " data-idx="4"></div>
+        </div>
         <div class="pc-overlay"></div>
         <div class="pc-info">
-          <span class="pc-cat"><span class="lang-pt">Estudo Preliminar</span><span class="lang-en">Preliminary Design</span></span>
+          <span class="pc-cat"><span class="lang-pt">Estudo Preliminar / Licenciamento</span><span class="lang-en">Preliminary Design / Licensing</span></span>
           <h3 class="pc-name">Sambaqui Sunset Residence</h3>
-          <p class="pc-meta">Florianópolis/SC · 26,000m²</p>
+          <p class="pc-meta">FlorianÃ³polis/SC Â· 26,000mÂ²</p>
         </div>
       </div>
-
-      <!-- 9. Prashanti Nilayam -->
+      <!-- Prashanti Nilayam -->
       <div class="pc pc-4" data-c="institucional comercial">
-        <div class="pc-thumb"><img src="das_portfolio_images/img_page29_0.jpeg" alt="Prashanti Nilayam" loading="lazy"/></div>
+        <div class="pc-timer-bar"></div>
+        <div class="pc-thumb">
+          <div class="pc-slide active"><img src="das_portfolio_images/page_29_img_1.jpeg" alt="Prashanti Nilayam - Imagem 1" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_30_img_1.jpeg" alt="Prashanti Nilayam - Imagem 2" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_30_img_2.jpeg" alt="Prashanti Nilayam - Imagem 3" loading="lazy"/></div>
+        </div>
+        <div class="pc-img-counter"><span class="pc-timer-status">â±ï¸</span> 01 / 03</div>
+        <div class="pc-dots">
+          <div class="pc-dot on" data-idx="0"></div>
+          <div class="pc-dot " data-idx="1"></div>
+          <div class="pc-dot " data-idx="2"></div>
+        </div>
         <div class="pc-overlay"></div>
         <div class="pc-info">
-          <span class="pc-cat"><span class="lang-pt">Estudo de Viabilidade</span><span class="lang-en">Feasibility Study</span></span>
+          <span class="pc-cat"><span class="lang-pt">Estudo de Viabilidade / Institucional</span><span class="lang-en">Feasibility Study / Institutional</span></span>
           <h3 class="pc-name">Prashanti Nilayam</h3>
-          <p class="pc-meta">Curitiba/PR · 9,500m²</p>
+          <p class="pc-meta">Curitiba/PR Â· 9,500mÂ²</p>
         </div>
       </div>
-
-      <!-- 10. Anhangava Residence -->
+      <!-- Anhangava Residence -->
       <div class="pc pc-6" data-c="residencial">
-        <div class="pc-thumb"><img src="das_portfolio_images/img_page31_0.jpeg" alt="Anhangava Residence" loading="lazy"/></div>
+        <div class="pc-timer-bar"></div>
+        <div class="pc-thumb">
+          <div class="pc-slide active"><img src="das_portfolio_images/page_31_img_1.jpeg" alt="Anhangava Residence - Imagem 1" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_32_img_1.jpeg" alt="Anhangava Residence - Imagem 2" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_32_img_2.jpeg" alt="Anhangava Residence - Imagem 3" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_32_img_3.jpeg" alt="Anhangava Residence - Imagem 4" loading="lazy"/></div>
+        </div>
+        <div class="pc-img-counter"><span class="pc-timer-status">â±ï¸</span> 01 / 04</div>
+        <div class="pc-dots">
+          <div class="pc-dot on" data-idx="0"></div>
+          <div class="pc-dot " data-idx="1"></div>
+          <div class="pc-dot " data-idx="2"></div>
+          <div class="pc-dot " data-idx="3"></div>
+        </div>
         <div class="pc-overlay"></div>
         <div class="pc-info">
           <span class="pc-cat"><span class="lang-pt">Projeto Executivo</span><span class="lang-en">Executive Design</span></span>
           <h3 class="pc-name">Anhangava Residence</h3>
-          <p class="pc-meta">Quatro Barras/PR · 550m²</p>
+          <p class="pc-meta">Quatro Barras/PR Â· 550mÂ²</p>
         </div>
       </div>
-
-      <!-- 11. Studios Brasílio -->
+      <!-- Studios BrasÃ­lio -->
       <div class="pc pc-6" data-c="residencial">
-        <div class="pc-thumb"><img src="das_portfolio_images/img_page33_0.jpeg" alt="Studios Brasílio" loading="lazy"/></div>
+        <div class="pc-timer-bar"></div>
+        <div class="pc-thumb">
+          <div class="pc-slide active"><img src="das_portfolio_images/page_33_img_1.jpeg" alt="Studios BrasÃ­lio - Imagem 1" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_34_img_1.jpeg" alt="Studios BrasÃ­lio - Imagem 2" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_34_img_2.jpeg" alt="Studios BrasÃ­lio - Imagem 3" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_34_img_3.jpeg" alt="Studios BrasÃ­lio - Imagem 4" loading="lazy"/></div>
+        </div>
+        <div class="pc-img-counter"><span class="pc-timer-status">â±ï¸</span> 01 / 04</div>
+        <div class="pc-dots">
+          <div class="pc-dot on" data-idx="0"></div>
+          <div class="pc-dot " data-idx="1"></div>
+          <div class="pc-dot " data-idx="2"></div>
+          <div class="pc-dot " data-idx="3"></div>
+        </div>
         <div class="pc-overlay"></div>
         <div class="pc-info">
           <span class="pc-cat"><span class="lang-pt">Projeto Executivo</span><span class="lang-en">Executive Design</span></span>
-          <h3 class="pc-name">Studios Brasílio</h3>
-          <p class="pc-meta">Curitiba/PR · 1,250m²</p>
+          <h3 class="pc-name">Studios BrasÃ­lio</h3>
+          <p class="pc-meta">Curitiba/PR Â· 1,250mÂ²</p>
         </div>
       </div>
-
-      <!-- 12. Vilnius Concert Hall -->
+      <!-- Vilnius Concert Hall -->
       <div class="pc pc-12" data-c="institucional concurso">
-        <div class="pc-thumb"><img src="das_portfolio_images/img_page35_0.jpeg" alt="Vilnius Concert Hall" loading="lazy"/></div>
+        <div class="pc-timer-bar"></div>
+        <div class="pc-thumb">
+          <div class="pc-slide active"><img src="das_portfolio_images/page_35_img_1.jpeg" alt="Vilnius Concert Hall - Imagem 1" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_36_img_1.jpeg" alt="Vilnius Concert Hall - Imagem 2" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_36_img_2.jpeg" alt="Vilnius Concert Hall - Imagem 3" loading="lazy"/></div>
+        </div>
+        <div class="pc-img-counter"><span class="pc-timer-status">â±ï¸</span> 01 / 03</div>
+        <div class="pc-dots">
+          <div class="pc-dot on" data-idx="0"></div>
+          <div class="pc-dot " data-idx="1"></div>
+          <div class="pc-dot " data-idx="2"></div>
+        </div>
         <div class="pc-overlay"></div>
         <div class="pc-info">
-          <span class="pc-cat"><span class="lang-pt">Cultura & Eventos</span><span class="lang-en">Culture & Events</span></span>
+          <span class="pc-cat"><span class="lang-pt">Concurso Internacional (2Âª Fase)</span><span class="lang-en">International Competition (2nd Phase)</span></span>
           <h3 class="pc-name">Vilnius Concert Hall</h3>
-          <p class="pc-meta">Vilnius/Lithuania · 12,000m² · <span class="lang-pt">Concurso de Projeto</span><span class="lang-en">Design Competition</span></p>
+          <p class="pc-meta">Vilnius/LituÃ¢nia Â· 12,000mÂ²</p>
         </div>
       </div>
-
-      <!-- 13. Townhouses AHU -->
+      <!-- Townhouses AHU -->
       <div class="pc pc-4" data-c="residencial">
-        <div class="pc-thumb"><img src="das_portfolio_images/img_page37_0.jpeg" alt="Townhouses AHU" loading="lazy"/></div>
+        <div class="pc-timer-bar"></div>
+        <div class="pc-thumb">
+          <div class="pc-slide active"><img src="das_portfolio_images/img_page37_0.jpeg" alt="Townhouses AHU - Imagem 1" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_37_img_1.jpeg" alt="Townhouses AHU - Imagem 2" loading="lazy"/></div>
+        </div>
+        <div class="pc-img-counter"><span class="pc-timer-status">â±ï¸</span> 01 / 02</div>
+        <div class="pc-dots">
+          <div class="pc-dot on" data-idx="0"></div>
+          <div class="pc-dot " data-idx="1"></div>
+        </div>
         <div class="pc-overlay"></div>
         <div class="pc-info">
           <span class="pc-cat"><span class="lang-pt">Projeto Executivo</span><span class="lang-en">Executive Design</span></span>
           <h3 class="pc-name">Townhouses AHU</h3>
-          <p class="pc-meta">Curitiba/PR · 375m²</p>
+          <p class="pc-meta">Curitiba/PR Â· 375mÂ²</p>
         </div>
       </div>
-
-      <!-- 14. Penta Residential -->
+      <!-- Penta Residential -->
       <div class="pc pc-8" data-c="residencial concurso">
-        <div class="pc-thumb"><img src="das_portfolio_images/img_page38_0.jpeg" alt="Penta Residential" loading="lazy"/></div>
+        <div class="pc-timer-bar"></div>
+        <div class="pc-thumb">
+          <div class="pc-slide active"><img src="das_portfolio_images/page_38_img_1.jpeg" alt="Penta Residential - Imagem 1" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_39_img_1.jpeg" alt="Penta Residential - Imagem 2" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_39_img_2.jpeg" alt="Penta Residential - Imagem 3" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_39_img_3.jpeg" alt="Penta Residential - Imagem 4" loading="lazy"/></div>
+        </div>
+        <div class="pc-img-counter"><span class="pc-timer-status">â±ï¸</span> 01 / 04</div>
+        <div class="pc-dots">
+          <div class="pc-dot on" data-idx="0"></div>
+          <div class="pc-dot " data-idx="1"></div>
+          <div class="pc-dot " data-idx="2"></div>
+          <div class="pc-dot " data-idx="3"></div>
+        </div>
         <div class="pc-overlay"></div>
         <div class="pc-info">
           <span class="pc-cat"><span class="lang-pt">Concurso de Projeto</span><span class="lang-en">Design Competition</span></span>
           <h3 class="pc-name">Penta Residential</h3>
-          <p class="pc-meta">Prague/Czech Republic · 21,700m²</p>
+          <p class="pc-meta">Praga/RepÃºblica Tcheca Â· 21,700mÂ²</p>
         </div>
       </div>
-
-      <!-- 15. Comercial Brigadeiro -->
+      <!-- Comercial Brigadeiro -->
       <div class="pc pc-6" data-c="comercial">
-        <div class="pc-thumb"><img src="das_portfolio_images/img_page40_0.jpeg" alt="Comercial Brigadeiro" loading="lazy"/></div>
+        <div class="pc-timer-bar"></div>
+        <div class="pc-thumb">
+          <div class="pc-slide active"><img src="das_portfolio_images/page_40_img_1.jpeg" alt="Comercial Brigadeiro - Imagem 1" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_41_img_1.jpeg" alt="Comercial Brigadeiro - Imagem 2" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_41_img_2.jpeg" alt="Comercial Brigadeiro - Imagem 3" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_41_img_3.jpeg" alt="Comercial Brigadeiro - Imagem 4" loading="lazy"/></div>
+        </div>
+        <div class="pc-img-counter"><span class="pc-timer-status">â±ï¸</span> 01 / 04</div>
+        <div class="pc-dots">
+          <div class="pc-dot on" data-idx="0"></div>
+          <div class="pc-dot " data-idx="1"></div>
+          <div class="pc-dot " data-idx="2"></div>
+          <div class="pc-dot " data-idx="3"></div>
+        </div>
         <div class="pc-overlay"></div>
         <div class="pc-info">
-          <span class="pc-cat"><span class="lang-pt">Estudo Preliminar</span><span class="lang-en">Preliminary Design</span></span>
+          <span class="pc-cat"><span class="lang-pt">Estudo Preliminar / Comercial</span><span class="lang-en">Preliminary Design / Commercial</span></span>
           <h3 class="pc-name">Comercial Brigadeiro</h3>
-          <p class="pc-meta">Curitiba/PR · 625m²</p>
+          <p class="pc-meta">Curitiba/PR Â· 625mÂ²</p>
         </div>
       </div>
-
-      <!-- 16. Yoga House -->
+      <!-- Yoga House -->
       <div class="pc pc-6" data-c="institucional concurso">
-        <div class="pc-thumb"><img src="das_portfolio_images/img_page42_0.jpeg" alt="Yoga House" loading="lazy"/></div>
+        <div class="pc-timer-bar"></div>
+        <div class="pc-thumb">
+          <div class="pc-slide active"><img src="das_portfolio_images/page_42_img_1.jpeg" alt="Yoga House - Imagem 1" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_43_img_1.jpeg" alt="Yoga House - Imagem 2" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_43_img_2.jpeg" alt="Yoga House - Imagem 3" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_43_img_3.jpeg" alt="Yoga House - Imagem 4" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_43_img_4.jpeg" alt="Yoga House - Imagem 5" loading="lazy"/></div>
+        </div>
+        <div class="pc-img-counter"><span class="pc-timer-status">â±ï¸</span> 01 / 05</div>
+        <div class="pc-dots">
+          <div class="pc-dot on" data-idx="0"></div>
+          <div class="pc-dot " data-idx="1"></div>
+          <div class="pc-dot " data-idx="2"></div>
+          <div class="pc-dot " data-idx="3"></div>
+          <div class="pc-dot " data-idx="4"></div>
+        </div>
         <div class="pc-overlay"></div>
         <div class="pc-info">
           <span class="pc-cat"><span class="lang-pt">Concurso de Projeto</span><span class="lang-en">Design Competition</span></span>
           <h3 class="pc-name">Yoga House</h3>
-          <p class="pc-meta">Portugal · 220m²</p>
+          <p class="pc-meta">Portugal Â· 220mÂ²</p>
         </div>
       </div>
-
-      <!-- 17. Ananda Dhama Villa -->
+      <!-- Ananda Dhama Villa -->
       <div class="pc pc-8" data-c="residencial urbano">
-        <div class="pc-thumb"><img src="das_portfolio_images/img_page44_0.jpeg" alt="Ananda Dhama Villa" loading="lazy"/></div>
+        <div class="pc-timer-bar"></div>
+        <div class="pc-thumb">
+          <div class="pc-slide active"><img src="das_portfolio_images/page_44_img_1.jpeg" alt="Ananda Dhama Villa - Imagem 1" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_45_img_1.jpeg" alt="Ananda Dhama Villa - Imagem 2" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_46_img_1.jpeg" alt="Ananda Dhama Villa - Imagem 3" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_46_img_2.jpeg" alt="Ananda Dhama Villa - Imagem 4" loading="lazy"/></div>
+        </div>
+        <div class="pc-img-counter"><span class="pc-timer-status">â±ï¸</span> 01 / 04</div>
+        <div class="pc-dots">
+          <div class="pc-dot on" data-idx="0"></div>
+          <div class="pc-dot " data-idx="1"></div>
+          <div class="pc-dot " data-idx="2"></div>
+          <div class="pc-dot " data-idx="3"></div>
+        </div>
         <div class="pc-overlay"></div>
         <div class="pc-info">
-          <span class="pc-cat"><span class="lang-pt">Estudo de Viabilidade</span><span class="lang-en">Feasibility Study</span></span>
+          <span class="pc-cat"><span class="lang-pt">Estudo de Viabilidade / Masterplan</span><span class="lang-en">Feasibility Study / Masterplan</span></span>
           <h3 class="pc-name">Ananda Dhama Villa</h3>
-          <p class="pc-meta">Campo Largo/PR · 18 Lots</p>
+          <p class="pc-meta">Campo Largo/PR Â· 18 Lotes</p>
         </div>
       </div>
-
-      <!-- 18. Kaira Looro Memorial -->
+      <!-- Kaira Looro Memorial -->
       <div class="pc pc-4" data-c="institucional concurso">
-        <div class="pc-thumb"><img src="das_portfolio_images/img_page47_0.jpeg" alt="Kaira Looro Memorial" loading="lazy"/></div>
+        <div class="pc-timer-bar"></div>
+        <div class="pc-thumb">
+          <div class="pc-slide active"><img src="das_portfolio_images/page_47_img_1.jpeg" alt="Kaira Looro Memorial - Imagem 1" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_48_img_1.jpeg" alt="Kaira Looro Memorial - Imagem 2" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_48_img_2.jpeg" alt="Kaira Looro Memorial - Imagem 3" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_48_img_3.jpeg" alt="Kaira Looro Memorial - Imagem 4" loading="lazy"/></div>
+        </div>
+        <div class="pc-img-counter"><span class="pc-timer-status">â±ï¸</span> 01 / 04</div>
+        <div class="pc-dots">
+          <div class="pc-dot on" data-idx="0"></div>
+          <div class="pc-dot " data-idx="1"></div>
+          <div class="pc-dot " data-idx="2"></div>
+          <div class="pc-dot " data-idx="3"></div>
+        </div>
         <div class="pc-overlay"></div>
         <div class="pc-info">
-          <span class="pc-cat"><span class="lang-pt">Concurso de Projeto</span><span class="lang-en">Design Competition</span></span>
+          <span class="pc-cat"><span class="lang-pt">Concurso Internacional</span><span class="lang-en">International Competition</span></span>
           <h3 class="pc-name">Kaira Looro Memorial</h3>
-          <p class="pc-meta">Sedhiou/Senegal · 240m²</p>
+          <p class="pc-meta">Sedhiou/Senegal Â· 240mÂ²</p>
         </div>
       </div>
-
-      <!-- 19. Morro da Manteiga Park -->
+      <!-- Morro da Manteiga Park -->
       <div class="pc pc-6" data-c="urbano concurso">
-        <div class="pc-thumb"><img src="das_portfolio_images/img_page49_0.jpeg" alt="Morro da Manteiga Park" loading="lazy"/></div>
+        <div class="pc-timer-bar"></div>
+        <div class="pc-thumb">
+          <div class="pc-slide active"><img src="das_portfolio_images/page_49_img_1.jpeg" alt="Morro da Manteiga Park - Imagem 1" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_50_img_1.jpeg" alt="Morro da Manteiga Park - Imagem 2" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_50_img_2.jpeg" alt="Morro da Manteiga Park - Imagem 3" loading="lazy"/></div>
+        </div>
+        <div class="pc-img-counter"><span class="pc-timer-status">â±ï¸</span> 01 / 03</div>
+        <div class="pc-dots">
+          <div class="pc-dot on" data-idx="0"></div>
+          <div class="pc-dot " data-idx="1"></div>
+          <div class="pc-dot " data-idx="2"></div>
+        </div>
         <div class="pc-overlay"></div>
         <div class="pc-info">
-          <span class="pc-cat"><span class="lang-pt">Concurso de Projeto</span><span class="lang-en">Design Competition</span></span>
+          <span class="pc-cat"><span class="lang-pt">Concurso de Projeto / Paisagismo</span><span class="lang-en">Design Competition / Landscape</span></span>
           <h3 class="pc-name">Morro da Manteiga Park</h3>
-          <p class="pc-meta">Camacari/Bahia · 12,000m²</p>
+          <p class="pc-meta">CamaÃ§ari/BA Â· 12,000mÂ²</p>
         </div>
       </div>
-
-      <!-- 20. UBS Quilombola -->
+      <!-- UBS Quilombola -->
       <div class="pc pc-6" data-c="institucional concurso">
-        <div class="pc-thumb"><img src="das_portfolio_images/img_page51_0.jpeg" alt="UBS Quilombola" loading="lazy"/></div>
+        <div class="pc-timer-bar"></div>
+        <div class="pc-thumb">
+          <div class="pc-slide active"><img src="das_portfolio_images/page_51_img_1.jpeg" alt="UBS Quilombola - Imagem 1" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_51_img_2.jpeg" alt="UBS Quilombola - Imagem 2" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_52_img_1.jpeg" alt="UBS Quilombola - Imagem 3" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_52_img_2.jpeg" alt="UBS Quilombola - Imagem 4" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_52_img_3.jpeg" alt="UBS Quilombola - Imagem 5" loading="lazy"/></div>
+        </div>
+        <div class="pc-img-counter"><span class="pc-timer-status">â±ï¸</span> 01 / 05</div>
+        <div class="pc-dots">
+          <div class="pc-dot on" data-idx="0"></div>
+          <div class="pc-dot " data-idx="1"></div>
+          <div class="pc-dot " data-idx="2"></div>
+          <div class="pc-dot " data-idx="3"></div>
+          <div class="pc-dot " data-idx="4"></div>
+        </div>
         <div class="pc-overlay"></div>
         <div class="pc-info">
-          <span class="pc-cat"><span class="lang-pt">Concurso de Projeto</span><span class="lang-en">Design Competition</span></span>
+          <span class="pc-cat"><span class="lang-pt">Concurso de Projeto / SaÃºde</span><span class="lang-en">Design Competition / Healthcare</span></span>
           <h3 class="pc-name">UBS Quilombola</h3>
-          <p class="pc-meta">Conde/PB · 280m²</p>
+          <p class="pc-meta">Conde/PB Â· 280mÂ²</p>
         </div>
       </div>
-
-      <!-- 21. Crixa School -->
+      <!-- Crixa School -->
       <div class="pc pc-4" data-c="institucional concurso">
-        <div class="pc-thumb"><img src="das_portfolio_images/img_page53_0.jpeg" alt="Crixa School" loading="lazy"/></div>
+        <div class="pc-timer-bar"></div>
+        <div class="pc-thumb">
+          <div class="pc-slide active"><img src="das_portfolio_images/page_53_img_1.jpeg" alt="Crixa School - Imagem 1" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_54_img_1.jpeg" alt="Crixa School - Imagem 2" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_54_img_2.jpeg" alt="Crixa School - Imagem 3" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_54_img_3.jpeg" alt="Crixa School - Imagem 4" loading="lazy"/></div>
+        </div>
+        <div class="pc-img-counter"><span class="pc-timer-status">â±ï¸</span> 01 / 04</div>
+        <div class="pc-dots">
+          <div class="pc-dot on" data-idx="0"></div>
+          <div class="pc-dot " data-idx="1"></div>
+          <div class="pc-dot " data-idx="2"></div>
+          <div class="pc-dot " data-idx="3"></div>
+        </div>
         <div class="pc-overlay"></div>
         <div class="pc-info">
-          <span class="pc-cat"><span class="lang-pt">Concurso de Projeto</span><span class="lang-en">Design Competition</span></span>
+          <span class="pc-cat"><span class="lang-pt">Concurso de Projeto / EducaÃ§Ã£o</span><span class="lang-en">Design Competition / Education</span></span>
           <h3 class="pc-name">Crixa School</h3>
-          <p class="pc-meta">Brasília/DF · 4,500m²</p>
+          <p class="pc-meta">BrasÃ­lia/DF Â· 4,500mÂ²</p>
         </div>
       </div>
-
-      <!-- 22. Ágora Tech Park -->
+      <!-- Ãgora Tech Park -->
       <div class="pc pc-8" data-c="institucional concurso">
-        <div class="pc-thumb"><img src="das_portfolio_images/img_page55_0.jpeg" alt="Ágora Tech Park" loading="lazy"/></div>
+        <div class="pc-timer-bar"></div>
+        <div class="pc-thumb">
+          <div class="pc-slide active"><img src="das_portfolio_images/page_55_img_1.jpeg" alt="Ãgora Tech Park - Imagem 1" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_56_img_1.jpeg" alt="Ãgora Tech Park - Imagem 2" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_56_img_2.jpeg" alt="Ãgora Tech Park - Imagem 3" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_56_img_3.jpeg" alt="Ãgora Tech Park - Imagem 4" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_56_img_4.jpeg" alt="Ãgora Tech Park - Imagem 5" loading="lazy"/></div>
+        </div>
+        <div class="pc-img-counter"><span class="pc-timer-status">â±ï¸</span> 01 / 05</div>
+        <div class="pc-dots">
+          <div class="pc-dot on" data-idx="0"></div>
+          <div class="pc-dot " data-idx="1"></div>
+          <div class="pc-dot " data-idx="2"></div>
+          <div class="pc-dot " data-idx="3"></div>
+          <div class="pc-dot " data-idx="4"></div>
+        </div>
         <div class="pc-overlay"></div>
         <div class="pc-info">
-          <span class="pc-cat"><span class="lang-pt">Concurso de Projeto</span><span class="lang-en">Design Competition</span></span>
-          <h3 class="pc-name">Ágora Tech Park</h3>
-          <p class="pc-meta">Joinville/SC · 6,000m²</p>
+          <span class="pc-cat"><span class="lang-pt">Concurso de Projeto / Tecnologia</span><span class="lang-en">Design Competition / Technology</span></span>
+          <h3 class="pc-name">Ãgora Tech Park</h3>
+          <p class="pc-meta">Joinville/SC Â· 6,000mÂ²</p>
         </div>
       </div>
-
-      <!-- 23. Morro do Macaco Tech Park -->
+      <!-- Morro do Macaco Tech Park -->
       <div class="pc pc-6" data-c="institucional">
-        <div class="pc-thumb"><img src="das_portfolio_images/img_page57_0.jpeg" alt="Morro do Macaco Technology Park" loading="lazy"/></div>
+        <div class="pc-timer-bar"></div>
+        <div class="pc-thumb">
+          <div class="pc-slide active"><img src="das_portfolio_images/page_57_img_1.jpeg" alt="Morro do Macaco Tech Park - Imagem 1" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_58_img_1.jpeg" alt="Morro do Macaco Tech Park - Imagem 2" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_58_img_2.jpeg" alt="Morro do Macaco Tech Park - Imagem 3" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_58_img_3.jpeg" alt="Morro do Macaco Tech Park - Imagem 4" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_58_img_4.jpeg" alt="Morro do Macaco Tech Park - Imagem 5" loading="lazy"/></div>
+        </div>
+        <div class="pc-img-counter"><span class="pc-timer-status">â±ï¸</span> 01 / 05</div>
+        <div class="pc-dots">
+          <div class="pc-dot on" data-idx="0"></div>
+          <div class="pc-dot " data-idx="1"></div>
+          <div class="pc-dot " data-idx="2"></div>
+          <div class="pc-dot " data-idx="3"></div>
+          <div class="pc-dot " data-idx="4"></div>
+        </div>
         <div class="pc-overlay"></div>
         <div class="pc-info">
-          <span class="pc-cat"><span class="lang-pt">Estudo Preliminar</span><span class="lang-en">Preliminary Study</span></span>
+          <span class="pc-cat"><span class="lang-pt">Estudo Preliminar / Licenciamento</span><span class="lang-en">Preliminary Study / Licensing</span></span>
           <h3 class="pc-name">Morro do Macaco Tech Park</h3>
-          <p class="pc-meta">Bombinhas/SC · 36,000m²</p>
+          <p class="pc-meta">Bombinhas/SC Â· 36,000mÂ²</p>
         </div>
       </div>
-
-      <!-- 24. Correios Franchise -->
+      <!-- Correios Franchise -->
       <div class="pc pc-6" data-c="comercial">
-        <div class="pc-thumb"><img src="das_portfolio_images/img_page59_0.jpeg" alt="Franchised Post Office Branches" loading="lazy"/></div>
+        <div class="pc-timer-bar"></div>
+        <div class="pc-thumb">
+          <div class="pc-slide active"><img src="das_portfolio_images/page_59_img_1.jpeg" alt="Correios Franchise - Imagem 1" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_59_img_4.jpeg" alt="Correios Franchise - Imagem 2" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_59_img_5.jpeg" alt="Correios Franchise - Imagem 3" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_59_img_6.jpeg" alt="Correios Franchise - Imagem 4" loading="lazy"/></div>
+        </div>
+        <div class="pc-img-counter"><span class="pc-timer-status">â±ï¸</span> 01 / 04</div>
+        <div class="pc-dots">
+          <div class="pc-dot on" data-idx="0"></div>
+          <div class="pc-dot " data-idx="1"></div>
+          <div class="pc-dot " data-idx="2"></div>
+          <div class="pc-dot " data-idx="3"></div>
+        </div>
         <div class="pc-overlay"></div>
         <div class="pc-info">
-          <span class="pc-cat"><span class="lang-pt">Projeto Executivo</span><span class="lang-en">Executive Project</span></span>
+          <span class="pc-cat"><span class="lang-pt">Projeto Executivo / Comercial</span><span class="lang-en">Executive Project / Commercial</span></span>
           <h3 class="pc-name">Correios Franchise</h3>
-          <p class="pc-meta">Curitiba/PR & Joinville/SC</p>
+          <p class="pc-meta">Curitiba/PR & Joinville/SC Â· VÃ¡rias Unidades</p>
         </div>
       </div>
-
-      <!-- 25. Autodromo Residential Villa -->
+      <!-- Autodromo Residential Villa -->
       <div class="pc pc-12" data-c="urbano">
-        <div class="pc-thumb"><img src="das_portfolio_images/img_page60_0.jpeg" alt="Autodromo Residential Villa" loading="lazy"/></div>
+        <div class="pc-timer-bar"></div>
+        <div class="pc-thumb">
+          <div class="pc-slide active"><img src="das_portfolio_images/page_60_img_1.jpeg" alt="Autodromo Residential Villa - Imagem 1" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_61_img_1.jpeg" alt="Autodromo Residential Villa - Imagem 2" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_61_img_2.jpeg" alt="Autodromo Residential Villa - Imagem 3" loading="lazy"/></div>
+        </div>
+        <div class="pc-img-counter"><span class="pc-timer-status">â±ï¸</span> 01 / 03</div>
+        <div class="pc-dots">
+          <div class="pc-dot on" data-idx="0"></div>
+          <div class="pc-dot " data-idx="1"></div>
+          <div class="pc-dot " data-idx="2"></div>
+        </div>
         <div class="pc-overlay"></div>
         <div class="pc-info">
-          <span class="pc-cat"><span class="lang-pt">Estudo de Viabilidade</span><span class="lang-en">Feasibility Study</span></span>
+          <span class="pc-cat"><span class="lang-pt">Estudo de Viabilidade / Masterplan</span><span class="lang-en">Feasibility Study / Masterplan</span></span>
           <h3 class="pc-name">Autodromo Residential Villa</h3>
-          <p class="pc-meta">Curitiba/PR · 4,500m²</p>
+          <p class="pc-meta">Curitiba/PR Â· 4,500mÂ²</p>
         </div>
       </div>
-
-      <!-- 26. Barra Strategic Plan -->
+      <!-- Barra Strategic Plan -->
       <div class="pc pc-4" data-c="urbano">
-        <div class="pc-thumb"><img src="das_portfolio_images/img_page62_0.jpeg" alt="Barra Strategic Plan" loading="lazy"/></div>
+        <div class="pc-timer-bar"></div>
+        <div class="pc-thumb">
+          <div class="pc-slide active"><img src="das_portfolio_images/page_62_img_1.jpeg" alt="Barra Strategic Plan - Imagem 1" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_63_img_1.jpeg" alt="Barra Strategic Plan - Imagem 2" loading="lazy"/></div>
+        </div>
+        <div class="pc-img-counter"><span class="pc-timer-status">â±ï¸</span> 01 / 02</div>
+        <div class="pc-dots">
+          <div class="pc-dot on" data-idx="0"></div>
+          <div class="pc-dot " data-idx="1"></div>
+        </div>
         <div class="pc-overlay"></div>
         <div class="pc-info">
-          <span class="pc-cat"><span class="lang-pt">Masterplan</span><span class="lang-en">Masterplan</span></span>
+          <span class="pc-cat"><span class="lang-pt">Plano EstratÃ©gico / Mobilidade</span><span class="lang-en">Strategic Plan / Mobility</span></span>
           <h3 class="pc-name">Barra Strategic Plan</h3>
-          <p class="pc-meta">Rio de Janeiro/RJ</p>
+          <p class="pc-meta">Rio de Janeiro/RJ Â· 165kmÂ²</p>
         </div>
       </div>
-
-      <!-- 27. BRT Missões Terminal -->
+      <!-- BRT MissÃµes Terminal -->
       <div class="pc pc-4" data-c="urbano">
-        <div class="pc-thumb"><img src="das_portfolio_images/img_page64_0.jpeg" alt="BRT Missões Terminal" loading="lazy"/></div>
+        <div class="pc-timer-bar"></div>
+        <div class="pc-thumb">
+          <div class="pc-slide active"><img src="das_portfolio_images/page_64_img_1.jpeg" alt="BRT MissÃµes Terminal - Imagem 1" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_64_img_2.jpeg" alt="BRT MissÃµes Terminal - Imagem 2" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_64_img_3.jpeg" alt="BRT MissÃµes Terminal - Imagem 3" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_65_img_1.jpeg" alt="BRT MissÃµes Terminal - Imagem 4" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_65_img_2.jpeg" alt="BRT MissÃµes Terminal - Imagem 5" loading="lazy"/></div>
+        </div>
+        <div class="pc-img-counter"><span class="pc-timer-status">â±ï¸</span> 01 / 05</div>
+        <div class="pc-dots">
+          <div class="pc-dot on" data-idx="0"></div>
+          <div class="pc-dot " data-idx="1"></div>
+          <div class="pc-dot " data-idx="2"></div>
+          <div class="pc-dot " data-idx="3"></div>
+          <div class="pc-dot " data-idx="4"></div>
+        </div>
         <div class="pc-overlay"></div>
         <div class="pc-info">
-          <span class="pc-cat"><span class="lang-pt">Mobilidade</span><span class="lang-en">Mobility</span></span>
-          <h3 class="pc-name">BRT Missões Terminal</h3>
-          <p class="pc-meta">Rio de Janeiro/RJ · 6,800m²</p>
+          <span class="pc-cat"><span class="lang-pt">Estudo Preliminar / Mobilidade</span><span class="lang-en">Preliminary Design / Mobility</span></span>
+          <h3 class="pc-name">BRT MissÃµes Terminal</h3>
+          <p class="pc-meta">Rio de Janeiro/RJ Â· 6,800mÂ²</p>
         </div>
       </div>
-
-      <!-- 28. Margaridas BRT Terminal -->
+      <!-- Margaridas BRT Terminal -->
       <div class="pc pc-4" data-c="urbano">
-        <div class="pc-thumb"><img src="das_portfolio_images/img_page67_0.jpeg" alt="Margaridas BRT Terminal" loading="lazy"/></div>
+        <div class="pc-timer-bar"></div>
+        <div class="pc-thumb">
+          <div class="pc-slide active"><img src="das_portfolio_images/page_67_img_1.jpeg" alt="Margaridas BRT Terminal - Imagem 1" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_67_img_2.jpeg" alt="Margaridas BRT Terminal - Imagem 2" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_68_img_1.jpeg" alt="Margaridas BRT Terminal - Imagem 3" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_68_img_2.jpeg" alt="Margaridas BRT Terminal - Imagem 4" loading="lazy"/></div>
+        </div>
+        <div class="pc-img-counter"><span class="pc-timer-status">â±ï¸</span> 01 / 04</div>
+        <div class="pc-dots">
+          <div class="pc-dot on" data-idx="0"></div>
+          <div class="pc-dot " data-idx="1"></div>
+          <div class="pc-dot " data-idx="2"></div>
+          <div class="pc-dot " data-idx="3"></div>
+        </div>
         <div class="pc-overlay"></div>
         <div class="pc-info">
-          <span class="pc-cat"><span class="lang-pt">Mobilidade</span><span class="lang-en">Mobility</span></span>
+          <span class="pc-cat"><span class="lang-pt">Estudo Preliminar / Mobilidade</span><span class="lang-en">Preliminary Design / Mobility</span></span>
           <h3 class="pc-name">Margaridas BRT Terminal</h3>
-          <p class="pc-meta">Rio de Janeiro/RJ · 12,200m²</p>
+          <p class="pc-meta">Rio de Janeiro/RJ Â· 12,200mÂ²</p>
         </div>
       </div>
-
-      <!-- 29. Environmental Park Barra -->
+      <!-- Environmental Park Barra -->
       <div class="pc pc-12" data-c="urbano comercial">
-        <div class="pc-thumb"><img src="das_portfolio_images/img_page69_0.jpeg" alt="Environmental Park/Hotels Barra" loading="lazy"/></div>
+        <div class="pc-timer-bar"></div>
+        <div class="pc-thumb">
+          <div class="pc-slide active"><img src="das_portfolio_images/page_69_img_1.jpeg" alt="Environmental Park Barra - Imagem 1" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_70_img_1.jpeg" alt="Environmental Park Barra - Imagem 2" loading="lazy"/></div>
+        </div>
+        <div class="pc-img-counter"><span class="pc-timer-status">â±ï¸</span> 01 / 02</div>
+        <div class="pc-dots">
+          <div class="pc-dot on" data-idx="0"></div>
+          <div class="pc-dot " data-idx="1"></div>
+        </div>
         <div class="pc-overlay"></div>
         <div class="pc-info">
-          <span class="pc-cat"><span class="lang-pt">Parque & Hospitalidade</span><span class="lang-en">Park & Hospitality</span></span>
+          <span class="pc-cat"><span class="lang-pt">Estudo de Viabilidade / Hotelaria</span><span class="lang-en">Feasibility Study / Hospitality</span></span>
           <h3 class="pc-name">Environmental Park Barra</h3>
-          <p class="pc-meta">Rio de Janeiro/RJ · 18,000m²</p>
+          <p class="pc-meta">Rio de Janeiro/RJ Â· 18,000mÂ²</p>
         </div>
       </div>
-
     </div>
   </div>
 </section>
@@ -781,16 +1250,16 @@
       <div>
         <a href="index.html" class="ftr-logo"><img src="das_portfolio_images/logo-das-arquitetos.jpg" alt="DAS Arquitetos"/></a>
         <p class="ftr-desc">
-          <span class="lang-pt">Estúdio de arquitetura focado em projetos contemporâneos, gestão tecnológica e sustentabilidade ambiental.</span>
+          <span class="lang-pt">EstÃºdio de arquitetura focado em projetos contemporÃ¢neos, gestÃ£o tecnolÃ³gica e sustentabilidade ambiental.</span>
           <span class="lang-en">Architecture studio focused on contemporary projects, technological management, and environmental sustainability.</span>
         </p>
       </div>
       <div>
-        <p class="ftr-col-lbl"><span class="lang-pt">Navegação</span><span class="lang-en">Navigation</span></p>
+        <p class="ftr-col-lbl"><span class="lang-pt">NavegaÃ§Ã£o</span><span class="lang-en">Navigation</span></p>
         <div class="ftr-links">
-          <a href="index.html" class="ftr-link"><span class="lang-pt">Página Inicial</span><span class="lang-en">Home Page</span></a>
-          <a href="index.html#sobre" class="ftr-link"><span class="lang-pt">Sobre o Estúdio</span><span class="lang-en">About Us</span></a>
-          <a href="index.html#servicos" class="ftr-link"><span class="lang-pt">Serviços</span><span class="lang-en">Services</span></a>
+          <a href="index.html" class="ftr-link"><span class="lang-pt">PÃ¡gina Inicial</span><span class="lang-en">Home Page</span></a>
+          <a href="index.html#sobre" class="ftr-link"><span class="lang-pt">Sobre o EstÃºdio</span><span class="lang-en">About Us</span></a>
+          <a href="index.html#capacidades" class="ftr-link"><span class="lang-pt">ServiÃ§os</span><span class="lang-en">Services</span></a>
           <a href="index.html#contato" class="ftr-link"><span class="lang-pt">Contato</span><span class="lang-en">Contact</span></a>
         </div>
       </div>
@@ -799,13 +1268,13 @@
         <div class="ftr-links">
           <a href="mailto:contato@dasarquitetos.com.br" class="ftr-link">contato@dasarquitetos.com.br</a>
           <a href="tel:+5541999999999" class="ftr-link">+55 (41) 99999-9999</a>
-          <span class="ftr-link" style="color:rgba(255,255,255,0.3);">Curitiba — PR, Brasil</span>
+          <span class="ftr-link" style="color:rgba(255,255,255,0.3);">Curitiba â€” PR, Brasil</span>
         </div>
       </div>
       <div class="ftr-sub">
         <p class="ftr-col-lbl"><span class="lang-pt">Newsletter</span><span class="lang-en">Newsletter</span></p>
         <p style="font-size:0.78rem; color:rgba(255,255,255,0.4); margin-bottom:8px;">
-          <span class="lang-pt">Receba nossas atualizações sobre novos projetos.</span>
+          <span class="lang-pt">Receba nossas atualizaÃ§Ãµes sobre novos projetos.</span>
           <span class="lang-en">Receive updates on our new projects.</span>
         </p>
         <form onsubmit="event.preventDefault(); alert('Obrigado!');">
@@ -815,7 +1284,7 @@
       </div>
     </div>
     <div class="ftr-bottom">
-      <p class="ftr-copy">© 2026 DAS Arquitetos. Todos os direitos reservados.</p>
+      <p class="ftr-copy">Â© 2026 DAS Arquitetos. Todos os direitos reservados.</p>
       <div class="ftr-legal">
         <a href="#"><span class="lang-pt">Termos de Uso</span><span class="lang-en">Terms of Use</span></a>
         <a href="#"><span class="lang-pt">Privacidade</span><span class="lang-en">Privacy</span></a>
@@ -882,214 +1351,474 @@ document.querySelectorAll('.f-pill').forEach(pill => {
   });
 });
 
-/* ---- PROJECTS DATA ---- */
+/* ---- OFFICIAL PDF PROJECTS DATA ---- */
 const projectsData = {
   "Arena BSB": {
-    img: "das_portfolio_images/img_page4_0.jpeg",
-    catPt: "Esporte & Lazer", catEn: "Sports & Leisure",
-    loc: "Brasília/DF", area: "90,000m²",
-    descPt: "A construção da urbanidade requer uma abordagem que englobe, além da arquitetura e urbanismo, os agentes envolvidos nessa estruturação. A sustentabilidade do complexo foi pensada desde o início do projeto, buscando posicionar os edifícios na direção leste/oeste para maximizar ventilação e iluminação naturais.",
-    descEn: "The construction of urbanity requires an approach that encompasses beyond architecture and urbanism, also the agents involved in this structuring. The sustainability of the complex was considered from the initial project scopes, seeking to position the buildings mostly in the east/west direction to maximize natural ventilation and lighting."
+    "catPt": "Esporte & Lazer / Urbanismo",
+    "catEn": "Sports & Leisure / Urbanism",
+    "loc": "BrasÃ­lia/DF",
+    "area": "90,000mÂ²",
+    "gridClass": "pc-8",
+    "dataC": "institucional concurso",
+    "descPt": "Concurso Nacional de Arquitetura e Paisagismo para a RequalificaÃ§Ã£o do Complexo Esportivo e de Lazer Arena BSB. Projeto focado no conforto ambiental, eficiÃªncia energÃ©tica e integraÃ§Ã£o com a escala monumental de BrasÃ­lia.",
+    "descEn": "National Competition for Requalification of the Arena BSB Sports and Leisure Complex. Project focused on environmental comfort, energy efficiency, and integration with Brasilia monumental scale."
   },
   "Monte Alegre Residence": {
-    img: "das_portfolio_images/img_page7_0.jpeg",
-    catPt: "Projeto Executivo", catEn: "Executive Project",
-    loc: "Campo Largo/PR", area: "620m²",
-    descPt: "Residência contemporânea desenhada com foco na integração com o entorno e o uso de materiais sustentáveis para criar espaços funcionais e acolhedores.",
-    descEn: "Contemporary residence designed with a focus on integration with the surroundings and the use of sustainable materials to create functional and welcoming spaces."
+    "catPt": "Projeto Executivo / Interiores",
+    "catEn": "Executive Project / Interior Design",
+    "loc": "Campo Largo/PR",
+    "area": "620mÂ²",
+    "gridClass": "pc-4",
+    "dataC": "residencial",
+    "descPt": "ResidÃªncia contemporÃ¢nea de alto padrÃ£o desenhada com foco na integraÃ§Ã£o com o entorno verde, uso de materiais naturais e conforto tÃ©rmico em Campo Largo.",
+    "descEn": "High-end contemporary residence designed with a focus on integration with green surroundings, use of natural materials, and thermal comfort in Campo Largo."
   },
   "Ceara Building": {
-    img: "das_portfolio_images/img_page11_0.jpeg",
-    catPt: "Residencial Multifamiliar", catEn: "Multifamily Residential",
-    loc: "Curitiba/PR", area: "4,449.75m²",
-    descPt: "Um complexo residencial multifamiliar que preza pelo conforto ambiental, criando áreas generosas de vivência integradas com fachadas ativas.",
-    descEn: "A multifamily residential complex that values environmental comfort, creating generous living areas integrated with active facades."
+    "catPt": "Residencial Multifamiliar",
+    "catEn": "Multifamily Residential",
+    "loc": "Curitiba/PR",
+    "area": "4,449.75mÂ²",
+    "gridClass": "pc-4",
+    "dataC": "residencial",
+    "descPt": "EdifÃ­cio residencial contemporÃ¢neo com unidades tipo e cobertura duplex (297.34mÂ²). Projeto focado em sacadas generosas, Ã³tima insolaÃ§Ã£o e ventilaÃ§Ã£o cruzada.",
+    "descEn": "Contemporary residential building with standard units and penthouse (297.34mÂ²). Designed with generous balconies, optimal solar orientation, and cross ventilation."
   },
   "Red One": {
-    img: "das_portfolio_images/img_page15_0.jpeg",
-    catPt: "Residencial Multifamiliar", catEn: "Multifamily Residential",
-    loc: "Curitiba/PR", area: "17,952m²",
-    descPt: "Empreendimento com linguagem marcante e soluções tecnológicas para garantir eficiência energética, promovendo a qualidade de vida em alta densidade.",
-    descEn: "Development with striking language and technological solutions to ensure energy efficiency, promoting quality of life in high density."
+    "catPt": "Residencial Multifamiliar",
+    "catEn": "Multifamily Residential",
+    "loc": "Curitiba/PR",
+    "area": "17,952mÂ²",
+    "gridClass": "pc-4",
+    "dataC": "residencial",
+    "descPt": "Empreendimento residencial multifamiliar de grande porte reunindo linguagem arquitetÃ´nica marcante, eficiÃªncia estrutural e integraÃ§Ã£o urbana.",
+    "descEn": "Large-scale multifamily residential development bringing together striking architectural language, structural efficiency, and urban integration."
   },
   "Manaca Residence": {
-    img: "das_portfolio_images/img_page19_0.jpeg",
-    catPt: "Projeto Executivo", catEn: "Executive Project",
-    loc: "Campo Largo/PR", area: "1,350m²",
-    descPt: "Diante das mudanças climáticas, há uma necessidade urgente de quebrar paradigmas no processo de design de edifícios. Localizada em uma Área de Preservação Permanente em frente ao Lago Passaúna. O projeto utiliza sistemas de wetlands e paredes trombe para controle bioclimático.",
-    descEn: "In the face of climate changes, there is an urgent need to break paradigms regarding the design process of buildings. Located in a Permanent Preservation Area facing Lake Passaúna. The project uses constructed wetlands and trombe walls for bioclimatic control."
+    "catPt": "Projeto Executivo / SustentÃ¡vel",
+    "catEn": "Executive Project / Sustainable",
+    "loc": "Campo Largo/PR",
+    "area": "1,350mÂ²",
+    "gridClass": "pc-4",
+    "dataC": "residencial",
+    "descPt": "ResidÃªncia sustentÃ¡vel premiada (PrÃªmio Saint-Gobain), integrando jardineiras biolÃ³gicas (constructed wetlands), captaÃ§Ã£o solar e arquitetura bioclimÃ¡tica.",
+    "descEn": "Award-winning sustainable residence (Saint-Gobain Award), integrating constructed wetlands, solar harvesting, and bioclimatic architecture."
   },
   "Jardim Viviane": {
-    img: "das_portfolio_images/img_page22_0.jpeg",
-    catPt: "Projeto Executivo", catEn: "Executive Project",
-    loc: "Araucaria/PR", area: "2,200m²",
-    descPt: "No desenvolvimento do loteamento, a atenção foi dada a duas Escalas de Implementação, maximizando o sentido de urbanidade criando espaços semipúblicos na frente das unidades, encorajando encontros e permanência.",
-    descEn: "In the development of the subdivision, attention was given to two Scales of Implementation, maximizing the sense of urbanity by creating semi-public spaces in the front of the units, encouraging encounters and permanence."
+    "catPt": "Projeto Executivo / HabitaÃ§Ã£o",
+    "catEn": "Executive Project / Housing",
+    "loc": "AraucÃ¡ria/PR",
+    "area": "2,200mÂ²",
+    "gridClass": "pc-6",
+    "dataC": "residencial urbano",
+    "descPt": "IntervenÃ§Ã£o urbana e residencial em 8,500mÂ² de terreno com 2,200mÂ² de Ã¡rea construÃ­da. Ambientes integrados minimizando circulaÃ§Ãµes e maximizando luz natural.",
+    "descEn": "Urban and residential intervention on 8,500mÂ² site with 2,200mÂ² built area. Integrated spaces minimizing corridors and maximizing natural light."
   },
   "Dalligna Residence": {
-    img: "das_portfolio_images/img_page24_0.jpeg",
-    catPt: "Projeto Executivo", catEn: "Executive Project",
-    loc: "Quatro Barras/PR", area: "680m²",
-    descPt: "Uma arquitetura pensada para fluidez e contato constante com a paisagem, integrando ambientes internos e externos com uso extensivo de materiais naturais.",
-    descEn: "An architecture designed for fluidity and constant contact with the landscape, integrating internal and external environments with extensive use of natural materials."
+    "catPt": "Projeto Executivo",
+    "catEn": "Executive Project",
+    "loc": "Quatro Barras/PR",
+    "area": "680mÂ²",
+    "gridClass": "pc-6",
+    "dataC": "residencial",
+    "descPt": "ResidÃªncia contemporÃ¢nea inserida em terreno de 3,850mÂ² junto Ã  natureza de Quatro Barras. Estrutura valorizando transparÃªncia e vistas panorÃ¢micas.",
+    "descEn": "Contemporary residence set on a 3,850mÂ² lot near Quatro Barras nature. Structure highlighting transparency and panoramic views."
   },
   "Sambaqui Sunset Residence": {
-    img: "das_portfolio_images/img_page26_0.jpeg",
-    catPt: "Estudo Preliminar", catEn: "Preliminary Design",
-    loc: "Florianópolis/SC", area: "26,000m²",
-    descPt: "Um assentamento aterrado no contexto natural, mimetizando a topografia e a vegetação nativa para minimizar impactos visuais e ambientais.",
-    descEn: "A settlement grounded in the natural context, mimicking topography and native vegetation to minimize visual and environmental impacts."
+    "catPt": "Estudo Preliminar / Licenciamento",
+    "catEn": "Preliminary Design / Licensing",
+    "loc": "FlorianÃ³polis/SC",
+    "area": "26,000mÂ²",
+    "gridClass": "pc-8",
+    "dataC": "residencial urbano",
+    "descPt": "Complexo residencial beira-mar em terreno de 25,000mÂ² em FlorianÃ³polis. Projeto adaptado Ã s curvas de nÃ­vel para valorizar a vista do pÃ´r do sol.",
+    "descEn": "Oceanfront residential complex on a 25,000mÂ² site in FlorianÃ³polis. Designed to follow natural contours and optimize sunset views."
   },
   "Prashanti Nilayam": {
-    img: "das_portfolio_images/img_page29_0.jpeg",
-    catPt: "Estudo de Viabilidade", catEn: "Feasibility Study",
-    loc: "Curitiba/PR", area: "9,500m²",
-    descPt: "Estudo volumétrico e viabilidade focando na inserção urbana sustentável, integrando áreas comerciais e residenciais com forte apelo comunitário.",
-    descEn: "Volumetric and feasibility study focusing on sustainable urban insertion, integrating commercial and residential areas with a strong community appeal."
+    "catPt": "Estudo de Viabilidade / Institucional",
+    "catEn": "Feasibility Study / Institutional",
+    "loc": "Curitiba/PR",
+    "area": "9,500mÂ²",
+    "gridClass": "pc-4",
+    "dataC": "institucional comercial",
+    "descPt": "Estudo de viabilidade em terreno de 3,200mÂ² para centro institucional e comunitÃ¡rio sustentÃ¡vel com praÃ§as internas e eficiÃªncia energÃ©tica.",
+    "descEn": "Feasibility study on a 3,200mÂ² plot for a sustainable institutional and community center featuring inner plazas and energy efficiency."
   },
   "Anhangava Residence": {
-    img: "das_portfolio_images/img_page31_0.jpeg",
-    catPt: "Projeto Executivo", catEn: "Executive Design",
-    loc: "Quatro Barras/PR", area: "550m²",
-    descPt: "Residência com formas curvas orgânicas inspiradas na topografia local, criando varandas panorâmicas contínuas voltadas para a paisagem deslumbrante.",
-    descEn: "Residence with organic curved forms inspired by local topography, creating continuous panoramic balconies facing the stunning landscape."
+    "catPt": "Projeto Executivo",
+    "catEn": "Executive Design",
+    "loc": "Quatro Barras/PR",
+    "area": "550mÂ²",
+    "gridClass": "pc-6",
+    "dataC": "residencial",
+    "descPt": "ResidÃªncia implantada em 4,500mÂ² de terreno aos pÃ©s do Morro do Anhangava, integrando materiais locais e amplas aberturas envidraÃ§adas.",
+    "descEn": "Residence set on a 4,500mÂ² plot at the foot of Mount Anhangava, integrating local materials and large glass openings."
   },
-  "Studios Brasílio": {
-    img: "das_portfolio_images/img_page33_0.jpeg",
-    catPt: "Projeto Executivo", catEn: "Executive Design",
-    loc: "Curitiba/PR", area: "1,250m²",
-    descPt: "Edifício compacto e inteligente desenhado para o estilo de vida contemporâneo, maximizando eficiência de espaço e soluções de proteção solar.",
-    descEn: "Compact and smart building designed for the contemporary lifestyle, maximizing space efficiency and solar protection solutions."
+  "Studios BrasÃ­lio": {
+    "catPt": "Projeto Executivo",
+    "catEn": "Executive Design",
+    "loc": "Curitiba/PR",
+    "area": "1,250mÂ²",
+    "gridClass": "pc-6",
+    "dataC": "residencial",
+    "descPt": "EdifÃ­cio residencial urbano compacto composto por studios modernos com plantas otimizadas e fachada em tijolos Ã  vista e serralheria fina.",
+    "descEn": "Compact urban residential building featuring modern studios with optimized floor plans, exposed brick faÃ§ade, and fine metalwork."
   },
   "Vilnius Concert Hall": {
-    img: "das_portfolio_images/img_page35_0.jpeg",
-    catPt: "Cultura & Eventos", catEn: "Culture & Events",
-    loc: "Vilnius/Lithuania", area: "12,000m²",
-    descPt: "Proposta para o concurso internacional da sala de concertos de Vilnius, enfatizando monumentalidade diáfana através de envoltórias translúcidas e iluminação dramática.",
-    descEn: "Proposal for the Vilnius concert hall international competition, emphasizing diaphanous monumentality through translucent envelopes and dramatic lighting."
+    "catPt": "Concurso Internacional (2Âª Fase)",
+    "catEn": "International Competition (2nd Phase)",
+    "loc": "Vilnius/LituÃ¢nia",
+    "area": "12,000mÂ²",
+    "gridClass": "pc-12",
+    "dataC": "institucional concurso",
+    "descPt": "Projeto selecionado para a 2Âª fase do Concurso Internacional para a Sala de Concertos Nacional da LituÃ¢nia. Volumetria icÃ´nica e acÃºstica de alta precisÃ£o.",
+    "descEn": "Project qualified for 2nd phase of International Competition for Lithuania National Concert Hall. Iconic volumetry and high-precision acoustics."
   },
   "Townhouses AHU": {
-    img: "das_portfolio_images/img_page37_0.jpeg",
-    catPt: "Projeto Executivo", catEn: "Executive Design",
-    loc: "Curitiba/PR", area: "375m²",
-    descPt: "Conjunto de casas urbanas geminadas concebidas para garantir o máximo de privacidade e iluminação natural em terrenos compactos.",
-    descEn: "Set of attached urban townhouses conceived to ensure maximum privacy and natural lighting in compact plots."
+    "catPt": "Projeto Executivo",
+    "catEn": "Executive Design",
+    "loc": "Curitiba/PR",
+    "area": "375mÂ²",
+    "gridClass": "pc-4",
+    "dataC": "residencial",
+    "descPt": "Conjunto de townhouses contemporÃ¢neas no bairro AhÃº em Curitiba, otimizando o aproveitamento do lote urbano com elegÃ¢ncia e privacidade.",
+    "descEn": "Set of contemporary townhouses in the AhÃº neighborhood of Curitiba, optimizing urban lot usage with elegance and privacy."
   },
   "Penta Residential": {
-    img: "das_portfolio_images/img_page38_0.jpeg",
-    catPt: "Concurso de Projeto", catEn: "Design Competition",
-    loc: "Prague/Czech Republic", area: "21,700m²",
-    descPt: "Projeto para grande complexo residencial em Praga focando em tetos verdes, reutilização de água e um microclima de pátio interno protegido.",
-    descEn: "Project for a large residential complex in Prague focusing on green roofs, water reuse, and a protected internal courtyard microclimate."
+    "catPt": "Concurso de Projeto",
+    "catEn": "Design Competition",
+    "loc": "Praga/RepÃºblica Tcheca",
+    "area": "21,700mÂ²",
+    "gridClass": "pc-8",
+    "dataC": "residencial concurso",
+    "descPt": "Proposta para o concurso internacional de habitaÃ§Ã£o em Praga. IntervenÃ§Ã£o em 8,000mÂ² unindo praÃ§a pÃºblica, dinamismo e volumetria sustentÃ¡vel.",
+    "descEn": "International residential competition proposal for Prague. Intervention on 8,000mÂ² uniting public plaza, dynamism, and sustainable volumetry."
   },
   "Comercial Brigadeiro": {
-    img: "das_portfolio_images/img_page40_0.jpeg",
-    catPt: "Estudo Preliminar", catEn: "Preliminary Design",
-    loc: "Curitiba/PR", area: "625m²",
-    descPt: "Reforma e adequação de espaço comercial unindo elementos industriais com vegetação nativa integrada para um ambiente de convivência urbano.",
-    descEn: "Renovation and adaptation of commercial space uniting industrial elements with integrated native vegetation for an urban gathering environment."
+    "catPt": "Estudo Preliminar / Comercial",
+    "catEn": "Preliminary Design / Commercial",
+    "loc": "Curitiba/PR",
+    "area": "625mÂ²",
+    "gridClass": "pc-6",
+    "dataC": "comercial",
+    "descPt": "EdifÃ­cio comercial em lote de 600mÂ² com fachada ativa no tÃ©rreo, ventilaÃ§Ã£o cruzada e espaÃ§os corporativos iluminados e integrados Ã  rua.",
+    "descEn": "Commercial building on a 600mÂ² plot featuring active street ground floor, cross ventilation, and well-lit corporate spaces."
   },
   "Yoga House": {
-    img: "das_portfolio_images/img_page42_0.jpeg",
-    catPt: "Concurso de Projeto", catEn: "Design Competition",
-    loc: "Portugal", area: "220m²",
-    descPt: "A palavra Yoga vem da raiz sânscrita 'yuj', que significa unir. O conceito do design visa maximizar a conexão com os elementos da natureza usando madeira laminada colada (glulam).",
-    descEn: "The word Yoga comes from the Sanskrit root 'yuj', which means to unite. The design concept aims to maximize the connection with elements of nature using glued laminated timber (glulam)."
+    "catPt": "Concurso de Projeto",
+    "catEn": "Design Competition",
+    "loc": "Portugal",
+    "area": "220mÂ²",
+    "gridClass": "pc-6",
+    "dataC": "institucional concurso",
+    "descPt": "Concurso para pavilhÃ£o de Yoga e reflexÃ£o em Portugal (4,500mÂ² de terreno). Arquitetura orgÃ¢nica em madeira, taipa e vidros voltados Ã  paisagem.",
+    "descEn": "Competition for a Yoga and contemplation pavilion in Portugal (4,500mÂ² site). Organic architecture in timber, rammed earth, and scenic glass."
   },
   "Ananda Dhama Villa": {
-    img: "das_portfolio_images/img_page44_0.jpeg",
-    catPt: "Estudo de Viabilidade", catEn: "Feasibility Study",
-    loc: "Campo Largo/PR", area: "18 Lotes",
-    descPt: "Plano urbano focado no bem-estar, com preservação das linhas de relevo, grandes recuos vegetados e uma arquitetura comunitária no epicentro.",
-    descEn: "Urban plan focused on well-being, with preservation of relief lines, large vegetated setbacks, and a community architecture at the epicenter."
+    "catPt": "Estudo de Viabilidade / Masterplan",
+    "catEn": "Feasibility Study / Masterplan",
+    "loc": "Campo Largo/PR",
+    "area": "18 Lotes",
+    "gridClass": "pc-8",
+    "dataC": "residencial urbano",
+    "descPt": "Masterplan sustentÃ¡vel em 74,000mÂ² de Ã¡rea com divisÃ£o em 18 lotes habitacionais preservando topo de morro e vegetaÃ§Ã£o nativa.",
+    "descEn": "Sustainable masterplan on a 74,000mÂ² area divided into 18 housing lots preserving hilltops and native vegetation."
   },
   "Kaira Looro Memorial": {
-    img: "das_portfolio_images/img_page47_0.jpeg",
-    catPt: "Concurso de Projeto", catEn: "Design Competition",
-    loc: "Sedhiou/Senegal", area: "240m²",
-    descPt: "Pavilhões memoriais feitos em taipa (rammed earth) e formas abobadadas, integrando sistemas de captação de água pluvial e respeito aos costumes locais.",
-    descEn: "Memorial pavilions made of rammed earth and vaulted forms, integrating rainwater harvesting systems and respect for local customs."
+    "catPt": "Concurso Internacional",
+    "catEn": "International Competition",
+    "loc": "Sedhiou/Senegal",
+    "area": "240mÂ²",
+    "gridClass": "pc-4",
+    "dataC": "institucional concurso",
+    "descPt": "Memorial em honra Ã s vÃ­timas da paz no Senegal. ConstruÃ§Ã£o em taipa (rammed earth), materiais locais e captaÃ§Ã£o de Ã¡gua pluvial.",
+    "descEn": "Peace memorial pavilion in Senegal built with rammed earth, local bio-materials, and rainwater harvesting systems."
   },
   "Morro da Manteiga Park": {
-    img: "das_portfolio_images/img_page49_0.jpeg",
-    catPt: "Concurso de Projeto", catEn: "Design Competition",
-    loc: "Camacari/Bahia", area: "12,000m²",
-    descPt: "Parque ambiental concebido para restabelecer a relação da cidade com o meio natural por meio de infraestruturas de lazer leves e permeáveis.",
-    descEn: "Environmental park designed to reestablish the city's relationship with the natural environment through light and permeable leisure infrastructures."
+    "catPt": "Concurso de Projeto / Paisagismo",
+    "catEn": "Design Competition / Landscape",
+    "loc": "CamaÃ§ari/BA",
+    "area": "12,000mÂ²",
+    "gridClass": "pc-6",
+    "dataC": "urbano concurso",
+    "descPt": "Parque urbano e ambiental em 680,000mÂ² de intervenÃ§Ã£o ecolÃ³gica em CamaÃ§ari. Infraestruturas permeÃ¡veis, passarelas elevadas e preservaÃ§Ã£o da fauna.",
+    "descEn": "Urban environmental park spanning 680,000mÂ² ecological intervention in CamaÃ§ari featuring permeable infrastructure and elevated boardwalks."
   },
   "UBS Quilombola": {
-    img: "das_portfolio_images/img_page51_0.jpeg",
-    catPt: "Concurso de Projeto", catEn: "Design Competition",
-    loc: "Conde/PB", area: "280m²",
-    descPt: "Unidade Básica de Saúde idealizada com ventilação cruzada, sombreamento e uso de sistemas construtivos tradicionais otimizados para o clima nordestino.",
-    descEn: "Basic Health Unit designed with cross ventilation, shading, and use of traditional construction systems optimized for the Northeastern climate."
+    "catPt": "Concurso de Projeto / SaÃºde",
+    "catEn": "Design Competition / Healthcare",
+    "loc": "Conde/PB",
+    "area": "280mÂ²",
+    "gridClass": "pc-6",
+    "dataC": "institucional concurso",
+    "descPt": "Unidade BÃ¡sica de SaÃºde para comunidade Quilombola em Conde/PB. Arquitetura bioclimÃ¡tica com brises de madeira, ventilaÃ§Ã£o natural e tÃ©cnicas locais.",
+    "descEn": "Basic Health Unit for Quilombola community in Conde/PB. Bioclimatic architecture featuring timber brises, natural ventilation, and local techniques."
   },
   "Crixa School": {
-    img: "das_portfolio_images/img_page53_0.jpeg",
-    catPt: "Concurso de Projeto", catEn: "Design Competition",
-    loc: "Brasília/DF", area: "4,500m²",
-    descPt: "Escola com volumetria lúdica e brises coloridos, projetada para instigar a criatividade e proteger do sol do cerrado, enquanto cria pátios generosos de recreação.",
-    descEn: "School with playful volumetry and colorful brises, designed to instigate creativity and protect from the cerrado sun, while creating generous recreation courtyards."
+    "catPt": "Concurso de Projeto / EducaÃ§Ã£o",
+    "catEn": "Design Competition / Education",
+    "loc": "BrasÃ­lia/DF",
+    "area": "4,500mÂ²",
+    "gridClass": "pc-4",
+    "dataC": "institucional concurso",
+    "descPt": "Escola pÃºblica em BrasÃ­lia planejada em terreno de 8,500mÂ². EspaÃ§os de aprendizado lÃºdicos, sombreamento por brises e pÃ¡tios sombreados de convivÃªncia.",
+    "descEn": "Public school in Brasilia designed on an 8,500mÂ² site featuring playful learning environments, brise shading, and shaded courtyards."
   },
-  "Ágora Tech Park": {
-    img: "das_portfolio_images/img_page55_0.jpeg",
-    catPt: "Concurso de Projeto", catEn: "Design Competition",
-    loc: "Joinville/SC", area: "6,000m²",
-    descPt: "Complexo tecnológico articulado por generosos eixos de circulação e grandes varandas, estimulando a troca de ideias em um ambiente criativo e arejado.",
-    descEn: "Technological complex articulated by generous circulation axes and large balconies, stimulating the exchange of ideas in a creative and airy environment."
+  "Ãgora Tech Park": {
+    "catPt": "Concurso de Projeto / Tecnologia",
+    "catEn": "Design Competition / Technology",
+    "loc": "Joinville/SC",
+    "area": "6,000mÂ²",
+    "gridClass": "pc-8",
+    "dataC": "institucional concurso",
+    "descPt": "Parque tecnolÃ³gico em Joinville (45,000mÂ² de intervenÃ§Ã£o urbana). Vias de pedestres, varandas de inovaÃ§Ã£o e edificaÃ§Ãµes de alta eficiÃªncia sustentÃ¡vel.",
+    "descEn": "Technology park in Joinville (45,000mÂ² urban intervention). Pedestrian axes, innovation balconies, and highly efficient sustainable buildings."
   },
   "Morro do Macaco Tech Park": {
-    img: "das_portfolio_images/img_page57_0.jpeg",
-    catPt: "Estudo Preliminar", catEn: "Preliminary Study",
-    loc: "Bombinhas/SC", area: "36,000m²",
-    descPt: "Intervenção costeira que propõe estruturas geodésicas de mínimo impacto visual e físico no terreno, unindo pesquisa tecnológica e sustentabilidade.",
-    descEn: "Coastal intervention proposing geodesic structures of minimal visual and physical impact on the terrain, uniting technological research and sustainability."
+    "catPt": "Estudo Preliminar / Licenciamento",
+    "catEn": "Preliminary Study / Licensing",
+    "loc": "Bombinhas/SC",
+    "area": "36,000mÂ²",
+    "gridClass": "pc-6",
+    "dataC": "institucional",
+    "descPt": "Parque tecnolÃ³gico e centro de pesquisas em 245,000mÂ² na costa de Bombinhas. Estruturas geodÃ©sicas suspensas de mÃ­nimo impacto ambiental.",
+    "descEn": "Technology park and research center on a 245,000mÂ² coastal site in Bombinhas featuring minimal-impact geodesic structures."
   },
   "Correios Franchise": {
-    img: "das_portfolio_images/img_page59_0.jpeg",
-    catPt: "Projeto Executivo", catEn: "Executive Project",
-    loc: "Curitiba/PR & Joinville/SC", area: "Várias",
-    descPt: "Padronização e renovação arquitetônica para franquias dos Correios, alinhando a identidade visual com operações mais eficientes e acessíveis.",
-    descEn: "Standardization and architectural renovation for Post Office franchises, aligning visual identity with more efficient and accessible operations."
+    "catPt": "Projeto Executivo / Comercial",
+    "catEn": "Executive Project / Commercial",
+    "loc": "Curitiba/PR & Joinville/SC",
+    "area": "VÃ¡rias Unidades",
+    "gridClass": "pc-6",
+    "dataC": "comercial",
+    "descPt": "PadronizaÃ§Ã£o arquitetÃ´nica e renovaÃ§Ã£o de franquias dos Correios, alinhando eficiÃªncia operacional, acessibilidade universal e identidade visual.",
+    "descEn": "Architectural standardization and renovation of Post Office franchises, aligning operational efficiency, accessibility, and visual identity."
   },
   "Autodromo Residential Villa": {
-    img: "das_portfolio_images/img_page60_0.jpeg",
-    catPt: "Estudo de Viabilidade", catEn: "Feasibility Study",
-    loc: "Curitiba/PR", area: "4,500m²",
-    descPt: "Requalificação da área do antigo autódromo em um núcleo residencial, onde o traçado da antiga pista guia o eixo principal do novo parque habitacional.",
-    descEn: "Requalification of the former racetrack area into a residential core, where the layout of the old track guides the main axis of the new housing park."
+    "catPt": "Estudo de Viabilidade / Masterplan",
+    "catEn": "Feasibility Study / Masterplan",
+    "loc": "Curitiba/PR",
+    "area": "4,500mÂ²",
+    "gridClass": "pc-12",
+    "dataC": "urbano",
+    "descPt": "RequalificaÃ§Ã£o urbana do antigo autÃ³dromo em Curitiba em um masterplan residencial de 550,000mÂ² com parques lineares e modais ativos.",
+    "descEn": "Urban requalification of the former race track in Curitiba into a 550,000mÂ² residential masterplan featuring linear parks and active mobility."
   },
   "Barra Strategic Plan": {
-    img: "das_portfolio_images/img_page62_0.jpeg",
-    catPt: "Masterplan", catEn: "Masterplan",
-    loc: "Rio de Janeiro/RJ", area: "165km²",
-    descPt: "Plano estratégico para a mobilidade e desenvolvimento da Barra da Tijuca focado na integração intermodal com linhas de VLT, BRT e modais aquaviários.",
-    descEn: "Strategic plan for the mobility and development of Barra da Tijuca focused on intermodal integration with VLT, BRT lines, and waterway modals."
+    "catPt": "Plano EstratÃ©gico / Mobilidade",
+    "catEn": "Strategic Plan / Mobility",
+    "loc": "Rio de Janeiro/RJ",
+    "area": "165kmÂ²",
+    "gridClass": "pc-4",
+    "dataC": "urbano",
+    "descPt": "Plano diretor de mobilidade intermodal para a Barra da Tijuca cobrindo 165kmÂ² com integraÃ§Ã£o entre VLT, BRT, hidrovias e ciclovias.",
+    "descEn": "Intermodal mobility master plan for Barra da Tijuca spanning 165kmÂ² integrating Light Rail (VLT), BRT, waterways, and bike paths."
   },
-  "BRT Missões Terminal": {
-    img: "das_portfolio_images/img_page64_0.jpeg",
-    catPt: "Mobilidade", catEn: "Mobility",
-    loc: "Rio de Janeiro/RJ", area: "6,800m²",
-    descPt: "Terminal intermodal concebido sob uma icônica estrutura metálica em malha que confere identidade e protege os usuários com ampla ventilação natural.",
-    descEn: "Intermodal terminal conceived under an iconic mesh metal structure that grants identity and protects users with ample natural ventilation."
+  "BRT MissÃµes Terminal": {
+    "catPt": "Estudo Preliminar / Mobilidade",
+    "catEn": "Preliminary Design / Mobility",
+    "loc": "Rio de Janeiro/RJ",
+    "area": "6,800mÂ²",
+    "gridClass": "pc-4",
+    "dataC": "urbano",
+    "descPt": "Terminal de passageiros BRT em terreno de 70,000mÂ² no Rio de Janeiro. Cobertura metÃ¡lica espacial garantindo ventilaÃ§Ã£o natural e conforto tÃ©rmico.",
+    "descEn": "BRT passenger terminal on a 70,000mÂ² site in Rio de Janeiro. Space-frame metal canopy ensuring natural ventilation and thermal comfort."
   },
   "Margaridas BRT Terminal": {
-    img: "das_portfolio_images/img_page67_0.jpeg",
-    catPt: "Mobilidade", catEn: "Mobility",
-    loc: "Rio de Janeiro/RJ", area: "12,200m²",
-    descPt: "Estrutura orgânica fluida como teto do terminal, criando um marco visual na infraestrutura viária e oferecendo um ambiente acolhedor e sombreado.",
-    descEn: "Fluid organic structure as the terminal's roof, creating a visual landmark in road infrastructure and offering a welcoming, shaded environment."
+    "catPt": "Estudo Preliminar / Mobilidade",
+    "catEn": "Preliminary Design / Mobility",
+    "loc": "Rio de Janeiro/RJ",
+    "area": "12,200mÂ²",
+    "gridClass": "pc-4",
+    "dataC": "urbano",
+    "descPt": "Terminal intermodal em terreno de 55,000mÂ² com marcante cobertura fluida e orgÃ¢nica, transformando a infraestrutura de transporte em marco urbano.",
+    "descEn": "Intermodal terminal on a 55,000mÂ² site featuring a fluid organic roof, turning transport infrastructure into an iconic urban landmark."
   },
   "Environmental Park Barra": {
-    img: "das_portfolio_images/img_page69_0.jpeg",
-    catPt: "Parque & Hospitalidade", catEn: "Park & Hospitality",
-    loc: "Rio de Janeiro/RJ", area: "18,000m²",
-    descPt: "Proposta de eco-hotel que abraça as curvas da lagoa, focado no turismo de baixo impacto com recuperação e proteção das margens ciliares.",
-    descEn: "Eco-hotel proposal that embraces the curves of the lagoon, focused on low-impact tourism with recovery and protection of riparian margins."
+    "catPt": "Estudo de Viabilidade / Hotelaria",
+    "catEn": "Feasibility Study / Hospitality",
+    "loc": "Rio de Janeiro/RJ",
+    "area": "18,000mÂ²",
+    "gridClass": "pc-12",
+    "dataC": "urbano comercial",
+    "descPt": "Eco-resort e parque ambiental em 250,000mÂ² de Ã¡rea na Barra da Tijuca, focado em construÃ§Ã£o sobre pilotis e preservaÃ§Ã£o da vegetaÃ§Ã£o de restinga.",
+    "descEn": "Eco-resort and environmental park on a 250,000mÂ² plot in Barra da Tijuca focused on stilt construction and coastal vegetation preservation."
   }
 };
+const projectImagesMap = {
+  "Arena BSB": [
+    "das_portfolio_images/page_4_img_1.jpeg",
+    "das_portfolio_images/page_5_img_1.jpeg",
+    "das_portfolio_images/page_5_img_2.jpeg",
+    "das_portfolio_images/page_5_img_3.jpeg",
+    "das_portfolio_images/page_6_img_1.jpeg"
+  ],
+  "Monte Alegre Residence": [
+    "das_portfolio_images/page_7_img_1.jpeg",
+    "das_portfolio_images/page_8_img_1.jpeg",
+    "das_portfolio_images/page_9_img_1.jpeg",
+    "das_portfolio_images/page_9_img_2.jpeg",
+    "das_portfolio_images/page_9_img_3.jpeg"
+  ],
+  "Ceara Building": [
+    "das_portfolio_images/page_11_img_1.jpeg",
+    "das_portfolio_images/page_12_img_1.jpeg",
+    "das_portfolio_images/page_13_img_1.jpeg",
+    "das_portfolio_images/page_14_img_1.jpeg"
+  ],
+  "Red One": [
+    "das_portfolio_images/page_15_img_1.jpeg",
+    "das_portfolio_images/page_16_img_1.jpeg",
+    "das_portfolio_images/page_17_img_1.jpeg",
+    "das_portfolio_images/page_18_img_1.jpeg"
+  ],
+  "Manaca Residence": [
+    "das_portfolio_images/page_19_img_1.jpeg",
+    "das_portfolio_images/page_20_img_5.jpeg",
+    "das_portfolio_images/page_20_img_6.jpeg",
+    "das_portfolio_images/page_21_img_1.jpeg"
+  ],
+  "Jardim Viviane": [
+    "das_portfolio_images/page_22_img_1.jpeg",
+    "das_portfolio_images/page_23_img_1.jpeg",
+    "das_portfolio_images/page_23_img_2.jpeg",
+    "das_portfolio_images/page_23_img_3.jpeg",
+    "das_portfolio_images/page_23_img_5.jpeg"
+  ],
+  "Dalligna Residence": [
+    "das_portfolio_images/page_24_img_1.jpeg",
+    "das_portfolio_images/page_25_img_1.jpeg"
+  ],
+  "Sambaqui Sunset Residence": [
+    "das_portfolio_images/page_26_img_1.jpeg",
+    "das_portfolio_images/page_27_img_1.jpeg",
+    "das_portfolio_images/page_27_img_2.jpeg",
+    "das_portfolio_images/page_28_img_1.jpeg",
+    "das_portfolio_images/page_28_img_2.jpeg"
+  ],
+  "Prashanti Nilayam": [
+    "das_portfolio_images/page_29_img_1.jpeg",
+    "das_portfolio_images/page_30_img_1.jpeg",
+    "das_portfolio_images/page_30_img_2.jpeg"
+  ],
+  "Anhangava Residence": [
+    "das_portfolio_images/page_31_img_1.jpeg",
+    "das_portfolio_images/page_32_img_1.jpeg",
+    "das_portfolio_images/page_32_img_2.jpeg",
+    "das_portfolio_images/page_32_img_3.jpeg"
+  ],
+  "Studios BrasÃ­lio": [
+    "das_portfolio_images/page_33_img_1.jpeg",
+    "das_portfolio_images/page_34_img_1.jpeg",
+    "das_portfolio_images/page_34_img_2.jpeg",
+    "das_portfolio_images/page_34_img_3.jpeg"
+  ],
+  "Vilnius Concert Hall": [
+    "das_portfolio_images/page_35_img_1.jpeg",
+    "das_portfolio_images/page_36_img_1.jpeg",
+    "das_portfolio_images/page_36_img_2.jpeg"
+  ],
+  "Townhouses AHU": [
+    "das_portfolio_images/img_page37_0.jpeg",
+    "das_portfolio_images/page_37_img_1.jpeg"
+  ],
+  "Penta Residential": [
+    "das_portfolio_images/page_38_img_1.jpeg",
+    "das_portfolio_images/page_39_img_1.jpeg",
+    "das_portfolio_images/page_39_img_2.jpeg",
+    "das_portfolio_images/page_39_img_3.jpeg"
+  ],
+  "Comercial Brigadeiro": [
+    "das_portfolio_images/page_40_img_1.jpeg",
+    "das_portfolio_images/page_41_img_1.jpeg",
+    "das_portfolio_images/page_41_img_2.jpeg",
+    "das_portfolio_images/page_41_img_3.jpeg"
+  ],
+  "Yoga House": [
+    "das_portfolio_images/page_42_img_1.jpeg",
+    "das_portfolio_images/page_43_img_1.jpeg",
+    "das_portfolio_images/page_43_img_2.jpeg",
+    "das_portfolio_images/page_43_img_3.jpeg",
+    "das_portfolio_images/page_43_img_4.jpeg"
+  ],
+  "Ananda Dhama Villa": [
+    "das_portfolio_images/page_44_img_1.jpeg",
+    "das_portfolio_images/page_45_img_1.jpeg",
+    "das_portfolio_images/page_46_img_1.jpeg",
+    "das_portfolio_images/page_46_img_2.jpeg"
+  ],
+  "Kaira Looro Memorial": [
+    "das_portfolio_images/page_47_img_1.jpeg",
+    "das_portfolio_images/page_48_img_1.jpeg",
+    "das_portfolio_images/page_48_img_2.jpeg",
+    "das_portfolio_images/page_48_img_3.jpeg"
+  ],
+  "Morro da Manteiga Park": [
+    "das_portfolio_images/page_49_img_1.jpeg",
+    "das_portfolio_images/page_50_img_1.jpeg",
+    "das_portfolio_images/page_50_img_2.jpeg"
+  ],
+  "UBS Quilombola": [
+    "das_portfolio_images/page_51_img_1.jpeg",
+    "das_portfolio_images/page_51_img_2.jpeg",
+    "das_portfolio_images/page_52_img_1.jpeg",
+    "das_portfolio_images/page_52_img_2.jpeg",
+    "das_portfolio_images/page_52_img_3.jpeg"
+  ],
+  "Crixa School": [
+    "das_portfolio_images/page_53_img_1.jpeg",
+    "das_portfolio_images/page_54_img_1.jpeg",
+    "das_portfolio_images/page_54_img_2.jpeg",
+    "das_portfolio_images/page_54_img_3.jpeg"
+  ],
+  "Ãgora Tech Park": [
+    "das_portfolio_images/page_55_img_1.jpeg",
+    "das_portfolio_images/page_56_img_1.jpeg",
+    "das_portfolio_images/page_56_img_2.jpeg",
+    "das_portfolio_images/page_56_img_3.jpeg",
+    "das_portfolio_images/page_56_img_4.jpeg"
+  ],
+  "Morro do Macaco Tech Park": [
+    "das_portfolio_images/page_57_img_1.jpeg",
+    "das_portfolio_images/page_58_img_1.jpeg",
+    "das_portfolio_images/page_58_img_2.jpeg",
+    "das_portfolio_images/page_58_img_3.jpeg",
+    "das_portfolio_images/page_58_img_4.jpeg"
+  ],
+  "Correios Franchise": [
+    "das_portfolio_images/page_59_img_1.jpeg",
+    "das_portfolio_images/page_59_img_4.jpeg",
+    "das_portfolio_images/page_59_img_5.jpeg",
+    "das_portfolio_images/page_59_img_6.jpeg"
+  ],
+  "Autodromo Residential Villa": [
+    "das_portfolio_images/page_60_img_1.jpeg",
+    "das_portfolio_images/page_61_img_1.jpeg",
+    "das_portfolio_images/page_61_img_2.jpeg"
+  ],
+  "Barra Strategic Plan": [
+    "das_portfolio_images/page_62_img_1.jpeg",
+    "das_portfolio_images/page_63_img_1.jpeg"
+  ],
+  "BRT MissÃµes Terminal": [
+    "das_portfolio_images/page_64_img_1.jpeg",
+    "das_portfolio_images/page_64_img_2.jpeg",
+    "das_portfolio_images/page_64_img_3.jpeg",
+    "das_portfolio_images/page_65_img_1.jpeg",
+    "das_portfolio_images/page_65_img_2.jpeg"
+  ],
+  "Margaridas BRT Terminal": [
+    "das_portfolio_images/page_67_img_1.jpeg",
+    "das_portfolio_images/page_67_img_2.jpeg",
+    "das_portfolio_images/page_68_img_1.jpeg",
+    "das_portfolio_images/page_68_img_2.jpeg"
+  ],
+  "Environmental Park Barra": [
+    "das_portfolio_images/page_69_img_1.jpeg",
+    "das_portfolio_images/page_70_img_1.jpeg"
+  ]
+};
 
-/* ---- SLOW & SUAVE STAGGERED SHADE LOGIC + VIEWPORT AUTO CENTERING ---- */
+/* ---- EXPANDED CARD DETAILS & GALLERY ---- */
 function updateExpandedContent(card, name, data) {
   const isPt = document.documentElement.lang === 'pt-BR';
   let expView = card.querySelector('.pc-expanded-view');
@@ -1099,23 +1828,37 @@ function updateExpandedContent(card, name, data) {
     card.appendChild(expView);
   }
 
+  const projectImgs = projectImagesMap[name] || [data.img || ''];
+  const firstImg = projectImgs[0] || '';
+
+  const thumbsHtml = projectImgs.map((imgSrc, idx) => `
+    <div class="exp-thumb-item ${idx === 0 ? 'active' : ''}" data-src="${imgSrc}">
+      <img src="${imgSrc}" alt="${name} - Imagem ${idx + 1}"/>
+    </div>
+  `).join('');
+
   expView.innerHTML = `
-    <div class="exp-img-container">
-      <img src="${data.img}" alt="${name}"/>
+    <div class="exp-img-gallery">
+      <div class="exp-main-img">
+        <img id="expMainImg-${name.replace(/[^a-zA-Z0-9]/g, '')}" src="${firstImg}" alt="${name}"/>
+      </div>
+      <div class="exp-thumbs-row">
+        ${thumbsHtml}
+      </div>
     </div>
     <div class="exp-content">
       <button class="exp-close-btn" aria-label="Fechar">
-        <span>${isPt ? 'Fechar' : 'Close'}</span> ✕
+        <span>${isPt ? 'Fechar' : 'Close'}</span> âœ•
       </button>
       <span class="exp-cat">${isPt ? data.catPt : data.catEn}</span>
       <h3 class="exp-title">${name}</h3>
       <div class="exp-meta-grid">
         <div class="exp-meta-item">
-          <small>${isPt ? 'Localização' : 'Location'}</small>
+          <small>${isPt ? 'LocalizaÃ§Ã£o' : 'Location'}</small>
           <span>${data.loc}</span>
         </div>
         <div class="exp-meta-item">
-          <small>${isPt ? 'Área / Escala' : 'Area / Scale'}</small>
+          <small>${isPt ? 'Ãrea / Escala' : 'Area / Scale'}</small>
           <span>${data.area}</span>
         </div>
       </div>
@@ -1127,6 +1870,24 @@ function updateExpandedContent(card, name, data) {
   closeBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     collapseCard(card);
+  });
+
+  const mainImgEl = expView.querySelector(`#expMainImg-${name.replace(/[^a-zA-Z0-9]/g, '')}`);
+  const thumbItems = expView.querySelectorAll('.exp-thumb-item');
+  thumbItems.forEach(thumb => {
+    thumb.addEventListener('click', (e) => {
+      e.stopPropagation();
+      thumbItems.forEach(t => t.classList.remove('active'));
+      thumb.classList.add('active');
+      const targetSrc = thumb.dataset.src;
+      if (mainImgEl) {
+        mainImgEl.style.opacity = '0';
+        setTimeout(() => {
+          mainImgEl.src = targetSrc;
+          mainImgEl.style.opacity = '1';
+        }, 180);
+      }
+    });
   });
 }
 
@@ -1157,7 +1918,6 @@ function expandCard(card) {
   card.classList.add('expanded');
   updateExpandedContent(card, name, data);
 
-  // Trigger smooth scroll auto-centering immediately and refine after box height finishes expansion
   smoothScrollToCenter(card);
   setTimeout(() => {
     smoothScrollToCenter(card);
@@ -1172,12 +1932,86 @@ function collapseCard(card) {
   }
 }
 
-document.querySelectorAll('.pc').forEach(card => {
-  card.addEventListener('click', (e) => {
-    if (card.classList.contains('expanded')) return;
-    expandCard(card);
+/* ---- 15s TIMED SLIDESHOW WITH VISUAL PROGRESS BAR INDICATOR ---- */
+(function() {
+  document.querySelectorAll('.pc').forEach(card => {
+    const slides = card.querySelectorAll('.pc-slide');
+    if (slides.length <= 1) return;
+
+    const counter = card.querySelector('.pc-img-counter');
+    const dots = card.querySelectorAll('.pc-dot');
+    let current = 0;
+    let timer = null;
+    const total = slides.length;
+
+    function resetProgressBar() {
+      card.classList.remove('timer-active');
+      // Trigger reflow to restart CSS transition
+      void card.offsetWidth;
+    }
+
+    function triggerProgressBar() {
+      resetProgressBar();
+      card.classList.add('timer-active');
+    }
+
+    function goTo(idx) {
+      slides[current].classList.remove('active');
+      if (dots[current]) dots[current].classList.remove('on');
+      
+      current = (idx + total) % total;
+      
+      slides[current].classList.add('active');
+      if (dots[current]) dots[current].classList.add('on');
+      if (counter) {
+        counter.innerHTML = `<span class="pc-timer-status">â±ï¸</span> ${String(current + 1).padStart(2, '0')} / ${String(total).padStart(2, '0')}`;
+      }
+      triggerProgressBar();
+    }
+
+    function start15sTimer() {
+      if (timer) return;
+      triggerProgressBar();
+      // 15 seconds interval (15000ms)
+      timer = setInterval(() => {
+        goTo(current + 1);
+      }, 15000);
+    }
+
+    function stop15sTimer() {
+      if (timer) {
+        clearInterval(timer);
+        timer = null;
+      }
+      resetProgressBar();
+    }
+
+    // Start timer & progress bar animation ONLY on mouseenter or click
+    card.addEventListener('mouseenter', start15sTimer);
+    card.addEventListener('mouseleave', stop15sTimer);
+
+    card.addEventListener('click', (e) => {
+      if (card.classList.contains('expanded')) {
+        stop15sTimer();
+        return;
+      }
+      start15sTimer();
+      expandCard(card);
+    });
+
+    // Dot navigation
+    dots.forEach(dot => {
+      dot.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const targetIdx = parseInt(dot.dataset.idx, 10);
+        goTo(targetIdx);
+        // Reset 15s interval on manual click
+        stop15sTimer();
+        start15sTimer();
+      });
+    });
   });
-});
+})();
 </script>
 </body>
 </html>

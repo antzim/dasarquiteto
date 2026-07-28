@@ -1,0 +1,1210 @@
+import os, hashlib, json
+
+out_dir = 'das_portfolio_images'
+
+# Detect logo hashes
+logo_hashes = set()
+for fname in os.listdir(out_dir):
+    fpath = os.path.join(out_dir, fname)
+    if os.path.isfile(fpath):
+        size = os.path.getsize(fpath)
+        with open(fpath, 'rb') as f:
+            h = hashlib.md5(f.read()).hexdigest()
+        if size < 25000:
+            logo_hashes.add(h)
+
+hash_counts = {}
+for fname in os.listdir(out_dir):
+    fpath = os.path.join(out_dir, fname)
+    if os.path.isfile(fpath):
+        with open(fpath, 'rb') as f:
+            h = hashlib.md5(f.read()).hexdigest()
+        hash_counts.setdefault(h, []).append(fname)
+
+for h, files in hash_counts.items():
+    if len(files) >= 3:
+        logo_hashes.add(h)
+
+with open('project_images_map.json', encoding='utf-8') as f:
+    raw_img_map = json.load(f)
+
+# Fallbacks for projects with special initial images
+fallback_map = {
+    'Correios Franchise': ['das_portfolio_images/img_page59_0.jpeg', 'das_portfolio_images/page_59_img_1.jpeg', 'das_portfolio_images/page_59_img_2.jpeg'],
+    'Townhouses AHU': ['das_portfolio_images/img_page37_0.jpeg', 'das_portfolio_images/page_37_img_1.jpeg'],
+    'Barra Strategic Plan': ['das_portfolio_images/img_page62_0.jpeg', 'das_portfolio_images/page_62_img_1.jpeg'],
+    'Environmental Park Barra': ['das_portfolio_images/img_page69_0.jpeg', 'das_portfolio_images/page_69_img_1.jpeg']
+}
+
+cleaned_map = {}
+for proj, files in raw_img_map.items():
+    real_imgs = []
+    for fpath in files:
+        fname = os.path.basename(fpath)
+        full_p = os.path.join(out_dir, fname)
+        if not os.path.exists(full_p):
+            continue
+        with open(full_p, 'rb') as f:
+            h = hashlib.md5(f.read()).hexdigest()
+        if h not in logo_hashes and 'logo' not in fname.lower():
+            real_imgs.append(fpath)
+    
+    if not real_imgs and proj in fallback_map:
+        real_imgs = fallback_map[proj]
+    elif len(real_imgs) < 2 and proj in fallback_map:
+        real_imgs = fallback_map[proj] + real_imgs
+
+    # Deduplicate while preserving order
+    seen = set()
+    unique_imgs = []
+    for img in real_imgs:
+        if img not in seen:
+            seen.add(img)
+            unique_imgs.append(img)
+    
+    cleaned_map[proj] = unique_imgs[:5] # Max 5 clean architectural renders per project
+
+projects_data = {
+    'Arena BSB': {
+        'catPt': 'Esporte & Lazer / Urbanismo', 'catEn': 'Sports & Leisure / Urbanism',
+        'loc': 'Brasília/DF', 'area': '90,000m²',
+        'gridClass': 'pc-8', 'dataC': 'institucional concurso',
+        'descPt': 'Concurso Nacional de Arquitetura e Paisagismo para a Requalificação do Complexo Esportivo e de Lazer Arena BSB. Projeto focado no conforto ambiental, eficiência energética e integração com a escala monumental de Brasília.',
+        'descEn': 'National Competition for Requalification of the Arena BSB Sports and Leisure Complex. Project focused on environmental comfort, energy efficiency, and integration with Brasilia monumental scale.'
+    },
+    'Monte Alegre Residence': {
+        'catPt': 'Projeto Executivo / Interiores', 'catEn': 'Executive Project / Interior Design',
+        'loc': 'Campo Largo/PR', 'area': '620m²',
+        'gridClass': 'pc-4', 'dataC': 'residencial',
+        'descPt': 'Residência contemporânea de alto padrão desenhada com foco na integração com o entorno verde, uso de materiais naturais e conforto térmico em Campo Largo.',
+        'descEn': 'High-end contemporary residence designed with a focus on integration with green surroundings, use of natural materials, and thermal comfort in Campo Largo.'
+    },
+    'Ceara Building': {
+        'catPt': 'Residencial Multifamiliar', 'catEn': 'Multifamily Residential',
+        'loc': 'Curitiba/PR', 'area': '4,449.75m²',
+        'gridClass': 'pc-4', 'dataC': 'residencial',
+        'descPt': 'Edifício residencial contemporâneo com unidades tipo e cobertura duplex (297.34m²). Projeto focado em sacadas generosas, ótima insolação e ventilação cruzada.',
+        'descEn': 'Contemporary residential building with standard units and penthouse (297.34m²). Designed with generous balconies, optimal solar orientation, and cross ventilation.'
+    },
+    'Red One': {
+        'catPt': 'Residencial Multifamiliar', 'catEn': 'Multifamily Residential',
+        'loc': 'Curitiba/PR', 'area': '17,952m²',
+        'gridClass': 'pc-4', 'dataC': 'residencial',
+        'descPt': 'Empreendimento residencial multifamiliar de grande porte reunindo linguagem arquitetônica marcante, eficiência estrutural e integração urbana.',
+        'descEn': 'Large-scale multifamily residential development bringing together striking architectural language, structural efficiency, and urban integration.'
+    },
+    'Manaca Residence': {
+        'catPt': 'Projeto Executivo / Sustentável', 'catEn': 'Executive Project / Sustainable',
+        'loc': 'Campo Largo/PR', 'area': '1,350m²',
+        'gridClass': 'pc-4', 'dataC': 'residencial',
+        'descPt': 'Residência sustentável premiada (Prêmio Saint-Gobain), integrando jardineiras biológicas (constructed wetlands), captação solar e arquitetura bioclimática.',
+        'descEn': 'Award-winning sustainable residence (Saint-Gobain Award), integrating constructed wetlands, solar harvesting, and bioclimatic architecture.'
+    },
+    'Jardim Viviane': {
+        'catPt': 'Projeto Executivo / Habitação', 'catEn': 'Executive Project / Housing',
+        'loc': 'Araucária/PR', 'area': '2,200m²',
+        'gridClass': 'pc-6', 'dataC': 'residencial urbano',
+        'descPt': 'Intervenção urbana e residencial em 8,500m² de terreno com 2,200m² de área construída. Ambientes integrados minimizando circulações e maximizando luz natural.',
+        'descEn': 'Urban and residential intervention on 8,500m² site with 2,200m² built area. Integrated spaces minimizing corridors and maximizing natural light.'
+    },
+    'Dalligna Residence': {
+        'catPt': 'Projeto Executivo', 'catEn': 'Executive Project',
+        'loc': 'Quatro Barras/PR', 'area': '680m²',
+        'gridClass': 'pc-6', 'dataC': 'residencial',
+        'descPt': 'Residência contemporânea inserida em terreno de 3,850m² junto à natureza de Quatro Barras. Estrutura valorizando transparência e vistas panorâmicas.',
+        'descEn': 'Contemporary residence set on a 3,850m² lot near Quatro Barras nature. Structure highlighting transparency and panoramic views.'
+    },
+    'Sambaqui Sunset Residence': {
+        'catPt': 'Estudo Preliminar / Licenciamento', 'catEn': 'Preliminary Design / Licensing',
+        'loc': 'Florianópolis/SC', 'area': '26,000m²',
+        'gridClass': 'pc-8', 'dataC': 'residencial urbano',
+        'descPt': 'Complexo residencial beira-mar em terreno de 25,000m² em Florianópolis. Projeto adaptado às curvas de nível para valorizar a vista do pôr do sol.',
+        'descEn': 'Oceanfront residential complex on a 25,000m² site in Florianópolis. Designed to follow natural contours and optimize sunset views.'
+    },
+    'Prashanti Nilayam': {
+        'catPt': 'Estudo de Viabilidade / Institucional', 'catEn': 'Feasibility Study / Institutional',
+        'loc': 'Curitiba/PR', 'area': '9,500m²',
+        'gridClass': 'pc-4', 'dataC': 'institucional comercial',
+        'descPt': 'Estudo de viabilidade em terreno de 3,200m² para centro institucional e comunitário sustentável com praças internas e eficiência energética.',
+        'descEn': 'Feasibility study on a 3,200m² plot for a sustainable institutional and community center featuring inner plazas and energy efficiency.'
+    },
+    'Anhangava Residence': {
+        'catPt': 'Projeto Executivo', 'catEn': 'Executive Design',
+        'loc': 'Quatro Barras/PR', 'area': '550m²',
+        'gridClass': 'pc-6', 'dataC': 'residencial',
+        'descPt': 'Residência implantada em 4,500m² de terreno aos pés do Morro do Anhangava, integrando materiais locais e amplas aberturas envidraçadas.',
+        'descEn': 'Residence set on a 4,500m² plot at the foot of Mount Anhangava, integrating local materials and large glass openings.'
+    },
+    'Studios Brasílio': {
+        'catPt': 'Projeto Executivo', 'catEn': 'Executive Design',
+        'loc': 'Curitiba/PR', 'area': '1,250m²',
+        'gridClass': 'pc-6', 'dataC': 'residencial',
+        'descPt': 'Edifício residencial urbano compacto composto por studios modernos com plantas otimizadas e fachada em tijolos à vista e serralheria fina.',
+        'descEn': 'Compact urban residential building featuring modern studios with optimized floor plans, exposed brick façade, and fine metalwork.'
+    },
+    'Vilnius Concert Hall': {
+        'catPt': 'Concurso Internacional (2ª Fase)', 'catEn': 'International Competition (2nd Phase)',
+        'loc': 'Vilnius/Lituânia', 'area': '12,000m²',
+        'gridClass': 'pc-12', 'dataC': 'institucional concurso',
+        'descPt': 'Projeto selecionado para a 2ª fase do Concurso Internacional para a Sala de Concertos Nacional da Lituânia. Volumetria icônica e acústica de alta precisão.',
+        'descEn': 'Project qualified for 2nd phase of International Competition for Lithuania National Concert Hall. Iconic volumetry and high-precision acoustics.'
+    },
+    'Townhouses AHU': {
+        'catPt': 'Projeto Executivo', 'catEn': 'Executive Design',
+        'loc': 'Curitiba/PR', 'area': '375m²',
+        'gridClass': 'pc-4', 'dataC': 'residencial',
+        'descPt': 'Conjunto de townhouses contemporâneas no bairro Ahú em Curitiba, otimizando o aproveitamento do lote urbano com elegância e privacidade.',
+        'descEn': 'Set of contemporary townhouses in the Ahú neighborhood of Curitiba, optimizing urban lot usage with elegance and privacy.'
+    },
+    'Penta Residential': {
+        'catPt': 'Concurso de Projeto', 'catEn': 'Design Competition',
+        'loc': 'Praga/República Tcheca', 'area': '21,700m²',
+        'gridClass': 'pc-8', 'dataC': 'residencial concurso',
+        'descPt': 'Proposta para o concurso internacional de habitação em Praga. Intervenção em 8,000m² unindo praça pública, dinamismo e volumetria sustentável.',
+        'descEn': 'International residential competition proposal for Prague. Intervention on 8,000m² uniting public plaza, dynamism, and sustainable volumetry.'
+    },
+    'Comercial Brigadeiro': {
+        'catPt': 'Estudo Preliminar / Comercial', 'catEn': 'Preliminary Design / Commercial',
+        'loc': 'Curitiba/PR', 'area': '625m²',
+        'gridClass': 'pc-6', 'dataC': 'comercial',
+        'descPt': 'Edifício comercial em lote de 600m² com fachada ativa no térreo, ventilação cruzada e espaços corporativos iluminados e integrados à rua.',
+        'descEn': 'Commercial building on a 600m² plot featuring active street ground floor, cross ventilation, and well-lit corporate spaces.'
+    },
+    'Yoga House': {
+        'catPt': 'Concurso de Projeto', 'catEn': 'Design Competition',
+        'loc': 'Portugal', 'area': '220m²',
+        'gridClass': 'pc-6', 'dataC': 'institucional concurso',
+        'descPt': 'Concurso para pavilhão de Yoga e reflexão em Portugal (4,500m² de terreno). Arquitetura orgânica em madeira, taipa e vidros voltados à paisagem.',
+        'descEn': 'Competition for a Yoga and contemplation pavilion in Portugal (4,500m² site). Organic architecture in timber, rammed earth, and scenic glass.'
+    },
+    'Ananda Dhama Villa': {
+        'catPt': 'Estudo de Viabilidade / Masterplan', 'catEn': 'Feasibility Study / Masterplan',
+        'loc': 'Campo Largo/PR', 'area': '18 Lotes',
+        'gridClass': 'pc-8', 'dataC': 'residencial urbano',
+        'descPt': 'Masterplan sustentável em 74,000m² de área com divisão em 18 lotes habitacionais preservando topo de morro e vegetação nativa.',
+        'descEn': 'Sustainable masterplan on a 74,000m² area divided into 18 housing lots preserving hilltops and native vegetation.'
+    },
+    'Kaira Looro Memorial': {
+        'catPt': 'Concurso Internacional', 'catEn': 'International Competition',
+        'loc': 'Sedhiou/Senegal', 'area': '240m²',
+        'gridClass': 'pc-4', 'dataC': 'institucional concurso',
+        'descPt': 'Memorial em honra às vítimas da paz no Senegal. Construção em taipa (rammed earth), materiais locais e captação de água pluvial.',
+        'descEn': 'Peace memorial pavilion in Senegal built with rammed earth, local bio-materials, and rainwater harvesting systems.'
+    },
+    'Morro da Manteiga Park': {
+        'catPt': 'Concurso de Projeto / Paisagismo', 'catEn': 'Design Competition / Landscape',
+        'loc': 'Camaçari/BA', 'area': '12,000m²',
+        'gridClass': 'pc-6', 'dataC': 'urbano concurso',
+        'descPt': 'Parque urbano e ambiental em 680,000m² de intervenção ecológica em Camaçari. Infraestruturas permeáveis, passarelas elevadas e preservação da fauna.',
+        'descEn': 'Urban environmental park spanning 680,000m² ecological intervention in Camaçari featuring permeable infrastructure and elevated boardwalks.'
+    },
+    'UBS Quilombola': {
+        'catPt': 'Concurso de Projeto / Saúde', 'catEn': 'Design Competition / Healthcare',
+        'loc': 'Conde/PB', 'area': '280m²',
+        'gridClass': 'pc-6', 'dataC': 'institucional concurso',
+        'descPt': 'Unidade Básica de Saúde para comunidade Quilombola em Conde/PB. Arquitetura bioclimática com brises de madeira, ventilação natural e técnicas locais.',
+        'descEn': 'Basic Health Unit for Quilombola community in Conde/PB. Bioclimatic architecture featuring timber brises, natural ventilation, and local techniques.'
+    },
+    'Crixa School': {
+        'catPt': 'Concurso de Projeto / Educação', 'catEn': 'Design Competition / Education',
+        'loc': 'Brasília/DF', 'area': '4,500m²',
+        'gridClass': 'pc-4', 'dataC': 'institucional concurso',
+        'descPt': 'Escola pública em Brasília planejada em terreno de 8,500m². Espaços de aprendizado lúdicos, sombreamento por brises e pátios sombreados de convivência.',
+        'descEn': 'Public school in Brasilia designed on an 8,500m² site featuring playful learning environments, brise shading, and shaded courtyards.'
+    },
+    'Ágora Tech Park': {
+        'catPt': 'Concurso de Projeto / Tecnologia', 'catEn': 'Design Competition / Technology',
+        'loc': 'Joinville/SC', 'area': '6,000m²',
+        'gridClass': 'pc-8', 'dataC': 'institucional concurso',
+        'descPt': 'Parque tecnológico em Joinville (45,000m² de intervenção urbana). Vias de pedestres, varandas de inovação e edificações de alta eficiência sustentável.',
+        'descEn': 'Technology park in Joinville (45,000m² urban intervention). Pedestrian axes, innovation balconies, and highly efficient sustainable buildings.'
+    },
+    'Morro do Macaco Tech Park': {
+        'catPt': 'Estudo Preliminar / Licenciamento', 'catEn': 'Preliminary Study / Licensing',
+        'loc': 'Bombinhas/SC', 'area': '36,000m²',
+        'gridClass': 'pc-6', 'dataC': 'institucional',
+        'descPt': 'Parque tecnológico e centro de pesquisas em 245,000m² na costa de Bombinhas. Estruturas geodésicas suspensas de mínimo impacto ambiental.',
+        'descEn': 'Technology park and research center on a 245,000m² coastal site in Bombinhas featuring minimal-impact geodesic structures.'
+    },
+    'Correios Franchise': {
+        'catPt': 'Projeto Executivo / Comercial', 'catEn': 'Executive Project / Commercial',
+        'loc': 'Curitiba/PR & Joinville/SC', 'area': 'Várias Unidades',
+        'gridClass': 'pc-6', 'dataC': 'comercial',
+        'descPt': 'Padronização arquitetônica e renovação de franquias dos Correios, alinhando eficiência operacional, acessibilidade universal e identidade visual.',
+        'descEn': 'Architectural standardization and renovation of Post Office franchises, aligning operational efficiency, accessibility, and visual identity.'
+    },
+    'Autodromo Residential Villa': {
+        'catPt': 'Estudo de Viabilidade / Masterplan', 'catEn': 'Feasibility Study / Masterplan',
+        'loc': 'Curitiba/PR', 'area': '4,500m²',
+        'gridClass': 'pc-12', 'dataC': 'urbano',
+        'descPt': 'Requalificação urbana do antigo autódromo em Curitiba em um masterplan residencial de 550,000m² com parques lineares e modais ativos.',
+        'descEn': 'Urban requalification of the former race track in Curitiba into a 550,000m² residential masterplan featuring linear parks and active mobility.'
+    },
+    'Barra Strategic Plan': {
+        'catPt': 'Plano Estratégico / Mobilidade', 'catEn': 'Strategic Plan / Mobility',
+        'loc': 'Rio de Janeiro/RJ', 'area': '165km²',
+        'gridClass': 'pc-4', 'dataC': 'urbano',
+        'descPt': 'Plano diretor de mobilidade intermodal para a Barra da Tijuca cobrindo 165km² com integração entre VLT, BRT, hidrovias e ciclovias.',
+        'descEn': 'Intermodal mobility master plan for Barra da Tijuca spanning 165km² integrating Light Rail (VLT), BRT, waterways, and bike paths.'
+    },
+    'BRT Missões Terminal': {
+        'catPt': 'Estudo Preliminar / Mobilidade', 'catEn': 'Preliminary Design / Mobility',
+        'loc': 'Rio de Janeiro/RJ', 'area': '6,800m²',
+        'gridClass': 'pc-4', 'dataC': 'urbano',
+        'descPt': 'Terminal de passageiros BRT em terreno de 70,000m² no Rio de Janeiro. Cobertura metálica espacial garantindo ventilação natural e conforto térmico.',
+        'descEn': 'BRT passenger terminal on a 70,000m² site in Rio de Janeiro. Space-frame metal canopy ensuring natural ventilation and thermal comfort.'
+    },
+    'Margaridas BRT Terminal': {
+        'catPt': 'Estudo Preliminar / Mobilidade', 'catEn': 'Preliminary Design / Mobility',
+        'loc': 'Rio de Janeiro/RJ', 'area': '12,200m²',
+        'gridClass': 'pc-4', 'dataC': 'urbano',
+        'descPt': 'Terminal intermodal em terreno de 55,000m² com marcante cobertura fluida e orgânica, transformando a infraestrutura de transporte em marco urbano.',
+        'descEn': 'Intermodal terminal on a 55,000m² site featuring a fluid organic roof, turning transport infrastructure into an iconic urban landmark.'
+    },
+    'Environmental Park Barra': {
+        'catPt': 'Estudo de Viabilidade / Hotelaria', 'catEn': 'Feasibility Study / Hospitality',
+        'loc': 'Rio de Janeiro/RJ', 'area': '18,000m²',
+        'gridClass': 'pc-12', 'dataC': 'urbano comercial',
+        'descPt': 'Eco-resort e parque ambiental em 250,000m² de área na Barra da Tijuca, focado em construção sobre pilotis e preservação da vegetação de restinga.',
+        'descEn': 'Eco-resort and environmental park on a 250,000m² plot in Barra da Tijuca focused on stilt construction and coastal vegetation preservation.'
+    }
+}
+
+cards_html = []
+for name, data in projects_data.items():
+    selected_imgs = cleaned_map.get(name, [])
+    if not selected_imgs:
+        continue
+    
+    slides_code = []
+    dots_code = []
+    for idx, img_path in enumerate(selected_imgs):
+        active_cls = 'active' if idx == 0 else ''
+        slides_code.append(f'<div class="pc-slide {active_cls}"><img src="{img_path}" alt="{name} - Imagem {idx+1}" loading="lazy"/></div>')
+        dot_on = 'on' if idx == 0 else ''
+        dots_code.append(f'<div class="pc-dot {dot_on}" data-idx="{idx}"></div>')
+    
+    slides_str = '\n          '.join(slides_code)
+    dots_str = '\n          '.join(dots_code)
+    total = len(selected_imgs)
+    counter_str = f'<div class="pc-img-counter"><span class="pc-timer-status">⏱️</span> 01 / {total:02d}</div>' if total > 1 else ''
+    dots_wrap_str = f'<div class="pc-dots">\n          {dots_str}\n        </div>' if total > 1 else ''
+
+    card_html = f'''      <!-- {name} -->
+      <div class="pc {data['gridClass']}" data-c="{data['dataC']}">
+        <div class="pc-timer-bar"></div>
+        <div class="pc-thumb">
+          {slides_str}
+        </div>
+        {counter_str}
+        {dots_wrap_str}
+        <div class="pc-overlay"></div>
+        <div class="pc-info">
+          <span class="pc-cat"><span class="lang-pt">{data['catPt']}</span><span class="lang-en">{data['catEn']}</span></span>
+          <h3 class="pc-name">{name}</h3>
+          <p class="pc-meta">{data['loc']} · {data['area']}</p>
+        </div>
+      </div>'''
+    cards_html.append(card_html)
+
+grid_content = '\n'.join(cards_html)
+
+html_template = f'''<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DAS Arquitetos — Portfólio de Projetos</title>
+  <meta name="description" content="Portfólio oficial do estúdio DAS Arquitetos com acervo exclusivo de imagens arquitetônicas e temporizador de 15s no hover/clique com barra de progresso."/>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+
+  <style>
+    /* =====================================================
+       DESIGN TOKENS - ARCHITECTURAL PASTEL TONES
+    ===================================================== */
+    :root {{
+      --ff-sans:   'Outfit', sans-serif;
+      --ff-serif:  'Playfair Display', serif;
+      --ff-mono:   'JetBrains Mono', monospace;
+
+      --bg:        #F4F1EA;
+      --surface:   #EAE5DC;
+      --border:    rgba(0,0,0,0.06);
+
+      --ink-900:   #1A1A1A;
+      --ink-700:   #333333;
+      --ink-400:   #7A7A75;
+      --ink-200:   #C2BFB9;
+
+      --glass-bg:  rgba(244, 241, 234, 0.85);
+      --glass-blur: 24px;
+
+      --ease:      cubic-bezier(0.16, 1, 0.3, 1);
+      --t-fast:    0.22s var(--ease);
+      --t-med:     0.45s var(--ease);
+      --t-slow:    0.85s var(--ease);
+
+      --sp-2:   4px; --sp-4:   8px; --sp-6:   12px; --sp-8:   16px;
+      --sp-12:  24px; --sp-16:  32px; --sp-20:  40px; --sp-24:  48px;
+      --sp-32:  64px; --sp-40:  80px; --sp-56:  112px; --sp-72:  144px;
+
+      --r-xs:   4px; --r-sm:   8px; --r-md:  14px; --r-full: 9999px;
+      --max-w:  1380px; --hdr-h:  68px;
+    }}
+
+    html[lang="pt-BR"] .lang-en {{ display: none !important; }}
+    html[lang="en"] .lang-pt {{ display: none !important; }}
+
+    *, *::before, *::after {{ box-sizing: border-box; margin: 0; padding: 0; }}
+    html {{ scroll-behavior: smooth; font-size: 16px; background: var(--bg); color: var(--ink-900); font-family: var(--ff-sans); -webkit-font-smoothing: antialiased; }}
+    body {{ overflow-x: hidden; line-height: 1.65; }}
+    img  {{ display: block; max-width: 100%; }}
+    a    {{ text-decoration: none; color: inherit; }}
+    ul   {{ list-style: none; }}
+    button {{ cursor: pointer; border: none; background: none; font-family: inherit; }}
+
+    #progress-bar {{ position: fixed; top: 0; left: 0; width: 0%; height: 2px; background: var(--ink-900); z-index: 9999; transition: width 0.08s linear; }}
+
+    /* HEADER */
+    .hdr {{ position: fixed; inset: 0 0 auto; height: var(--hdr-h); background: var(--glass-bg); backdrop-filter: blur(var(--glass-blur)); -webkit-backdrop-filter: blur(var(--glass-blur)); border-bottom: 1px solid var(--border); z-index: 900; transition: box-shadow var(--t-med), transform var(--t-med); }}
+    .hdr.scrolled  {{ box-shadow: 0 4px 40px rgba(0,0,0,0.05); }}
+    .hdr.hide      {{ transform: translateY(-100%); }}
+    .hdr-inner {{ max-width: var(--max-w); margin: 0 auto; padding: 0 var(--sp-12); height: 100%; display: flex; align-items: center; justify-content: space-between; gap: var(--sp-16); }}
+    .hdr-logo img {{ height: 42px; width: auto; object-fit: contain; mix-blend-mode: multiply; transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1); transform-origin: left center; }}
+    .hdr-logo:hover img {{ transform: scale(1.6); }}
+    .hdr-nav {{ display: flex; align-items: center; gap: var(--sp-20); }}
+    .hdr-nav a {{ font-size: 0.75rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-400); transition: color var(--t-fast); position: relative; padding-bottom: 2px; }}
+    .hdr-nav a::after {{ content: ''; position: absolute; bottom: -2px; left: 0; width: 0; height: 1px; background: var(--ink-900); transition: width var(--t-med); }}
+    .hdr-nav a:hover {{ color: var(--ink-900); }}
+    .hdr-nav a:hover::after {{ width: 100%; }}
+    .lang-toggle {{ display: flex; align-items: center; gap: 8px; font-family: var(--ff-mono); font-size: 0.75rem; color: var(--ink-400); margin-right: var(--sp-12); }}
+    .lang-toggle button {{ font-family: inherit; font-size: inherit; color: inherit; transition: color var(--t-fast); }}
+    .lang-toggle button.active {{ color: var(--ink-900); font-weight: 600; }}
+    .lang-toggle button:hover {{ color: var(--ink-900); }}
+    .hdr-cta {{ display: inline-flex; align-items: center; padding: 9px 20px; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; background: var(--ink-900); color: var(--bg); border: 1.5px solid var(--ink-900); border-radius: var(--r-xs); position: relative; overflow: hidden; transition: color var(--t-fast), border-color var(--t-fast); z-index: 1; }}
+    .hdr-cta::before {{ content: ''; position: absolute; inset: 0; background: var(--bg); transform: scaleX(0); transform-origin: left; transition: transform var(--t-med); z-index: -1; }}
+    .hdr-cta:hover {{ color: var(--ink-900); }}
+    .hdr-cta:hover::before {{ transform: scaleX(1); }}
+    .hdr-toggle {{ display: none; flex-direction: column; gap: 5px; padding: 6px; }}
+    .hdr-toggle span {{ display: block; width: 20px; height: 1.5px; background: var(--ink-900); transition: all 0.3s var(--ease); }}
+    .hdr-toggle.open span:nth-child(1) {{ transform: rotate(45deg) translate(4.5px, 4.5px); }}
+    .hdr-toggle.open span:nth-child(2) {{ opacity: 0; }}
+    .hdr-toggle.open span:nth-child(3) {{ transform: rotate(-45deg) translate(4.5px, -4.5px); }}
+
+    /* MOBILE NAV */
+    .mob-nav {{ position: fixed; top: var(--hdr-h); inset-inline: 0; background: var(--bg); border-bottom: 1px solid var(--border); padding: var(--sp-12) var(--sp-12) var(--sp-16); display: flex; flex-direction: column; gap: var(--sp-4); transform: translateY(-110%); opacity: 0; transition: transform var(--t-med), opacity 0.3s; z-index: 899; pointer-events: none; }}
+    .mob-nav.open {{ transform: translateY(0); opacity: 1; pointer-events: auto; }}
+    .mob-nav a {{ font-size: 0.88rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-400); padding: var(--sp-4) 0; border-bottom: 1px solid var(--border); transition: color var(--t-fast); }}
+    .mob-nav a:hover {{ color: var(--ink-900); }}
+
+    /* COMMONS */
+    .s {{ padding: var(--sp-56) 0; }}
+    .s-inner {{ max-width: var(--max-w); margin: 0 auto; padding: 0 var(--sp-12); }}
+    .eyebrow {{ display: inline-block; font-family: var(--ff-mono); font-size: 0.65rem; font-weight: 400; letter-spacing: 0.35em; text-transform: uppercase; color: var(--ink-400); margin-bottom: var(--sp-6); }}
+    .h2 {{ font-family: var(--ff-serif); font-size: clamp(1.9rem, 3.8vw, 3.2rem); font-weight: 700; line-height: 1.12; color: var(--ink-900); }}
+    .h2 em {{ font-style: italic; color: var(--ink-400); }}
+    .lead {{ font-size: clamp(0.95rem, 1.3vw, 1.08rem); color: var(--ink-400); line-height: 1.8; max-width: 580px; }}
+    .s-hdr {{ display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-24); align-items: end; margin-bottom: var(--sp-40); }}
+
+    .rv {{ opacity: 0; transform: translateY(36px); transition: opacity var(--t-slow), transform var(--t-slow); }}
+    .rv.in {{ opacity: 1; transform: none; }}
+    .rv-d1 {{ transition-delay: 0.10s; }} .rv-d2 {{ transition-delay: 0.20s; }} .rv-d3 {{ transition-delay: 0.30s; }} .rv-d4 {{ transition-delay: 0.42s; }}
+
+    /* HEADER SPACING FOR PAGES WITHOUT HERO */
+    .page-header-spacing {{ padding-top: calc(var(--hdr-h) + var(--sp-40)); }}
+
+    /* PORTFOLIO GRID */
+    .projects {{ background: var(--surface); min-height: 100vh; }}
+    .filters {{ display: flex; gap: var(--sp-4); flex-wrap: wrap; margin-bottom: var(--sp-20); }}
+    .f-pill {{ font-size: 0.72rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; padding: 6px 14px; border: 1px solid var(--border); border-radius: var(--r-full); color: var(--ink-400); background: var(--bg); transition: all var(--t-fast); cursor: pointer; }}
+    .f-pill:hover, .f-pill.on {{ background: var(--ink-900); color: var(--bg); border-color: var(--ink-900); }}
+    .pg {{ display: grid; grid-template-columns: repeat(12,1fr); gap: var(--sp-6); transition: all 0.75s var(--ease); }}
+    
+    /* CARD & IMAGE SLIDESHOW SYSTEM WITH 15s TIMER INDICATOR */
+    .pc {{ 
+      position: relative; 
+      overflow: hidden; 
+      border-radius: var(--r-xs); 
+      cursor: pointer; 
+      background: #0E0E0E; 
+      transition: box-shadow 0.4s ease, border-radius 0.4s var(--ease), opacity 0.45s var(--ease);
+    }}
+    .pc:hover {{
+      box-shadow: 0 20px 48px rgba(0, 0, 0, 0.18);
+    }}
+    .pc-8 {{ grid-column: span 8; }} .pc-4 {{ grid-column: span 4; }} .pc-6 {{ grid-column: span 6; }} .pc-7 {{ grid-column: span 7; }} .pc-5 {{ grid-column: span 5; }} .pc-12 {{ grid-column: span 12; }}
+    
+    /* 15s TIMED PROGRESS BAR AT TOP OF CARD */
+    .pc-timer-bar {{
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0%;
+      height: 3px;
+      background: linear-gradient(90deg, #FFFFFF, rgba(255,255,255,0.7));
+      box-shadow: 0 0 8px rgba(255,255,255,0.8);
+      z-index: 20;
+      pointer-events: none;
+      transition: width 0s linear;
+    }}
+    .pc.timer-active .pc-timer-bar {{
+      width: 100%;
+      transition: width 15s linear;
+    }}
+
+    .pc-thumb {{ position: relative; overflow: hidden; height: 100%; aspect-ratio: 16/10; }} 
+    .pc-8 .pc-thumb {{ aspect-ratio: 16/9; }} 
+    .pc-4 .pc-thumb {{ aspect-ratio: 4/5; }} 
+    .pc-12 .pc-thumb {{ aspect-ratio: 21/9; }}
+    
+    /* FAST, SMOOTH, CLEAN FADE SLIDE TRANSITION (0.4s) */
+    .pc-slide {{
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 1;
+      pointer-events: none;
+    }}
+    .pc-slide.active {{
+      opacity: 1;
+      z-index: 2;
+    }}
+    .pc-slide img {{
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }}
+    .pc:hover .pc-slide.active img {{
+      transform: scale(1.03);
+    }}
+
+    /* IMAGE COUNTER BADGE & TIMER PULSE */
+    .pc-img-counter {{
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 10;
+      background: rgba(0,0,0,0.65);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: var(--r-full);
+      font-family: var(--ff-mono);
+      font-size: 0.55rem;
+      letter-spacing: 0.15em;
+      color: rgba(255,255,255,0.9);
+      padding: 4px 10px;
+      opacity: 0;
+      transition: opacity 0.35s var(--ease), transform 0.35s var(--ease);
+      transform: translateY(-6px);
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }}
+    .pc:hover .pc-img-counter {{ opacity: 1; transform: translateY(0); }}
+
+    .pc-timer-status {{
+      display: inline-block;
+      font-size: 0.62rem;
+      opacity: 0.6;
+      transition: opacity 0.3s, transform 0.3s;
+    }}
+    .pc.timer-active .pc-timer-status {{
+      opacity: 1;
+      animation: pulseTimer 1.5s infinite ease-in-out;
+    }}
+    @keyframes pulseTimer {{
+      0%, 100% {{ transform: scale(1); opacity: 0.7; }}
+      50% {{ transform: scale(1.25); opacity: 1; }}
+    }}
+
+    /* DOT INDICATORS */
+    .pc-dots {{
+      position: absolute;
+      bottom: 44px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      display: flex;
+      gap: 6px;
+      opacity: 0;
+      transition: opacity 0.35s var(--ease);
+    }}
+    .pc:hover .pc-dots {{ opacity: 1; }}
+    .pc-dot {{
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.35);
+      transition: background 0.3s, transform 0.3s;
+      cursor: pointer;
+    }}
+    .pc-dot.on {{
+      background: #fff;
+      transform: scale(1.35);
+    }}
+    
+    .pc-overlay {{ position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.76) 0%, transparent 58%); z-index: 3; transition: background 0.4s var(--ease); pointer-events: none; }}
+    .pc:not(.expanded):hover .pc-overlay {{ background: linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.12) 68%); }}
+    
+    .pc-info {{ position: absolute; bottom: 0; left: 0; right: 0; z-index: 4; padding: var(--sp-8); transform: translateY(4px); transition: transform 0.38s var(--ease); pointer-events: none; }}
+    .pc:not(.expanded):hover .pc-info {{ transform: none; }}
+    .pc-cat {{ font-family: var(--ff-mono); font-size: 0.58rem; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(255,255,255,0.52); display: block; margin-bottom: 3px; }}
+    .pc-name {{ font-family: var(--ff-serif); font-size: 1.12rem; font-weight: 600; color: #fff; line-height: 1.2; margin-bottom: 5px; }}
+    .pc-meta {{ font-family: var(--ff-mono); font-size: 0.58rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.45); opacity: 0.85; transition: opacity 0.28s 0.08s; }}
+
+    /* EXPANDED STATE — INLINE GALLERY WITH ACCURATE PDF DATA */
+    .pc-expanded-view {{ display: none; }}
+    
+    .pc.expanded {{
+      grid-column: 1 / -1 !important;
+      background: #FFFFFF !important;
+      border-radius: var(--r-md);
+      box-shadow: 0 32px 80px rgba(0,0,0,0.14), 0 6px 24px rgba(0,0,0,0.05) !important;
+      padding: var(--sp-16);
+      cursor: default;
+      z-index: 10 !important;
+      position: relative;
+      animation: boxFormIn 0.75s var(--ease) forwards;
+    }}
+
+    @keyframes boxFormIn {{
+      0% {{
+        opacity: 0.7;
+        transform: scale(0.98) translateY(10px);
+      }}
+      100% {{
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }}
+    }}
+    
+    .pc.expanded .pc-thumb,
+    .pc.expanded .pc-overlay,
+    .pc.expanded .pc-info,
+    .pc.expanded .pc-img-counter,
+    .pc.expanded .pc-dots,
+    .pc.expanded .pc-timer-bar {{
+      display: none !important;
+    }}
+
+    .pc.expanded .pc-expanded-view {{
+      display: flex;
+      flex-direction: row;
+      gap: var(--sp-20);
+      width: 100%;
+    }}
+
+    .exp-img-gallery {{
+      width: 55%;
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-6);
+      opacity: 0;
+      animation: expImgShade 0.75s var(--ease) 0.15s forwards;
+    }}
+    
+    .exp-main-img {{
+      width: 100%;
+      height: 380px;
+      border-radius: var(--r-sm);
+      overflow: hidden;
+      background: #000;
+    }}
+    .exp-main-img img {{
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: opacity 0.4s var(--ease);
+    }}
+
+    .exp-thumbs-row {{
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }}
+    .exp-thumb-item {{
+      width: 84px;
+      height: 58px;
+      border-radius: var(--r-xs);
+      overflow: hidden;
+      flex-shrink: 0;
+      cursor: pointer;
+      border: 2px solid transparent;
+      opacity: 0.6;
+      transition: opacity 0.25s, border-color 0.25s;
+    }}
+    .exp-thumb-item.active, .exp-thumb-item:hover {{
+      opacity: 1;
+      border-color: var(--ink-900);
+    }}
+    .exp-thumb-item img {{
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }}
+
+    @keyframes expImgShade {{
+      0% {{
+        opacity: 0;
+        transform: translateY(12px);
+      }}
+      100% {{
+        opacity: 1;
+        transform: translateY(0);
+      }}
+    }}
+
+    .exp-content {{
+      width: 45%;
+      padding: var(--sp-4) var(--sp-12) var(--sp-8) 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+    }}
+
+    @keyframes textShadeIn {{
+      0% {{
+        opacity: 0;
+        transform: translateY(18px);
+      }}
+      100% {{
+        opacity: 1;
+        transform: translateY(0);
+      }}
+    }}
+
+    .exp-close-btn {{
+      position: absolute;
+      top: 0;
+      right: 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      background: #F4F1EA;
+      color: var(--ink-900);
+      font-family: var(--ff-mono);
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      border-radius: var(--r-full);
+      border: 1px solid var(--border);
+      transition: all var(--t-fast);
+      cursor: pointer;
+      opacity: 0;
+      animation: textShadeIn 0.75s var(--ease) 0.45s forwards;
+    }}
+    .exp-close-btn:hover {{
+      background: var(--ink-900);
+      color: #FFF;
+      border-color: var(--ink-900);
+    }}
+
+    .exp-cat {{
+      font-family: var(--ff-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--ink-400);
+      margin-bottom: var(--sp-4);
+      opacity: 0;
+      animation: textShadeIn 0.75s var(--ease) 0.15s forwards;
+    }}
+
+    .exp-title {{
+      font-family: var(--ff-serif);
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+      font-weight: 700;
+      color: var(--ink-900);
+      line-height: 1.15;
+      margin-bottom: var(--sp-8);
+      opacity: 0;
+      animation: textShadeIn 0.75s var(--ease) 0.25s forwards;
+    }}
+
+    .exp-meta-grid {{
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--sp-8);
+      padding: var(--sp-8) 0;
+      margin-bottom: var(--sp-8);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      opacity: 0;
+      animation: textShadeIn 0.75s var(--ease) 0.35s forwards;
+    }}
+
+    .exp-meta-item small {{
+      display: block;
+      font-family: var(--ff-mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink-400);
+      margin-bottom: 2px;
+    }}
+
+    .exp-meta-item span {{
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--ink-900);
+    }}
+
+    .exp-desc {{
+      font-size: 0.92rem;
+      color: var(--ink-700);
+      line-height: 1.8;
+      opacity: 0;
+      animation: textShadeIn 0.75s var(--ease) 0.45s forwards;
+    }}
+
+    @media (max-width: 860px) {{
+      .pc.expanded .pc-expanded-view {{
+        flex-direction: column;
+      }}
+      .exp-img-gallery, .exp-content {{
+        width: 100%;
+      }}
+      .exp-main-img {{
+        height: 260px;
+      }}
+    }}
+
+    /* FOOTER */
+    .ftr {{ background: #111111; padding: var(--sp-40) 0 var(--sp-16); }}
+    .ftr-inner {{ max-width: var(--max-w); margin: 0 auto; padding: 0 var(--sp-12); }}
+    .ftr-top {{ display: grid; grid-template-columns: 2fr 1fr 1fr 1.5fr; gap: var(--sp-24); padding-bottom: var(--sp-40); border-bottom: 1px solid rgba(255,255,255,0.06); }}
+    .ftr-logo img {{ height: 46px; width: auto; margin-bottom: var(--sp-8); filter: brightness(0) invert(1) opacity(0.65); }}
+    .ftr-desc {{ font-size: 0.82rem; color: rgba(255,255,255,0.4); line-height: 1.72; max-width: 270px; }}
+    .ftr-col-lbl {{ font-family: var(--ff-mono); font-size: 0.56rem; letter-spacing: 0.32em; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: var(--sp-8); }}
+    .ftr-links {{ display: flex; flex-direction: column; gap: 8px; }}
+    .ftr-link {{ font-size: 0.82rem; color: rgba(255,255,255,0.45); transition: color var(--t-fast); }}
+    .ftr-link:hover {{ color: rgba(255,255,255,0.85); }}
+    .ftr-sub form {{ display: flex; gap: 6px; margin-top: var(--sp-4); }}
+    .ftr-sub input {{ flex: 1; padding: 9px 12px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--r-xs); font-family: var(--ff-sans); font-size: 0.8rem; color: #fff; outline: none; }}
+    .ftr-sub input::placeholder {{ color: rgba(255,255,255,0.3); }}
+    .ftr-sub button {{ padding: 9px 14px; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.75); font-family: var(--ff-sans); font-size: 0.74rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; border-radius: var(--r-xs); cursor: pointer; transition: background var(--t-fast), color var(--t-fast); }}
+    .ftr-sub button:hover {{ background: rgba(255,255,255,0.2); color: #fff; }}
+    .ftr-bottom {{ display: flex; justify-content: space-between; align-items: center; padding-top: var(--sp-12); flex-wrap: wrap; gap: var(--sp-6); }}
+    .ftr-copy {{ font-size: 0.74rem; color: rgba(255,255,255,0.25); }}
+    .ftr-legal {{ display: flex; gap: var(--sp-12); }}
+    .ftr-legal a {{ font-size: 0.74rem; color: rgba(255,255,255,0.25); transition: color var(--t-fast); }}
+    .ftr-legal a:hover {{ color: rgba(255,255,255,0.55); }}
+
+    /* Responsive */
+    @media (max-width: 1060px) {{
+      .ftr-top {{ grid-template-columns: 1fr 1fr; }}
+      .s-hdr {{ grid-template-columns: 1fr; gap: var(--sp-8); }}
+      .pc-8, .pc-7, .pc-5, .pc-4, .pc-6 {{ grid-column: span 12; }}
+    }}
+    @media (max-width: 720px) {{
+      :root {{ --sp-56: 72px; --sp-72: 88px; }}
+      .hdr-nav, .hdr-cta, .lang-toggle {{ display: none; }}
+      .hdr-toggle {{ display: flex; }} 
+      .ftr-top {{ grid-template-columns: 1fr; }}
+    }}
+    @media (max-width: 460px) {{
+      .ftr-bottom {{ flex-direction: column; text-align: center; }}
+    }}
+  </style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<header class="hdr" id="hdr">
+  <div class="hdr-inner">
+    <a href="index_06.html" class="hdr-logo" aria-label="DAS Arquitetos">
+      <img src="das_portfolio_images/logo-das-arquitetos.jpg" alt="DAS Arquitetos"/>
+    </a>
+
+    <nav class="hdr-nav" aria-label="Navegação">
+      <a href="index_06.html"><span class="lang-pt">Voltar para o site</span><span class="lang-en">Back to site</span></a>
+    </nav>
+
+    <div style="display:flex;align-items:center;gap:16px;">
+      <!-- LANGUAGE TOGGLE -->
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="pt-BR">PT</button>
+        <span>|</span>
+        <button class="lang-btn" data-lang="en">EN</button>
+      </div>
+
+      <a href="index_06.html" class="hdr-cta">
+        <span class="lang-pt">Página Inicial</span><span class="lang-en">Home Page</span>
+      </a>
+      <button class="hdr-toggle" id="hdrToggle" aria-label="Menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Mobile Nav -->
+<nav class="mob-nav" id="mobNav" aria-label="Menu mobile">
+  <a href="index_06.html" data-cn><span class="lang-pt">Página Inicial</span><span class="lang-en">Home Page</span></a>
+  <div style="margin-top:16px; display:flex; gap:12px;">
+    <button class="lang-btn active" data-lang="pt-BR" style="font-size:0.8rem; font-weight:600; color:var(--ink-900);">PT</button>
+    <button class="lang-btn" data-lang="en" style="font-size:0.8rem; font-weight:600; color:var(--ink-400);">EN</button>
+  </div>
+</nav>
+
+<!-- PORTFOLIO PROJECTS -->
+<section class="s projects page-header-spacing" id="portfolio">
+  <div class="s-inner">
+    <div class="s-hdr">
+      <div>
+        <span class="eyebrow rv"><span class="lang-pt">Acervo Oficial · 100% Imagens de Arquitetura</span><span class="lang-en">Official Collection · 100% Architectural Images</span></span>
+        <h2 class="h2 rv rv-d1">
+          <span class="lang-pt">Catálogo de<br/><em>Obras & Projetos</em></span>
+          <span class="lang-en">Catalog of<br/><em>Works & Projects</em></span>
+        </h2>
+      </div>
+      <div>
+        <p class="lead rv rv-d2">
+          <span class="lang-pt">Exclusivamente renders, desenhos e fotos de arquitetura do portfólio oficial. Passe o mouse ou clique para ativar o <strong>temporizador de 15 segundos</strong> com barra de progresso em tempo real.</span>
+          <span class="lang-en">Exclusively architectural renders, drawings, and photos from the official portfolio. Hover or click to activate the <strong>15-second timer</strong> with a real-time progress bar.</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters rv">
+      <button class="f-pill on" data-f="all"><span class="lang-pt">Todos</span><span class="lang-en">All</span></button>
+      <button class="f-pill" data-f="residencial"><span class="lang-pt">Residencial</span><span class="lang-en">Residential</span></button>
+      <button class="f-pill" data-f="institucional"><span class="lang-pt">Institucional & Cultural</span><span class="lang-en">Institutional & Cultural</span></button>
+      <button class="f-pill" data-f="comercial"><span class="lang-pt">Comercial</span><span class="lang-en">Commercial</span></button>
+      <button class="f-pill" data-f="urbano"><span class="lang-pt">Urbano & Masterplan</span><span class="lang-en">Urban & Masterplan</span></button>
+      <button class="f-pill" data-f="concurso"><span class="lang-pt">Concursos</span><span class="lang-en">Competitions</span></button>
+    </div>
+
+    <div class="pg rv" id="projectGrid">
+{grid_content}
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="ftr">
+  <div class="ftr-inner">
+    <div class="ftr-top">
+      <div>
+        <a href="index_06.html" class="ftr-logo"><img src="das_portfolio_images/logo-das-arquitetos.jpg" alt="DAS Arquitetos"/></a>
+        <p class="ftr-desc">
+          <span class="lang-pt">Estúdio de arquitetura focado em projetos contemporâneos, gestão tecnológica e sustentabilidade ambiental.</span>
+          <span class="lang-en">Architecture studio focused on contemporary projects, technological management, and environmental sustainability.</span>
+        </p>
+      </div>
+      <div>
+        <p class="ftr-col-lbl"><span class="lang-pt">Navegação</span><span class="lang-en">Navigation</span></p>
+        <div class="ftr-links">
+          <a href="index_06.html" class="ftr-link"><span class="lang-pt">Página Inicial</span><span class="lang-en">Home Page</span></a>
+          <a href="index_06.html#sobre" class="ftr-link"><span class="lang-pt">Sobre o Estúdio</span><span class="lang-en">About Us</span></a>
+          <a href="index_06.html#capacidades" class="ftr-link"><span class="lang-pt">Serviços</span><span class="lang-en">Services</span></a>
+          <a href="index_06.html#contato" class="ftr-link"><span class="lang-pt">Contato</span><span class="lang-en">Contact</span></a>
+        </div>
+      </div>
+      <div>
+        <p class="ftr-col-lbl"><span class="lang-pt">Contatos</span><span class="lang-en">Contacts</span></p>
+        <div class="ftr-links">
+          <a href="mailto:contato@dasarquitetos.com.br" class="ftr-link">contato@dasarquitetos.com.br</a>
+          <a href="tel:+5541999999999" class="ftr-link">+55 (41) 99999-9999</a>
+          <span class="ftr-link" style="color:rgba(255,255,255,0.3);">Curitiba — PR, Brasil</span>
+        </div>
+      </div>
+      <div class="ftr-sub">
+        <p class="ftr-col-lbl"><span class="lang-pt">Newsletter</span><span class="lang-en">Newsletter</span></p>
+        <p style="font-size:0.78rem; color:rgba(255,255,255,0.4); margin-bottom:8px;">
+          <span class="lang-pt">Receba nossas atualizações sobre novos projetos.</span>
+          <span class="lang-en">Receive updates on our new projects.</span>
+        </p>
+        <form onsubmit="event.preventDefault(); alert('Obrigado!');">
+          <input type="email" placeholder="Seu e-mail..." required/>
+          <button type="submit"><span class="lang-pt">Enviar</span><span class="lang-en">Send</span></button>
+        </form>
+      </div>
+    </div>
+    <div class="ftr-bottom">
+      <p class="ftr-copy">© 2026 DAS Arquitetos. Todos os direitos reservados.</p>
+      <div class="ftr-legal">
+        <a href="#"><span class="lang-pt">Termos de Uso</span><span class="lang-en">Terms of Use</span></a>
+        <a href="#"><span class="lang-pt">Privacidade</span><span class="lang-en">Privacy</span></a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ---- Lang Toggle ---- */
+document.querySelectorAll('.lang-btn').forEach(btn => {{
+  btn.addEventListener('click', () => {{
+    const lang = btn.dataset.lang;
+    document.documentElement.lang = lang;
+    document.querySelectorAll('.lang-btn').forEach(b => {{
+      b.classList.toggle('active', b.dataset.lang === lang);
+      if(b.dataset.lang === lang) {{
+        b.style.fontWeight = "600"; b.style.color = "var(--ink-900)";
+      }} else {{
+        b.style.fontWeight = "400"; b.style.color = "var(--ink-400)";
+      }}
+    }});
+
+    const activeExpanded = document.querySelector('.pc.expanded');
+    if (activeExpanded) {{
+      const name = activeExpanded.querySelector('.pc-name')?.textContent.trim() || activeExpanded.querySelector('.exp-title')?.textContent.trim();
+      if (name && projectsData[name]) {{
+        updateExpandedContent(activeExpanded, name, projectsData[name]);
+      }}
+    }}
+  }});
+}});
+
+/* ---- Standard Interactions ---- */
+const bar = document.getElementById('progress-bar');
+window.addEventListener('scroll', () => {{ const h = document.documentElement; bar.style.width = (window.scrollY / (h.scrollHeight - h.clientHeight) * 100) + '%'; }}, {{ passive: true }});
+
+const hdr = document.getElementById('hdr');
+let lastY = 0;
+window.addEventListener('scroll', () => {{ const y = window.scrollY; hdr.classList.toggle('scrolled', y > 60); hdr.classList.toggle('hide', y > lastY && y > 180); lastY = y; }}, {{ passive: true }});
+
+const toggle = document.getElementById('hdrToggle'); const mob = document.getElementById('mobNav'); let open = false;
+toggle.addEventListener('click', () => {{ open = !open; toggle.classList.toggle('open', open); mob.classList.toggle('open', open); toggle.setAttribute('aria-expanded', open); }});
+document.querySelectorAll('[data-cn]').forEach(a => {{ a.addEventListener('click', () => {{ open = false; toggle.classList.remove('open'); mob.classList.remove('open'); }}); }});
+
+const obs = new IntersectionObserver(entries => {{ entries.forEach(e => {{ if (e.isIntersecting) {{ e.target.classList.add('in'); obs.unobserve(e.target); }} }}); }}, {{ threshold: 0.08, rootMargin: '0px 0px -50px 0px' }});
+document.querySelectorAll('.rv').forEach(el => obs.observe(el));
+
+document.querySelectorAll('.f-pill').forEach(pill => {{
+  pill.addEventListener('click', () => {{
+    document.querySelectorAll('.f-pill').forEach(p => p.classList.remove('on'));
+    pill.classList.add('on');
+    const f = pill.dataset.f;
+    
+    const activeExpanded = document.querySelector('.pc.expanded');
+    if (activeExpanded) collapseCard(activeExpanded);
+
+    document.querySelectorAll('.pc').forEach(card => {{
+      const match = f === 'all' || card.dataset.c.includes(f);
+      card.style.transition = 'opacity 0.45s var(--ease)'; 
+      card.style.opacity = match ? '1' : '0.2'; 
+      card.style.pointerEvents = match ? 'auto' : 'none';
+    }});
+  }});
+}});
+
+/* ---- OFFICIAL PDF PROJECTS DATA ---- */
+const projectsData = {json.dumps(projects_data, indent=2, ensure_ascii=False)};
+const projectImagesMap = {json.dumps(cleaned_map, indent=2, ensure_ascii=False)};
+
+/* ---- EXPANDED CARD DETAILS & GALLERY ---- */
+function updateExpandedContent(card, name, data) {{
+  const isPt = document.documentElement.lang === 'pt-BR';
+  let expView = card.querySelector('.pc-expanded-view');
+  if (!expView) {{
+    expView = document.createElement('div');
+    expView.className = 'pc-expanded-view';
+    card.appendChild(expView);
+  }}
+
+  const projectImgs = projectImagesMap[name] || [data.img || ''];
+  const firstImg = projectImgs[0] || '';
+
+  const thumbsHtml = projectImgs.map((imgSrc, idx) => `
+    <div class="exp-thumb-item ${{idx === 0 ? 'active' : ''}}" data-src="${{imgSrc}}">
+      <img src="${{imgSrc}}" alt="${{name}} - Imagem ${{idx + 1}}"/>
+    </div>
+  `).join('');
+
+  expView.innerHTML = `
+    <div class="exp-img-gallery">
+      <div class="exp-main-img">
+        <img id="expMainImg-${{name.replace(/[^a-zA-Z0-9]/g, '')}}" src="${{firstImg}}" alt="${{name}}"/>
+      </div>
+      <div class="exp-thumbs-row">
+        ${{thumbsHtml}}
+      </div>
+    </div>
+    <div class="exp-content">
+      <button class="exp-close-btn" aria-label="Fechar">
+        <span>${{isPt ? 'Fechar' : 'Close'}}</span> ✕
+      </button>
+      <span class="exp-cat">${{isPt ? data.catPt : data.catEn}}</span>
+      <h3 class="exp-title">${{name}}</h3>
+      <div class="exp-meta-grid">
+        <div class="exp-meta-item">
+          <small>${{isPt ? 'Localização' : 'Location'}}</small>
+          <span>${{data.loc}}</span>
+        </div>
+        <div class="exp-meta-item">
+          <small>${{isPt ? 'Área / Escala' : 'Area / Scale'}}</small>
+          <span>${{data.area}}</span>
+        </div>
+      </div>
+      <p class="exp-desc">${{isPt ? data.descPt : data.descEn}}</p>
+    </div>
+  `;
+
+  const closeBtn = expView.querySelector('.exp-close-btn');
+  closeBtn.addEventListener('click', (e) => {{
+    e.stopPropagation();
+    collapseCard(card);
+  }});
+
+  const mainImgEl = expView.querySelector(`#expMainImg-${{name.replace(/[^a-zA-Z0-9]/g, '')}}`);
+  const thumbItems = expView.querySelectorAll('.exp-thumb-item');
+  thumbItems.forEach(thumb => {{
+    thumb.addEventListener('click', (e) => {{
+      e.stopPropagation();
+      thumbItems.forEach(t => t.classList.remove('active'));
+      thumb.classList.add('active');
+      const targetSrc = thumb.dataset.src;
+      if (mainImgEl) {{
+        mainImgEl.style.opacity = '0';
+        setTimeout(() => {{
+          mainImgEl.src = targetSrc;
+          mainImgEl.style.opacity = '1';
+        }}, 180);
+      }}
+    }});
+  }});
+}}
+
+function smoothScrollToCenter(element) {{
+  const rect = element.getBoundingClientRect();
+  const elementCenter = rect.top + window.scrollY + (rect.height / 2);
+  const viewportCenter = window.innerHeight / 2;
+  const targetScrollY = Math.max(0, elementCenter - viewportCenter);
+
+  window.scrollTo({{
+    top: targetScrollY,
+    behavior: 'smooth'
+  }});
+}}
+
+function expandCard(card) {{
+  const currentExpanded = document.querySelector('.pc.expanded');
+  if (currentExpanded && currentExpanded !== card) {{
+    collapseCard(currentExpanded);
+  }}
+
+  const nameEl = card.querySelector('.pc-name');
+  if (!nameEl) return;
+  const name = nameEl.textContent.trim();
+  const data = projectsData[name];
+  if (!data) return;
+
+  card.classList.add('expanded');
+  updateExpandedContent(card, name, data);
+
+  smoothScrollToCenter(card);
+  setTimeout(() => {{
+    smoothScrollToCenter(card);
+  }}, 220);
+}}
+
+function collapseCard(card) {{
+  card.classList.remove('expanded');
+  const expView = card.querySelector('.pc-expanded-view');
+  if (expView) {{
+    expView.remove();
+  }}
+}}
+
+/* ---- 15s TIMED SLIDESHOW WITH VISUAL PROGRESS BAR INDICATOR ---- */
+(function() {{
+  document.querySelectorAll('.pc').forEach(card => {{
+    const slides = card.querySelectorAll('.pc-slide');
+    if (slides.length <= 1) return;
+
+    const counter = card.querySelector('.pc-img-counter');
+    const dots = card.querySelectorAll('.pc-dot');
+    let current = 0;
+    let timer = null;
+    const total = slides.length;
+
+    function resetProgressBar() {{
+      card.classList.remove('timer-active');
+      // Trigger reflow to restart CSS transition
+      void card.offsetWidth;
+    }}
+
+    function triggerProgressBar() {{
+      resetProgressBar();
+      card.classList.add('timer-active');
+    }}
+
+    function goTo(idx) {{
+      slides[current].classList.remove('active');
+      if (dots[current]) dots[current].classList.remove('on');
+      
+      current = (idx + total) % total;
+      
+      slides[current].classList.add('active');
+      if (dots[current]) dots[current].classList.add('on');
+      if (counter) {{
+        counter.innerHTML = `<span class="pc-timer-status">⏱️</span> ${{String(current + 1).padStart(2, '0')}} / ${{String(total).padStart(2, '0')}}`;
+      }}
+      triggerProgressBar();
+    }}
+
+    function start15sTimer() {{
+      if (timer) return;
+      triggerProgressBar();
+      // 15 seconds interval (15000ms)
+      timer = setInterval(() => {{
+        goTo(current + 1);
+      }}, 15000);
+    }}
+
+    function stop15sTimer() {{
+      if (timer) {{
+        clearInterval(timer);
+        timer = null;
+      }}
+      resetProgressBar();
+    }}
+
+    // Start timer & progress bar animation ONLY on mouseenter or click
+    card.addEventListener('mouseenter', start15sTimer);
+    card.addEventListener('mouseleave', stop15sTimer);
+
+    card.addEventListener('click', (e) => {{
+      if (card.classList.contains('expanded')) {{
+        stop15sTimer();
+        return;
+      }}
+      start15sTimer();
+      expandCard(card);
+    }});
+
+    // Dot navigation
+    dots.forEach(dot => {{
+      dot.addEventListener('click', (e) => {{
+        e.stopPropagation();
+        const targetIdx = parseInt(dot.dataset.idx, 10);
+        goTo(targetIdx);
+        // Reset 15s interval on manual click
+        stop15sTimer();
+        start15sTimer();
+      }});
+    }});
+  }});
+}})();
+</script>
+</body>
+</html>'''
+
+with open('portfolio_02.html', 'w', encoding='utf-8') as f:
+    f.write(html_template)
+
+print('Updated portfolio_02.html with 100% clean architectural images and 15s animated timer bar!')

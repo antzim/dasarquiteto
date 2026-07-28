@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>DAS Arquitetos — Arquitetura Contemporânea & Sustentabilidade</title>
-  <meta name="description" content="DAS Arquitetos é um estúdio de arquitetura buscando implementar sua visão em projetos contemporâneos, sustentáveis e pautados na tecnologia."/>
+  <title>DAS Arquitetos â€” Arquitetura ContemporÃ¢nea & Sustentabilidade</title>
+  <meta name="description" content="DAS Arquitetos Ã© um estÃºdio de arquitetura buscando implementar sua visÃ£o em projetos contemporÃ¢neos, sustentÃ¡veis e pautados na tecnologia."/>
 
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
@@ -176,14 +176,136 @@
     .f-pill { font-size: 0.72rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; padding: 6px 14px; border: 1px solid var(--border); border-radius: var(--r-full); color: var(--ink-400); background: var(--bg); transition: all var(--t-fast); cursor: pointer; }
     .f-pill:hover, .f-pill.on { background: var(--ink-900); color: var(--bg); border-color: var(--ink-900); }
     .pg { display: grid; grid-template-columns: repeat(12,1fr); gap: var(--sp-6); }
-    .pc { position: relative; overflow: hidden; border-radius: var(--r-xs); cursor: pointer; background: #111; }
+    .pc { position: relative; overflow: hidden; border-radius: var(--r-xs); cursor: pointer; background: #111; perspective: 1000px; }
     .pc-8 { grid-column: span 8; } .pc-4 { grid-column: span 4; } .pc-6 { grid-column: span 6; } .pc-7 { grid-column: span 7; } .pc-5 { grid-column: span 5; }
-    .pc-thumb { overflow: hidden; aspect-ratio: 16/10; } .pc-8 .pc-thumb { aspect-ratio: 16/9; } .pc-4 .pc-thumb { aspect-ratio: 4/5; }
-    .pc-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.75s var(--ease); filter: brightness(0.9); }
-    .pc:hover .pc-thumb img { transform: scale(1.07); filter: brightness(0.72); }
+
+    /* HOVER SLIDESHOW SYSTEM */
+    .pc-thumb {
+      overflow: hidden;
+      aspect-ratio: 16/10;
+      transform-style: preserve-3d;
+      transition: transform 0.55s var(--ease);
+      position: relative;
+    }
+    .pc-8 .pc-thumb { aspect-ratio: 16/9; }
+    .pc-4 .pc-thumb { aspect-ratio: 4/5; }
+
+    /* Slide layers inside a card */
+    .pc-slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transform: scale(1.1) translateY(6px);
+      transition: opacity 0.9s cubic-bezier(0.4, 0, 0.2, 1),
+                  transform 1.2s cubic-bezier(0.16, 1, 0.3, 1),
+                  filter 0.9s ease;
+      filter: brightness(0.75) blur(2px);
+      will-change: opacity, transform, filter;
+    }
+    .pc-slide.active {
+      opacity: 1;
+      transform: scale(1.03) translateY(0);
+      filter: brightness(0.85) blur(0);
+      z-index: 2;
+    }
+    .pc-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Ken Burns for single-image cards */
+    .pc-slide.solo img {
+      transition: transform 1.6s cubic-bezier(0.16, 1, 0.3, 1), filter 0.75s var(--ease);
+    }
+    .pc:hover .pc-slide.solo img {
+      transform: scale(1.12) translate(-2%, -1%);
+    }
+
+    
+    /* 15s TIMED PROGRESS BAR AT TOP OF CARD */
+    .pc-timer-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0%;
+      height: 3px;
+      background: linear-gradient(90deg, #FFFFFF, rgba(255,255,255,0.7));
+      box-shadow: 0 0 8px rgba(255,255,255,0.8);
+      z-index: 20;
+      pointer-events: none;
+      transition: width 0s linear;
+    }
+    .pc.timer-active .pc-timer-bar {
+      width: 100%;
+      transition: width 15s linear;
+    }
+    .pc-timer-status {
+      display: inline-block;
+      font-size: 0.62rem;
+      opacity: 0.6;
+      transition: opacity 0.3s, transform 0.3s;
+    }
+    .pc.timer-active .pc-timer-status {
+      opacity: 1;
+      animation: pulseTimer 1.5s infinite ease-in-out;
+    }
+    @keyframes pulseTimer {
+      0%, 100% { transform: scale(1); opacity: 0.7; }
+      50% { transform: scale(1.25); opacity: 1; }
+    }
+
+    /* Image counter badge */
+    .pc-img-counter {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 10;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: var(--r-full);
+      font-family: var(--ff-mono);
+      font-size: 0.55rem;
+      letter-spacing: 0.15em;
+      color: rgba(255,255,255,0.85);
+      padding: 4px 10px;
+      opacity: 0;
+      transition: opacity 0.35s var(--ease), transform 0.35s var(--ease);
+      transform: translateY(-6px);
+      pointer-events: none;
+    }
+    .pc:hover .pc-img-counter { opacity: 1; transform: translateY(0); }
+
+    /* Dot indicators */
+    .pc-dots {
+      position: absolute;
+      bottom: 44px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      display: flex;
+      gap: 5px;
+      opacity: 0;
+      transition: opacity 0.35s var(--ease);
+    }
+    .pc:hover .pc-dots { opacity: 1; }
+    .pc-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.35);
+      transition: background 0.3s, transform 0.3s;
+    }
+    .pc-dot.on {
+      background: #fff;
+      transform: scale(1.4);
+    }
+
     .pc-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, transparent 58%); z-index: 1; transition: background 0.4s var(--ease); }
-    .pc:hover .pc-overlay { background: linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.1) 68%); }
-    .pc-info { position: absolute; bottom: 0; left: 0; right: 0; z-index: 2; padding: var(--sp-8); transform: translateY(6px); transition: transform 0.38s var(--ease); }
+    .pc:hover .pc-overlay { background: linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.12) 68%); }
+    .pc-info { position: absolute; bottom: 0; left: 0; right: 0; z-index: 3; padding: var(--sp-8); transform: translateY(6px); transition: transform 0.38s var(--ease); }
     .pc:hover .pc-info { transform: none; }
     .pc-cat { font-family: var(--ff-mono); font-size: 0.58rem; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(255,255,255,0.48); display: block; margin-bottom: 3px; }
     .pc-name { font-family: var(--ff-serif); font-size: 1.1rem; font-weight: 600; color: #fff; line-height: 1.2; margin-bottom: 5px; }
@@ -381,7 +503,8 @@
     .ftr { background: #111111; padding: var(--sp-40) 0 var(--sp-16); }
     .ftr-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--sp-12); }
     .ftr-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1.5fr; gap: var(--sp-24); padding-bottom: var(--sp-40); border-bottom: 1px solid rgba(255,255,255,0.06); }
-    .ftr-logo img { height: 46px; width: auto; margin-bottom: var(--sp-8); filter: brightness(0) invert(1) opacity(0.65); }
+    .ftr-logo img { height: 72px; width: auto; margin-bottom: var(--sp-8); mix-blend-mode: screen; opacity: 0.88; transition: opacity 0.3s; }
+    .ftr-logo:hover img { opacity: 1; }
     .ftr-desc { font-size: 0.82rem; color: rgba(255,255,255,0.4); line-height: 1.72; max-width: 270px; }
     .ftr-col-lbl { font-family: var(--ff-mono); font-size: 0.56rem; letter-spacing: 0.32em; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: var(--sp-8); }
     .ftr-links { display: flex; flex-direction: column; gap: 8px; }
@@ -431,7 +554,7 @@
       <img src="das_portfolio_images/logo-das-arquitetos.jpg" alt="DAS Arquitetos"/>
     </a>
 
-    <nav class="hdr-nav" aria-label="Navegação">
+    <nav class="hdr-nav" aria-label="NavegaÃ§Ã£o">
       <a href="#projetos"><span class="lang-pt">Projetos</span><span class="lang-en">Projects</span></a>
       <a href="#sobre"><span class="lang-pt">Sobre</span><span class="lang-en">About</span></a>
       <a href="#capacidades"><span class="lang-pt">Capacidades</span><span class="lang-en">Capabilities</span></a>
@@ -482,8 +605,8 @@
 
   <div class="hero-content">
     <span class="hero-eye" id="hEye">
-      <span class="lang-pt">Design · Arquitetura · Sustentabilidade</span>
-      <span class="lang-en">Design · Architecture · Sustainability</span>
+      <span class="lang-pt">Design Â· Arquitetura Â· Sustentabilidade</span>
+      <span class="lang-en">Design Â· Architecture Â· Sustainability</span>
     </span>
     <h1 class="hero-title" id="hTitle">
       <span class="line"><span class="line-inner">
@@ -495,14 +618,14 @@
         <span class="lang-en">Context, Climate</span>
       </span></span>
       <span class="line"><span class="line-inner" style="font-style:italic;color:rgba(255,255,255,0.7)">
-        <span class="lang-pt">& Inovação</span>
+        <span class="lang-pt">& InovaÃ§Ã£o</span>
         <span class="lang-en">& Innovation</span>
       </span></span>
     </h1>
     <p class="hero-sub" id="hSub">
       <span class="lang-pt">
-        Buscamos implementar nossa visão em variados tipos e escalas de projetos. 
-        Acreditamos que os contornos da arquitetura devem se adequar à paisagem e ao clima.
+        Buscamos implementar nossa visÃ£o em variados tipos e escalas de projetos. 
+        Acreditamos que os contornos da arquitetura devem se adequar Ã  paisagem e ao clima.
       </span>
       <span class="lang-en">
         We seek to implement our vision across the most varied types and scales of projects. 
@@ -521,9 +644,9 @@
 
   <div class="hero-strip" id="heroStrip">
     <div class="hero-strip-inner">
-      <div class="hstat rv"><span class="hstat-num">DAS</span><span class="hstat-label"><span class="lang-pt">Jovem Estúdio</span><span class="lang-en">Young Studio</span></span></div>
-      <div class="hstat rv rv-d1"><span class="hstat-num">BIM</span><span class="hstat-label"><span class="lang-pt">Gestão Tecnológica</span><span class="lang-en">Technological Management</span></span></div>
-      <div class="hstat rv rv-d2"><span class="hstat-num">+10</span><span class="hstat-label"><span class="lang-pt">Anos de Experiência</span><span class="lang-en">Years of Experience</span></span></div>
+      <div class="hstat rv"><span class="hstat-num">DAS</span><span class="hstat-label"><span class="lang-pt">EstÃºdio Multidisciplinar</span><span class="lang-en">Multidisciplinary Studio</span></span></div>
+      <div class="hstat rv rv-d1"><span class="hstat-num">BIM</span><span class="hstat-label"><span class="lang-pt">GestÃ£o TecnolÃ³gica</span><span class="lang-en">Technological Management</span></span></div>
+      <div class="hstat rv rv-d2"><span class="hstat-num">+20</span><span class="hstat-label"><span class="lang-pt">Anos de ExperiÃªncia</span><span class="lang-en">Years of Experience</span></span></div>
       <div class="hstat rv rv-d3"><span class="hstat-num">NZE</span><span class="hstat-label"><span class="lang-pt">Net Zero Energy</span><span class="lang-en">Net Zero Energy</span></span></div>
     </div>
   </div>
@@ -538,18 +661,18 @@
 <div class="marquee">
   <div class="marquee-track">
     <div class="marquee-item"><span class="lang-pt">Arquitetura Contextualizada</span><span class="lang-en">Contextualized Architecture</span><span class="marquee-dot"></span></div>
-    <div class="marquee-item"><span class="lang-pt">Design Sustentável</span><span class="lang-en">Sustainable Design</span><span class="marquee-dot"></span></div>
+    <div class="marquee-item"><span class="lang-pt">Design SustentÃ¡vel</span><span class="lang-en">Sustainable Design</span><span class="marquee-dot"></span></div>
     <div class="marquee-item"><span class="lang-pt">Concursos de Projeto</span><span class="lang-en">Design Competitions</span><span class="marquee-dot"></span></div>
     <div class="marquee-item"><span class="lang-pt">Modelagem BIM</span><span class="lang-en">BIM Modeling</span><span class="marquee-dot"></span></div>
-    <div class="marquee-item"><span class="lang-pt">Estratégias Bioclimáticas</span><span class="lang-en">Bioclimatic Strategies</span><span class="marquee-dot"></span></div>
-    <div class="marquee-item"><span class="lang-pt">Inovação Tecnológica</span><span class="lang-en">Technological Innovation</span><span class="marquee-dot"></span></div>
+    <div class="marquee-item"><span class="lang-pt">EstratÃ©gias BioclimÃ¡ticas</span><span class="lang-en">Bioclimatic Strategies</span><span class="marquee-dot"></span></div>
+    <div class="marquee-item"><span class="lang-pt">InovaÃ§Ã£o TecnolÃ³gica</span><span class="lang-en">Technological Innovation</span><span class="marquee-dot"></span></div>
     <!-- loop -->
     <div class="marquee-item"><span class="lang-pt">Arquitetura Contextualizada</span><span class="lang-en">Contextualized Architecture</span><span class="marquee-dot"></span></div>
-    <div class="marquee-item"><span class="lang-pt">Design Sustentável</span><span class="lang-en">Sustainable Design</span><span class="marquee-dot"></span></div>
+    <div class="marquee-item"><span class="lang-pt">Design SustentÃ¡vel</span><span class="lang-en">Sustainable Design</span><span class="marquee-dot"></span></div>
     <div class="marquee-item"><span class="lang-pt">Concursos de Projeto</span><span class="lang-en">Design Competitions</span><span class="marquee-dot"></span></div>
     <div class="marquee-item"><span class="lang-pt">Modelagem BIM</span><span class="lang-en">BIM Modeling</span><span class="marquee-dot"></span></div>
-    <div class="marquee-item"><span class="lang-pt">Estratégias Bioclimáticas</span><span class="lang-en">Bioclimatic Strategies</span><span class="marquee-dot"></span></div>
-    <div class="marquee-item"><span class="lang-pt">Inovação Tecnológica</span><span class="lang-en">Technological Innovation</span><span class="marquee-dot"></span></div>
+    <div class="marquee-item"><span class="lang-pt">EstratÃ©gias BioclimÃ¡ticas</span><span class="lang-en">Bioclimatic Strategies</span><span class="marquee-dot"></span></div>
+    <div class="marquee-item"><span class="lang-pt">InovaÃ§Ã£o TecnolÃ³gica</span><span class="lang-en">Technological Innovation</span><span class="marquee-dot"></span></div>
   </div>
 </div>
 
@@ -559,23 +682,19 @@
     <div class="about-grid">
       <div class="about-img-wrap rv">
         <img src="das_portfolio_images/img_page22_0.jpeg" alt="DAS Arquitetos" loading="lazy"/>
-        <div class="about-badge">
-          <small><span class="lang-pt">O Estúdio</span><span class="lang-en">The Studio</span></small>
-          <strong>DAS Arquitetos</strong>
-        </div>
       </div>
       <div>
-        <span class="eyebrow rv"><span class="lang-pt">Sobre Nós</span><span class="lang-en">About Us</span></span>
+        <span class="eyebrow rv"><span class="lang-pt">Sobre NÃ³s</span><span class="lang-en">About Us</span></span>
         <h2 class="h2 rv rv-d1" style="margin-bottom:var(--sp-8);">
-          <span class="lang-pt">Uma visão multidisciplinar<br/><em>para a cidade.</em></span>
+          <span class="lang-pt">Uma visÃ£o multidisciplinar<br/><em>para a cidade.</em></span>
           <span class="lang-en">A multidisciplinary vision<br/><em>for the city.</em></span>
         </h2>
         <p class="lead rv rv-d2" style="margin-bottom:var(--sp-16);">
           <span class="lang-pt">
-            Somos um jovem estúdio formado por dois designers e três arquitetos, buscando implementar nossa visão nas mais variadas escalas de projetos. Nosso objetivo é produzir uma arquitetura contextualizada que seja generosa para a cidade, valorizando matérias-primas locais e testando novas experimentações.
+            Somos um estÃºdio formado por dois designers e trÃªs arquitetos, buscando implementar nossa visÃ£o nas mais variadas escalas de projetos. Nosso objetivo Ã© produzir uma arquitetura contextualizada que seja generosa para a cidade, valorizando matÃ©rias-primas locais e testando novas experimentaÃ§Ãµes.
           </span>
           <span class="lang-en">
-            We are a young studio formed by two designers and three architects, seeking to implement our vision across the most varied types and scales of projects. Our goal is the production of a contextualized architecture that is generous to the city, valuing local raw materials and testing new experimentations.
+            We are a studio formed by two designers and three architects, seeking to implement our vision across the most varied types and scales of projects. Our goal is the production of a contextualized architecture that is generous to the city, valuing local raw materials and testing new experimentations.
           </span>
         </p>
 
@@ -583,22 +702,22 @@
           <div class="about-item">
             <span class="about-num">01</span>
             <div>
-              <h4><span class="lang-pt">Gestão Tecnológica</span><span class="lang-en">Technological Management</span></h4>
-              <p><span class="lang-pt">Utilizamos projetos baseados em modelagem BIM para gerar grandes economias na execução da obra.</span><span class="lang-en">We use projects based on BIM modeling to generate great savings in construction execution.</span></p>
+              <h4><span class="lang-pt">GestÃ£o TecnolÃ³gica</span><span class="lang-en">Technological Management</span></h4>
+              <p><span class="lang-pt">Utilizamos projetos baseados em modelagem BIM para gerar grandes economias na execuÃ§Ã£o da obra.</span><span class="lang-en">We use projects based on BIM modeling to generate great savings in construction execution.</span></p>
             </div>
           </div>
           <div class="about-item">
             <span class="about-num">02</span>
             <div>
               <h4><span class="lang-pt">Sustentabilidade em Foco</span><span class="lang-en">Sustainability in Focus</span></h4>
-              <p><span class="lang-pt">O uso de estratégias bioclimáticas resulta em arquitetura com alta eficiência energética e retorno do investimento.</span><span class="lang-en">The use of bioclimatic strategies results in architecture with high energy efficiency and return on investment.</span></p>
+              <p><span class="lang-pt">O uso de estratÃ©gias bioclimÃ¡ticas resulta em arquitetura com alta eficiÃªncia energÃ©tica e retorno do investimento.</span><span class="lang-en">The use of bioclimatic strategies results in architecture with high energy efficiency and return on investment.</span></p>
             </div>
           </div>
           <div class="about-item">
             <span class="about-num">03</span>
             <div>
-              <h4><span class="lang-pt">Humanização pelo Design</span><span class="lang-en">Humanization through Design</span></h4>
-              <p><span class="lang-pt">Objetivamos conscientizar os usuários de que precisamos urgentemente repensar a maneira como vivemos e vemos nossas relações em sociedade.</span><span class="lang-en">We aim to raise awareness among users that we urgently need to rethink the way we live and see our relationships as a society.</span></p>
+              <h4><span class="lang-pt">HumanizaÃ§Ã£o pelo Design</span><span class="lang-en">Humanization through Design</span></h4>
+              <p><span class="lang-pt">Objetivamos conscientizar os usuÃ¡rios de que precisamos urgentemente repensar a maneira como vivemos e vemos nossas relaÃ§Ãµes em sociedade.</span><span class="lang-en">We aim to raise awareness among users that we urgently need to rethink the way we live and see our relationships as a society.</span></p>
             </div>
           </div>
         </div>
@@ -612,7 +731,7 @@
   <div class="s-inner">
     <div class="s-hdr">
       <div>
-        <span class="eyebrow rv"><span class="lang-pt">Portfólio Selecionado</span><span class="lang-en">Selected Portfolio</span></span>
+        <span class="eyebrow rv"><span class="lang-pt">PortfÃ³lio Selecionado</span><span class="lang-en">Selected Portfolio</span></span>
         <h2 class="h2 rv rv-d1">
           <span class="lang-pt">Do micro<br/><em>ao macro</em></span>
           <span class="lang-en">From micro<br/><em>to macro</em></span>
@@ -620,7 +739,7 @@
       </div>
       <div>
         <p class="lead rv rv-d2">
-          <span class="lang-pt">Projetamos desde uma simples unidade social até o planejamento estratégico de um bairro inteiro. Veja abaixo uma seleção de trabalhos.</span>
+          <span class="lang-pt">Projetamos desde uma simples unidade social atÃ© o planejamento estratÃ©gico de um bairro inteiro. Veja abaixo uma seleÃ§Ã£o de trabalhos.</span>
           <span class="lang-en">We design from a simple social unit to the strategic planning of an entire neighborhood. See a selection of works below.</span>
         </p>
       </div>
@@ -635,84 +754,168 @@
     </div>
 
     <div class="pg rv">
+
+      <!-- ARENA BSB -->
       <div class="pc pc-8" data-c="institucional">
-        <div class="pc-thumb"><img src="das_portfolio_images/img_page4_0.jpeg" alt="Arena BSB" loading="lazy"/></div>
+        <div class="pc-timer-bar"></div>
+        <div class="pc-thumb">
+          <div class="pc-slide active"><img src="das_portfolio_images/page_4_img_1.jpeg" alt="Arena BSB - 1" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_5_img_1.jpeg" alt="Arena BSB - 2" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_5_img_2.jpeg" alt="Arena BSB - 3" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_5_img_3.jpeg" alt="Arena BSB - 4" loading="lazy"/></div>
+        </div>
+        <div class="pc-img-counter"><span class="pc-timer-status">â±ï¸</span> 01 / 04</div>
+        <div class="pc-dots">
+          <div class="pc-dot on" data-idx="0"></div>
+          <div class="pc-dot " data-idx="1"></div>
+          <div class="pc-dot " data-idx="2"></div>
+          <div class="pc-dot " data-idx="3"></div>
+        </div>
         <div class="pc-overlay"></div>
         <div class="pc-info">
           <span class="pc-cat"><span class="lang-pt">Esporte & Lazer</span><span class="lang-en">Sports & Leisure</span></span>
           <h3 class="pc-name">Arena BSB</h3>
-          <p class="pc-meta">90,000m² · <span class="lang-pt">Concurso Nacional - 2º Lugar</span><span class="lang-en">National Competition - 2nd Place</span></p>
+          <p class="pc-meta">90,000mÂ² Â· <span class="lang-pt">Concurso Nacional - 2Âº Lugar</span><span class="lang-en">National Competition - 2nd Place</span></p>
         </div>
       </div>
-      
+
+      <!-- MONTE ALEGRE RESIDENCE -->
       <div class="pc pc-4" data-c="residencial">
-        <div class="pc-thumb"><img src="das_portfolio_images/img_page7_0.jpeg" alt="Monte Alegre" loading="lazy"/></div>
+        <div class="pc-timer-bar"></div>
+        <div class="pc-thumb">
+          <div class="pc-slide active"><img src="das_portfolio_images/page_7_img_1.jpeg" alt="Monte Alegre Residence - 1" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_8_img_1.jpeg" alt="Monte Alegre Residence - 2" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_9_img_1.jpeg" alt="Monte Alegre Residence - 3" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_9_img_2.jpeg" alt="Monte Alegre Residence - 4" loading="lazy"/></div>
+        </div>
+        <div class="pc-img-counter"><span class="pc-timer-status">â±ï¸</span> 01 / 04</div>
+        <div class="pc-dots">
+          <div class="pc-dot on" data-idx="0"></div>
+          <div class="pc-dot " data-idx="1"></div>
+          <div class="pc-dot " data-idx="2"></div>
+          <div class="pc-dot " data-idx="3"></div>
+        </div>
         <div class="pc-overlay"></div>
         <div class="pc-info">
           <span class="pc-cat"><span class="lang-pt">Interiores & Residencial</span><span class="lang-en">Interiors & Residential</span></span>
           <h3 class="pc-name">Monte Alegre Residence</h3>
-          <p class="pc-meta">620m² · Executive Project</p>
+          <p class="pc-meta">620mÂ² Â· Executive Project</p>
         </div>
       </div>
 
+      <!-- MANACA RESIDENCE -->
       <div class="pc pc-5" data-c="residencial">
-        <div class="pc-thumb"><img src="das_portfolio_images/img_page19_0.jpeg" alt="Manaca Residence" loading="lazy"/></div>
+        <div class="pc-timer-bar"></div>
+        <div class="pc-thumb">
+          <div class="pc-slide active"><img src="das_portfolio_images/page_19_img_1.jpeg" alt="Manaca Residence - 1" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_20_img_5.jpeg" alt="Manaca Residence - 2" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_20_img_6.jpeg" alt="Manaca Residence - 3" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_21_img_1.jpeg" alt="Manaca Residence - 4" loading="lazy"/></div>
+        </div>
+        <div class="pc-img-counter"><span class="pc-timer-status">â±ï¸</span> 01 / 04</div>
+        <div class="pc-dots">
+          <div class="pc-dot on" data-idx="0"></div>
+          <div class="pc-dot " data-idx="1"></div>
+          <div class="pc-dot " data-idx="2"></div>
+          <div class="pc-dot " data-idx="3"></div>
+        </div>
         <div class="pc-overlay"></div>
         <div class="pc-info">
-          <span class="pc-cat"><span class="lang-pt">Residencial Sustentável</span><span class="lang-en">Sustainable Residential</span></span>
+          <span class="pc-cat"><span class="lang-pt">Residencial SustentÃ¡vel</span><span class="lang-en">Sustainable Residential</span></span>
           <h3 class="pc-name">Manaca Residence</h3>
-          <p class="pc-meta">1,350m² · <span class="lang-pt">Prêmio Saint Gobain</span><span class="lang-en">Saint Gobain Award</span></p>
+          <p class="pc-meta">1,350mÂ² Â· <span class="lang-pt">PrÃªmio Saint Gobain</span><span class="lang-en">Saint Gobain Award</span></p>
         </div>
       </div>
 
+      <!-- SAMBAQUI SUNSET RESIDENCE -->
       <div class="pc pc-7" data-c="residencial">
-        <div class="pc-thumb"><img src="das_portfolio_images/img_page26_0.jpeg" alt="Sambaqui Sunset" loading="lazy"/></div>
+        <div class="pc-timer-bar"></div>
+        <div class="pc-thumb">
+          <div class="pc-slide active"><img src="das_portfolio_images/page_26_img_1.jpeg" alt="Sambaqui Sunset Residence - 1" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_27_img_1.jpeg" alt="Sambaqui Sunset Residence - 2" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_27_img_2.jpeg" alt="Sambaqui Sunset Residence - 3" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_28_img_1.jpeg" alt="Sambaqui Sunset Residence - 4" loading="lazy"/></div>
+        </div>
+        <div class="pc-img-counter"><span class="pc-timer-status">â±ï¸</span> 01 / 04</div>
+        <div class="pc-dots">
+          <div class="pc-dot on" data-idx="0"></div>
+          <div class="pc-dot " data-idx="1"></div>
+          <div class="pc-dot " data-idx="2"></div>
+          <div class="pc-dot " data-idx="3"></div>
+        </div>
         <div class="pc-overlay"></div>
         <div class="pc-info">
-          <span class="pc-cat"><span class="lang-pt">Habitação</span><span class="lang-en">Housing</span></span>
+          <span class="pc-cat"><span class="lang-pt">HabitaÃ§Ã£o</span><span class="lang-en">Housing</span></span>
           <h3 class="pc-name">Sambaqui Sunset Residence</h3>
-          <p class="pc-meta">26,000m² · Preliminary Design</p>
+          <p class="pc-meta">26,000mÂ² Â· Preliminary Design</p>
         </div>
       </div>
 
+      <!-- VILNIUS CONCERT HALL -->
       <div class="pc pc-6" data-c="cultural">
-        <div class="pc-thumb"><img src="das_portfolio_images/img_page35_0.jpeg" alt="Vilnius Concert Hall" loading="lazy"/></div>
+        <div class="pc-timer-bar"></div>
+        <div class="pc-thumb">
+          <div class="pc-slide active"><img src="das_portfolio_images/page_35_img_1.jpeg" alt="Vilnius Concert Hall - 1" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_36_img_1.jpeg" alt="Vilnius Concert Hall - 2" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_36_img_2.jpeg" alt="Vilnius Concert Hall - 3" loading="lazy"/></div>
+        </div>
+        <div class="pc-img-counter"><span class="pc-timer-status">â±ï¸</span> 01 / 03</div>
+        <div class="pc-dots">
+          <div class="pc-dot on" data-idx="0"></div>
+          <div class="pc-dot " data-idx="1"></div>
+          <div class="pc-dot " data-idx="2"></div>
+        </div>
         <div class="pc-overlay"></div>
         <div class="pc-info">
           <span class="pc-cat"><span class="lang-pt">Cultural Internacional</span><span class="lang-en">International Cultural</span></span>
           <h3 class="pc-name">Vilnius Concert Hall</h3>
-          <p class="pc-meta">12,000m² · Lithuania</p>
+          <p class="pc-meta">12,000mÂ² Â· Lithuania</p>
         </div>
       </div>
 
+      <!-- CEARA BUILDING -->
       <div class="pc pc-6" data-c="institucional">
-        <div class="pc-thumb"><img src="das_portfolio_images/img_page11_0.jpeg" alt="Ceara Building" loading="lazy"/></div>
+        <div class="pc-timer-bar"></div>
+        <div class="pc-thumb">
+          <div class="pc-slide active"><img src="das_portfolio_images/page_11_img_1.jpeg" alt="Ceara Building - 1" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_12_img_1.jpeg" alt="Ceara Building - 2" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_13_img_1.jpeg" alt="Ceara Building - 3" loading="lazy"/></div>
+          <div class="pc-slide "><img src="das_portfolio_images/page_14_img_1.jpeg" alt="Ceara Building - 4" loading="lazy"/></div>
+        </div>
+        <div class="pc-img-counter"><span class="pc-timer-status">â±ï¸</span> 01 / 04</div>
+        <div class="pc-dots">
+          <div class="pc-dot on" data-idx="0"></div>
+          <div class="pc-dot " data-idx="1"></div>
+          <div class="pc-dot " data-idx="2"></div>
+          <div class="pc-dot " data-idx="3"></div>
+        </div>
         <div class="pc-overlay"></div>
         <div class="pc-info">
-          <span class="pc-cat"><span class="lang-pt">Edifício Residencial/Misto</span><span class="lang-en">Residential/Mixed Building</span></span>
+          <span class="pc-cat"><span class="lang-pt">EdifÃ­cio Residencial/Misto</span><span class="lang-en">Residential/Mixed Building</span></span>
           <h3 class="pc-name">Ceara Building</h3>
-          <p class="pc-meta">4,449m²</p>
+          <p class="pc-meta">4,449mÂ²</p>
         </div>
       </div>
     </div>
 
-    <!-- PROMINENT CTA BANNER TO ALL PROJECTS (PORT_index_05.html) -->
-    <div class="full-portfolio-cta-banner rv rv-d3">
+    <!-- CTA BANNER -->
+    <div class="full-portfolio-cta-banner rv rv-d3" style="margin-top: var(--sp-16); padding: var(--sp-12) var(--sp-20);">
       <div class="full-port-info">
-        <h3>
-          <span class="lang-pt">Quer explorar nossa coleção completa de projetos?</span>
-          <span class="lang-en">Want to explore our complete collection of projects?</span>
+        <h3 style="font-size: clamp(1.1rem, 1.8vw, 1.5rem); margin-bottom: 6px;">
+          <span class="lang-pt">Quer ver nossa coleÃ§Ã£o completa de projetos?</span>
+          <span class="lang-en">Want to see our complete project collection?</span>
         </h3>
-        <p>
-          <span class="lang-pt">Acesse a nossa galeria interativa com expansão suave e ficha técnica completa.</span>
-          <span class="lang-en">Access our interactive gallery with smooth expansion and detailed datasheets.</span>
+        <p style="font-size: 0.85rem; opacity: 0.75; margin: 0;">
+          <span class="lang-pt">Acesse a galeria interativa com ficha tÃ©cnica completa de cada obra.</span>
+          <span class="lang-en">Access the interactive gallery with full datasheets for each project.</span>
         </p>
       </div>
-      <a href="portfolio.html" class="btn btn-fill" style="padding:14px 28px; white-space:nowrap; flex-shrink:0;">
-        <span class="lang-pt">Ver Todos os Projetos →</span>
-        <span class="lang-en">View All Projects →</span>
+      <a href="portfolio.html" class="btn btn-fill" style="padding: 12px 24px; font-size: 0.82rem; white-space:nowrap; flex-shrink:0;">
+        <span class="lang-pt">Ver Todos os Projetos â†’</span>
+        <span class="lang-en">View All Projects â†’</span>
       </a>
     </div>
+
 
   </div>
 </section>
@@ -722,7 +925,7 @@
   <div class="s-inner">
     <div class="s-hdr">
       <div>
-        <span class="eyebrow rv"><span class="lang-pt">Nossas Forças</span><span class="lang-en">Our Strengths</span></span>
+        <span class="eyebrow rv"><span class="lang-pt">Nossas ForÃ§as</span><span class="lang-en">Our Strengths</span></span>
         <h2 class="h2 rv rv-d1">
           <span class="lang-pt">Capacidades e<br/><em>Diferenciais</em></span>
           <span class="lang-en">Capabilities and<br/><em>Differentials</em></span>
@@ -730,7 +933,7 @@
       </div>
       <div>
         <p class="lead rv rv-d2">
-          <span class="lang-pt">Unimos a sensibilidade estética do design com a precisão rigorosa da engenharia e da sustentabilidade.</span>
+          <span class="lang-pt">Unimos a sensibilidade estÃ©tica do design com a precisÃ£o rigorosa da engenharia e da sustentabilidade.</span>
           <span class="lang-en">We merge the aesthetic sensitivity of design with the rigorous precision of engineering and sustainability.</span>
         </p>
       </div>
@@ -739,9 +942,9 @@
     <div class="caps-grid">
       <div class="cap-card rv">
         <div class="cap-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg></div>
-        <h3 class="cap-title"><span class="lang-pt">Prêmio Nacional de Sustentabilidade</span><span class="lang-en">National Sustainability Award</span></h3>
+        <h3 class="cap-title"><span class="lang-pt">PrÃªmio Nacional de Sustentabilidade</span><span class="lang-en">National Sustainability Award</span></h3>
         <p class="cap-desc">
-          <span class="lang-pt">Premiados no Saint Gobain Architecture and Sustainable Habitat Award (Residência Manaca).</span>
+          <span class="lang-pt">Premiados no Saint Gobain Architecture and Sustainable Habitat Award (ResidÃªncia Manaca).</span>
           <span class="lang-en">Awarded in the Saint Gobain Architecture and Sustainable Habitat Award (Manaca Residence).</span>
         </p>
       </div>
@@ -749,15 +952,15 @@
         <div class="cap-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg></div>
         <h3 class="cap-title"><span class="lang-pt">Concursos de Arquitetura</span><span class="lang-en">Architecture Competitions</span></h3>
         <p class="cap-desc">
-          <span class="lang-pt">Forte atuação e premiações em concursos nacionais e internacionais, como a Arena BSB e Vilnius Concert Hall.</span>
+          <span class="lang-pt">Forte atuaÃ§Ã£o e premiaÃ§Ãµes em concursos nacionais e internacionais, como a Arena BSB e Vilnius Concert Hall.</span>
           <span class="lang-en">Strong presence and awards in national and international competitions, such as Arena BSB and Vilnius Concert Hall.</span>
         </p>
       </div>
       <div class="cap-card rv rv-d2">
         <div class="cap-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M22 9V7h-2V5c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-2h2v-2h-2v-2h2v-2h-2V9h2zm-4 10H4V5h14v14z"/></svg></div>
-        <h3 class="cap-title"><span class="lang-pt">BIM e Inovação</span><span class="lang-en">BIM and Innovation</span></h3>
+        <h3 class="cap-title"><span class="lang-pt">BIM e InovaÃ§Ã£o</span><span class="lang-en">BIM and Innovation</span></h3>
         <p class="cap-desc">
-          <span class="lang-pt">Integração tecnológica do começo ao fim para mitigar erros, garantir orçamentos e otimizar processos.</span>
+          <span class="lang-pt">IntegraÃ§Ã£o tecnolÃ³gica do comeÃ§o ao fim para mitigar erros, garantir orÃ§amentos e otimizar processos.</span>
           <span class="lang-en">Technological integration from start to finish to mitigate errors, ensure budgets, and optimize processes.</span>
         </p>
       </div>
@@ -769,11 +972,11 @@
 <section class="suriname" id="destaque">
   <div class="suriname-inner">
     <div>
-      <span class="eyebrow rv"><span class="lang-pt">Projeto em Destaque — Concurso Internacional</span><span class="lang-en">Highlight Project — International Competition</span></span>
+      <span class="eyebrow rv"><span class="lang-pt">Projeto em Destaque â€” Concurso Internacional</span><span class="lang-en">Highlight Project â€” International Competition</span></span>
       <h2 class="h2 rv rv-d1" style="margin-bottom:0;">Yoga House<br/><em style="color:rgba(255,255,255,0.7); font-size:2rem;">Portugal</em></h2>
       <p class="sur-desc rv rv-d2">
         <span class="lang-pt">
-          A palavra Yoga vem da raiz sânscrita "yuj", que significa unir. O conceito do design visa maximizar a conexão com os elementos da natureza usando madeira laminada colada (glulam) em uma volumetria que simula gestualmente a saudação "namastê", integrando correntes de ventilação natural e captação de iluminação bioclimática.
+          A palavra Yoga vem da raiz sÃ¢nscrita "yuj", que significa unir. O conceito do design visa maximizar a conexÃ£o com os elementos da natureza usando madeira laminada colada (glulam) em uma volumetria que simula gestualmente a saudaÃ§Ã£o "namastÃª", integrando correntes de ventilaÃ§Ã£o natural e captaÃ§Ã£o de iluminaÃ§Ã£o bioclimÃ¡tica.
         </span>
         <span class="lang-en">
           The word Yoga comes from the Sanskrit root "yuj", which means to unite. The design concept aims to maximize the connection with elements of nature using glued laminated timber (glulam) in a volumetry that gesturely simulates the "namaste" greeting, integrating natural ventilation currents and bioclimatic light harvesting.
@@ -782,7 +985,7 @@
       <div class="sur-specs rv rv-d2">
         <div class="sur-spec"><small><span class="lang-pt">Categoria</span><span class="lang-en">Category</span></small><strong><span class="lang-pt">Concurso de Projeto</span><span class="lang-en">Project Competition</span></strong></div>
         <div class="sur-spec"><small><span class="lang-pt">Ano</span><span class="lang-en">Year</span></small><strong>2020</strong></div>
-        <div class="sur-spec"><small><span class="lang-pt">Área Construída</span><span class="lang-en">Built Area</span></small><strong>220 m²</strong></div>
+        <div class="sur-spec"><small><span class="lang-pt">Ãrea ConstruÃ­da</span><span class="lang-en">Built Area</span></small><strong>220 mÂ²</strong></div>
         <div class="sur-spec"><small><span class="lang-pt">Estrutura</span><span class="lang-en">Structure</span></small><strong>Glulam / Bioclimatic</strong></div>
       </div>
       
@@ -790,7 +993,7 @@
       <div style="margin-top: 28px;" class="rv rv-d4">
         <a href="dasarquitetos-portfolio.pdf" target="_blank" class="btn btn-ghost-w" style="border-color: rgba(255,255,255,0.35); color: white;">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="margin-right:4px;"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-9.5 8.5L8 9.5V6h3v5.5zm4 0h-3V6h3v5.5zm4 0h-3V6h3v5.5zm-8 4v2H8v-2h1.5zm4 0v2h-1.5v-2h1.5zm4 0v2h-1.5v-2H17.5z"/></svg>
-          <span class="lang-pt">Visualizar PDF do Portfólio</span><span class="lang-en">View Portfolio PDF</span>
+          <span class="lang-pt">Visualizar PDF do PortfÃ³lio</span><span class="lang-en">View Portfolio PDF</span>
         </a>
       </div>
     </div>
@@ -801,40 +1004,40 @@
         
         <!-- LAYER 0 -->
         <div class="yh-slide-layer active" data-index="0">
-          <img src="das_portfolio_images/img_page42_0.jpeg" alt="Yoga House — Perspectiva Externa"/>
+          <img src="das_portfolio_images/img_page42_0.jpeg" alt="Yoga House â€” Perspectiva Externa"/>
         </div>
         <!-- LAYER 1 -->
         <div class="yh-slide-layer" data-index="1">
-          <img src="das_portfolio_images/img_page43_1.jpeg" alt="Yoga House — Santuário Interno"/>
+          <img src="das_portfolio_images/img_page43_1.jpeg" alt="Yoga House â€” SantuÃ¡rio Interno"/>
         </div>
         <!-- LAYER 2 -->
         <div class="yh-slide-layer" data-index="2">
-          <img src="das_portfolio_images/img_page43_2.jpeg" alt="Yoga House — Elevação & Implantação"/>
+          <img src="das_portfolio_images/img_page43_2.jpeg" alt="Yoga House â€” ElevaÃ§Ã£o & ImplantaÃ§Ã£o"/>
         </div>
         <!-- LAYER 3 -->
         <div class="yh-slide-layer" data-index="3">
-          <img src="das_portfolio_images/img_page43_0.jpeg" alt="Yoga House — Diagrama Bioclimático"/>
+          <img src="das_portfolio_images/img_page43_0.jpeg" alt="Yoga House â€” Diagrama BioclimÃ¡tico"/>
         </div>
 
-        <div class="yh-caption-badge" id="yhCapBadge">01 / 04 · Perspectiva Externa · Madeira Glulam</div>
+        <div class="yh-caption-badge" id="yhCapBadge">01 / 04 Â· Perspectiva Externa Â· Madeira Glulam</div>
       </div>
       
       <!-- THUMBNAILS BAR WITH AUTOMATIC PROGRESS TIMERS -->
       <div class="yh-thumbs-bar">
-        <div class="yh-thumb-item active" data-index="0" data-cap-pt="01 / 04 · Perspectiva Externa · Madeira Glulam" data-cap-en="01 / 04 · Exterior View · Glulam Timber">
+        <div class="yh-thumb-item active" data-index="0" data-cap-pt="01 / 04 Â· Perspectiva Externa Â· Madeira Glulam" data-cap-en="01 / 04 Â· Exterior View Â· Glulam Timber">
           <img src="das_portfolio_images/img_page42_0.jpeg" alt="Perspectiva Externa"/>
           <div class="yh-thumb-progress"></div>
         </div>
-        <div class="yh-thumb-item" data-index="1" data-cap-pt="02 / 04 · Santuário Interno · Luz Natural" data-cap-en="02 / 04 · Interior Sanctuary · Natural Light">
+        <div class="yh-thumb-item" data-index="1" data-cap-pt="02 / 04 Â· SantuÃ¡rio Interno Â· Luz Natural" data-cap-en="02 / 04 Â· Interior Sanctuary Â· Natural Light">
           <img src="das_portfolio_images/img_page43_1.jpeg" alt="Interior Yoga"/>
           <div class="yh-thumb-progress"></div>
         </div>
-        <div class="yh-thumb-item" data-index="2" data-cap-pt="03 / 04 · Implantação & Elevação Bioclimática" data-cap-en="03 / 04 · Site Plan & Bioclimatic Elevation">
-          <img src="das_portfolio_images/img_page43_2.jpeg" alt="Elevação"/>
+        <div class="yh-thumb-item" data-index="2" data-cap-pt="03 / 04 Â· ImplantaÃ§Ã£o & ElevaÃ§Ã£o BioclimÃ¡tica" data-cap-en="03 / 04 Â· Site Plan & Bioclimatic Elevation">
+          <img src="das_portfolio_images/img_page43_2.jpeg" alt="ElevaÃ§Ã£o"/>
           <div class="yh-thumb-progress"></div>
         </div>
-        <div class="yh-thumb-item" data-index="3" data-cap-pt="04 / 04 · Diagrama de Ventilação Natural" data-cap-en="04 / 04 · Natural Ventilation Diagram">
-          <img src="das_portfolio_images/img_page43_0.jpeg" alt="Diagrama Bioclimático"/>
+        <div class="yh-thumb-item" data-index="3" data-cap-pt="04 / 04 Â· Diagrama de VentilaÃ§Ã£o Natural" data-cap-en="04 / 04 Â· Natural Ventilation Diagram">
+          <img src="das_portfolio_images/img_page43_0.jpeg" alt="Diagrama BioclimÃ¡tico"/>
           <div class="yh-thumb-progress"></div>
         </div>
       </div>
@@ -853,7 +1056,7 @@
         <span class="lang-en">Let's design<br/><em>the future together.</em></span>
       </h2>
       <p class="contact-sub rv rv-d2">
-        <span class="lang-pt">Se você busca um projeto único, sustentável e fundamentado na mais alta precisão técnica, converse com nosso estúdio.</span>
+        <span class="lang-pt">Se vocÃª busca um projeto Ãºnico, sustentÃ¡vel e fundamentado na mais alta precisÃ£o tÃ©cnica, converse com nosso estÃºdio.</span>
         <span class="lang-en">If you are looking for a unique, sustainable project based on the highest technical precision, talk to our studio.</span>
       </p>
     </div>
@@ -880,16 +1083,16 @@
       <div>
         <a href="#hero" class="ftr-logo"><img src="das_portfolio_images/logo-das-arquitetos.jpg" alt="DAS Arquitetos"/></a>
         <p class="ftr-desc">
-          <span class="lang-pt">Estúdio de arquitetura focado em projetos contemporâneos, gestão tecnológica e sustentabilidade ambiental.</span>
+          <span class="lang-pt">EstÃºdio de arquitetura focado em projetos contemporÃ¢neos, gestÃ£o tecnolÃ³gica e sustentabilidade ambiental.</span>
           <span class="lang-en">Architecture studio focused on contemporary projects, technological management, and environmental sustainability.</span>
         </p>
       </div>
       <div>
-        <p class="ftr-col-lbl"><span class="lang-pt">Navegação</span><span class="lang-en">Navigation</span></p>
+        <p class="ftr-col-lbl"><span class="lang-pt">NavegaÃ§Ã£o</span><span class="lang-en">Navigation</span></p>
         <div class="ftr-links">
-          <a href="#hero" class="ftr-link"><span class="lang-pt">Página Inicial</span><span class="lang-en">Home Page</span></a>
+          <a href="#hero" class="ftr-link"><span class="lang-pt">PÃ¡gina Inicial</span><span class="lang-en">Home Page</span></a>
           <a href="#projetos" class="ftr-link"><span class="lang-pt">Projetos</span><span class="lang-en">Projects</span></a>
-          <a href="#sobre" class="ftr-link"><span class="lang-pt">Sobre o Estúdio</span><span class="lang-en">About Us</span></a>
+          <a href="#sobre" class="ftr-link"><span class="lang-pt">Sobre o EstÃºdio</span><span class="lang-en">About Us</span></a>
           <a href="#destaque" class="ftr-link"><span class="lang-pt">Destaque</span><span class="lang-en">Highlight</span></a>
           <a href="#contato" class="ftr-link"><span class="lang-pt">Contato</span><span class="lang-en">Contact</span></a>
         </div>
@@ -897,15 +1100,15 @@
       <div>
         <p class="ftr-col-lbl"><span class="lang-pt">Contatos</span><span class="lang-en">Contacts</span></p>
         <div class="ftr-links">
-          <a href="mailto:contato@dasarquitetos.com.br" class="ftr-link">contato@dasarquitetos.com.br</a>
-          <a href="tel:+5541999999999" class="ftr-link">+55 (41) 99999-9999</a>
-          <span class="ftr-link" style="color:rgba(255,255,255,0.3);">Curitiba — PR, Brasil</span>
+          <a href="mailto:das.arquitetos@gmail.com" class="ftr-link">das.arquitetos@gmail.com</a>
+          <a href="tel:+554198211450" class="ftr-link">+55 (41) 9821-1450</a>
+          <span class="ftr-link" style="color:rgba(255,255,255,0.3);">Curitiba â€” PR, Brasil</span>
         </div>
       </div>
       <div class="ftr-sub">
         <p class="ftr-col-lbl"><span class="lang-pt">Newsletter</span><span class="lang-en">Newsletter</span></p>
         <p style="font-size:0.78rem; color:rgba(255,255,255,0.4); margin-bottom:8px;">
-          <span class="lang-pt">Receba nossas atualizações sobre novos projetos.</span>
+          <span class="lang-pt">Receba nossas atualizaÃ§Ãµes sobre novos projetos.</span>
           <span class="lang-en">Receive updates on our new projects.</span>
         </p>
         <form onsubmit="event.preventDefault(); alert('Obrigado!');">
@@ -915,7 +1118,7 @@
       </div>
     </div>
     <div class="ftr-bottom">
-      <p class="ftr-copy">© 2026 DAS Arquitetos. Todos os direitos reservados.</p>
+      <p class="ftr-copy">Â© 2026 DAS Arquitetos. Todos os direitos reservados.</p>
       <div class="ftr-legal">
         <a href="#"><span class="lang-pt">Termos de Uso</span><span class="lang-en">Terms of Use</span></a>
         <a href="#"><span class="lang-pt">Privacidade</span><span class="lang-en">Privacy</span></a>
@@ -1068,6 +1271,112 @@ mainFrame.addEventListener('mouseleave', () => {
 
 // Start automatic slideshow
 startYhSlideshow();
+
+/* ---- 15s TIMED SLIDESHOW WITH VISUAL PROGRESS BAR INDICATOR ---- */
+(function() {
+  document.querySelectorAll('.pc').forEach(card => {
+    const slides = card.querySelectorAll('.pc-slide');
+    if (slides.length <= 1) return;
+
+    const counter = card.querySelector('.pc-img-counter');
+    const dots = card.querySelectorAll('.pc-dot');
+    let current = 0;
+    let timer = null;
+    const total = slides.length;
+
+    function resetProgressBar() {
+      card.classList.remove('timer-active');
+      void card.offsetWidth;
+    }
+
+    function triggerProgressBar() {
+      resetProgressBar();
+      card.classList.add('timer-active');
+    }
+
+    function goTo(idx) {
+      slides[current].classList.remove('active');
+      if (dots[current]) dots[current].classList.remove('on');
+      
+      current = (idx + total) % total;
+      
+      slides[current].classList.add('active');
+      if (dots[current]) dots[current].classList.add('on');
+      if (counter) {
+        counter.innerHTML = `<span class="pc-timer-status">â±ï¸</span> ${String(current + 1).padStart(2, '0')} / ${String(total).padStart(2, '0')}`;
+      }
+      triggerProgressBar();
+    }
+
+    function start15sTimer() {
+      if (timer) return;
+      triggerProgressBar();
+      timer = setInterval(() => {
+        goTo(current + 1);
+      }, 15000);
+    }
+
+    function stop15sTimer() {
+      if (timer) {
+        clearInterval(timer);
+        timer = null;
+      }
+      resetProgressBar();
+    }
+
+    // Start 15s timer & progress bar ONLY on mouseenter or click
+    card.addEventListener('mouseenter', start15sTimer);
+    card.addEventListener('mouseleave', stop15sTimer);
+
+    card.addEventListener('click', (e) => {
+      start15sTimer();
+    });
+
+    dots.forEach(dot => {
+      dot.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const targetIdx = parseInt(dot.dataset.idx, 10);
+        goTo(targetIdx);
+        stop15sTimer();
+        start15sTimer();
+      });
+    });
+  });
+
+  /* ---- SUBTLE 3D PARALLAX TILT ON HOVER (MINIMAL & SILKY) ---- */
+  document.querySelectorAll('.pc').forEach(card => {
+    const thumb = card.querySelector('.pc-thumb');
+    if (!thumb) return;
+
+    let rafId = null;
+
+    card.addEventListener('mousemove', (e) => {
+      if (card.classList.contains('expanded')) return;
+      if (rafId) cancelAnimationFrame(rafId);
+      
+      rafId = requestAnimationFrame(() => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+        
+        const tiltX = (y / rect.height) * -2.5;
+        const tiltY = (x / rect.width) * 2.5;
+        
+        card.style.transform = `perspective(1400px) rotateX(${tiltX.toFixed(2)}deg) rotateY(${tiltY.toFixed(2)}deg) scale3d(1.008, 1.008, 1.008)`;
+        card.style.zIndex = '5';
+      });
+    });
+
+    card.addEventListener('mouseleave', () => {
+      if (card.classList.contains('expanded')) return;
+      if (rafId) cancelAnimationFrame(rafId);
+      card.style.transform = 'perspective(1400px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+      card.style.boxShadow = '';
+      card.style.zIndex = '';
+    });
+  });
+})();
 </script>
 </body>
 </html>
+
